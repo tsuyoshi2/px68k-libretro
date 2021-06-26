@@ -586,6 +586,9 @@ static void parse_cmdline(const char *argv)
    strcpy(buffer, argv);
    strcat(buffer, " \0");
 
+   /* to be removed after debugging */
+   p6logd("buffer = %s\n", buffer);
+
    for (p = buffer; *p != '\0'; p++)
    {
       c = (unsigned char) *p; /* convert to unsigned char for is* functions */
@@ -612,6 +615,10 @@ static void parse_cmdline(const char *argv)
                //... do something with the word ...
                for (c2 = 0, p2 = start_of_word; p2 < p; p2++, c2++)
                   ARGUV[ARGUC][c2] = (unsigned char) *p2;
+
+               // to be removed after debugging
+               p6logd("string: c = %d s = %s\n", ARGUC, ARGUV[ARGUC]);
+               
                ARGUC++;
 
                state = DULL; /* back to "not in word, not in string" state */
@@ -625,6 +632,10 @@ static void parse_cmdline(const char *argv)
                //... do something with the word ...
                for (c2 = 0, p2 = start_of_word; p2 <p; p2++, c2++)
                   ARGUV[ARGUC][c2] = (unsigned char) *p2;
+
+               // to be removed after debugging
+               p6logd("word: c = %d s = %s\n", ARGUC, ARGUV[ARGUC]);
+
                ARGUC++;
 
                state = DULL; /* back to "not in word, not in string" state */
