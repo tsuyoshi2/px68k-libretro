@@ -500,11 +500,14 @@ static int pre_main(const char *argv)
             return false;
          }
 
-         sprintf((char*)argv, "px68k \"%s\"", disk.path[0]);
          if(disk.total_images > 1)
          {
-            sprintf((char*)argv, "%s \"%s\"", argv, disk.path[1]);
+            sprintf((char*)argv, "%s \"%s\" \"%s\"", "px68k", disk.path[0], disk.path[1]);
             disk.inserted[1] = true;
+         }
+         else
+         {
+            sprintf((char*)argv, "px68k \"%s\"", disk.path[0]);
          }
 
          disk.inserted[0] = true;
