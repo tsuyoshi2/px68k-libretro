@@ -1090,7 +1090,18 @@ static void update_variables(void)
       else if (!strcmp(var.value, "enabled"))
          Config.AdjustFrameRates = 1;
       CHANGEAV_TIMING = CHANGEAV_TIMING || Config.AdjustFrameRates != temp;
-   }   
+   }
+
+   var.key = "px68k_audio_desync_hack";
+   var.value = NULL;
+
+   if (environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE, &var) && var.value)
+   {
+      if (!strcmp(var.value, "disabled"))
+         Config.AudioDesyncHack = 0;
+      else if (!strcmp(var.value, "enabled"))
+         Config.AudioDesyncHack = 1;
+   }
 }
 
 /************************************
@@ -1412,6 +1423,12 @@ void retro_run(void)
    if (Config.PushVideoBeforeAudio)
       video_cb(videoBuffer, retrow, retroh, /*retrow*/ 800 << 1/*2*/);
 
+   if (Config.AudioDesyncHack)
+   {
+      int nsamples = audio_samples_avail();
+      if (nsamples > soundbuf_size)
+         audio_samples_discard(nsamples - soundbuf_size);
+   }
    raudio_callback(soundbuf, NULL, soundbuf_size << 2);
    audio_batch_cb((const int16_t*)soundbuf, soundbuf_size);
 
