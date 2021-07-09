@@ -407,7 +407,7 @@ void FASTCALL CRTC_Write(DWORD adr, BYTE data)
 			break;
 		case 0x29:
 			HSYNC_CLK = ((CRTC_Regs[0x29]&0x10)?VSYNC_HIGH:VSYNC_NORM)/VLINE_TOTAL;
-			VID_MODE = CRTC_Regs[0x29]&0x10;
+			VID_MODE = !!(CRTC_Regs[0x29]&0x10);
 			TextDotY = CRTC_VEND-CRTC_VSTART;
 			if ((CRTC_Regs[0x29]&0x14)==0x10)
 			{
