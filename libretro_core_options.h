@@ -307,7 +307,7 @@ struct retro_core_option_definition option_defs_us[] = {
    {
       "px68k_no_wait_mode",
       "No Wait Mode",
-      "When set to [enabled], core runs as fast as possible. Can cause audio desync but allows fast-forward. Setting this [disabled] is recommended.",
+      "When set to [enabled], core runs as fast as possible. Can cause audio desync. Setting this [disabled] is recommended.",
       {
          { "disabled", NULL},
          { "enabled",  NULL},
@@ -345,6 +345,17 @@ struct retro_core_option_definition option_defs_us[] = {
          { NULL,       NULL },
       },
       "disabled"
+   },
+   {
+      "px68k_adjust_frame_rates",
+      "Adjust Frame Rates",
+      "For compatibility with modern displays, slightly adjust frame rates reported to frontend in order to reduce the chances of audio stuttering.  Disable to use actual frame rates.",
+      {
+         { "disabled", NULL},
+         { "enabled",  NULL},
+         { NULL,       NULL },
+      },
+      "enabled"
    },
 
    { NULL, NULL, NULL, {{0}}, NULL }
