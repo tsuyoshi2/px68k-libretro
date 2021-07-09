@@ -335,6 +335,17 @@ struct retro_core_option_definition option_defs_us[] = {
       },
       "Full Frame"
    },
+   {
+      "px68k_audio_desync_hack",
+      "Audio Desync Hack",
+      "Prevents audio from desynchronizing by simply discarding any audio samples generated past the requested amount per frame slice.  Forces 'No Wait Mode' to [enabled], use appropriate frontend settings to properly throttle content.",
+      {
+         { "disabled", NULL},
+         { "enabled",  NULL},
+         { NULL,       NULL },
+      },
+      "disabled"
+   },
 
    { NULL, NULL, NULL, {{0}}, NULL }
 };

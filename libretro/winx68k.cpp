@@ -883,7 +883,8 @@ extern "C" void exec_app_retro(){
 	//while (1) {
 		// OPM_RomeoOut(Config.BufferSize * 5);
 		if (menu_mode == menu_out
-		    && (Config.NoWaitMode || Timer_GetCount())) {
+		    && (Config.AudioDesyncHack ||
+                        Config.NoWaitMode || Timer_GetCount())) {
 			WinX68k_Exec();
 
 			if (SplashFlag) {

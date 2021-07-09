@@ -1059,6 +1059,17 @@ static void update_variables(void)
       else if (!strcmp(var.value, "Full Frame"))
          Config.FrameRate = 1;
    }
+
+   var.key = "px68k_audio_desync_hack";
+   var.value = NULL;
+
+   if (environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE, &var) && var.value)
+   {
+      if (!strcmp(var.value, "disabled"))
+         Config.AudioDesyncHack = 0;
+      else if (!strcmp(var.value, "enabled"))
+         Config.AudioDesyncHack = 1;
+   }
 }
 
 /************************************
@@ -1353,6 +1364,12 @@ void retro_run(void)
 
    exec_app_retro();
 
+   if (Config.AudioDesyncHack)
+   {
+      int nsamples = audio_samples_avail();
+      if (nsamples > soundbuf_size)
+         audio_samples_discard(nsamples - soundbuf_size);
+   }
    raudio_callback(soundbuf, NULL, soundbuf_size << 2);
    audio_batch_cb((const int16_t*)soundbuf, soundbuf_size);
 

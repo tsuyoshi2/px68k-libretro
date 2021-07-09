@@ -146,6 +146,36 @@ static void FASTCALL DSound_Send(int length)
 	sound_send(length);
 }
 
+int
+audio_samples_avail()
+{
+   if (pbrp <= pbwp)
+      return (pbwp - pbrp) / 4;
+   else
+      return (pbep - pbrp) / 4 + (pbwp - pbsp) / 4;
+}
+
+void
+audio_samples_discard(int discard)
+{
+   int avail = audio_samples_avail();
+   if (discard > avail)
+      discard = avail;
+
+   if (discard <= 0)
+      return;
+
+   if (pbrp > pbwp) {
+      int availa = (pbep - pbrp) / 4;
+      if (discard >= availa) {
+         pbrp = pbsp;
+         discard -= availa;
+      }
+   }
+   
+   pbrp += 4 * discard;
+}
+
 void
 raudio_callback(void *userdata, unsigned char *stream, int len)
 {
