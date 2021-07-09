@@ -1059,6 +1059,17 @@ static void update_variables(void)
       else if (!strcmp(var.value, "Full Frame"))
          Config.FrameRate = 1;
    }
+
+   var.key = "px68k_push_video_before_audio";
+   var.value = NULL;
+
+   if (environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE, &var) && var.value)
+   {
+      if (!strcmp(var.value, "disabled"))
+         Config.PushVideoBeforeAudio = 0;
+      else if (!strcmp(var.value, "enabled"))
+         Config.PushVideoBeforeAudio = 1;
+   }
 }
 
 /************************************
@@ -1353,8 +1364,12 @@ void retro_run(void)
 
    exec_app_retro();
 
+   if (Config.PushVideoBeforeAudio)
+      video_cb(videoBuffer, retrow, retroh, /*retrow*/ 800 << 1/*2*/);
+
    raudio_callback(soundbuf, NULL, soundbuf_size << 2);
    audio_batch_cb((const int16_t*)soundbuf, soundbuf_size);
 
-   video_cb(videoBuffer, retrow, retroh, /*retrow*/ 800 << 1/*2*/);
+   if (!Config.PushVideoBeforeAudio)
+      video_cb(videoBuffer, retrow, retroh, /*retrow*/ 800 << 1/*2*/);
 }

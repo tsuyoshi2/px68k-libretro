@@ -335,6 +335,17 @@ struct retro_core_option_definition option_defs_us[] = {
       },
       "Full Frame"
    },
+   {
+      "px68k_push_video_before_audio",
+      "Push Video before Audio",
+      "Prioritize reducing video latency over audio latency and/or stuttering.",
+      {
+         { "disabled", NULL},
+         { "enabled",  NULL},
+         { NULL,       NULL },
+      },
+      "disabled"
+   },
 
    { NULL, NULL, NULL, {{0}}, NULL }
 };
