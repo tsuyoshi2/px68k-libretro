@@ -1420,9 +1420,6 @@ void retro_run(void)
 
    exec_app_retro();
 
-   if (Config.PushVideoBeforeAudio)
-      video_cb(videoBuffer, retrow, retroh, /*retrow*/ 800 << 1/*2*/);
-
    if (Config.AudioDesyncHack)
    {
       int nsamples = audio_samples_avail();
@@ -1430,6 +1427,10 @@ void retro_run(void)
          audio_samples_discard(nsamples - soundbuf_size);
    }
    raudio_callback(soundbuf, NULL, soundbuf_size << 2);
+
+   if (Config.PushVideoBeforeAudio)
+      video_cb(videoBuffer, retrow, retroh, /*retrow*/ 800 << 1/*2*/);
+
    audio_batch_cb((const int16_t*)soundbuf, soundbuf_size);
 
    if (!Config.PushVideoBeforeAudio)
