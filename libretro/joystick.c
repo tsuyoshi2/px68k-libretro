@@ -144,9 +144,9 @@ void FASTCALL Joystick_Update(int is_menu, int key, int port)
 		if (res & (1 << RETRO_DEVICE_ID_JOYPAD_X))	ret0 ^= (Config.VbtnSwap ? JOY_TRG2 : JOY_TRG1);
 		if (res & (1 << RETRO_DEVICE_ID_JOYPAD_Y))	ret0 ^= (Config.VbtnSwap ? JOY_TRG1 : JOY_TRG2);
 
-		if (res & (1 << RETRO_DEVICE_ID_JOYPAD_START)) ret0 ^= (JOY_UP | JOY_DOWN);
+		if (res & (1 << RETRO_DEVICE_ID_JOYPAD_START)) ret0 &= ~(JOY_UP | JOY_DOWN);
 		if (!Config.joy1_select_mapping)
-			if (res & (1 << RETRO_DEVICE_ID_JOYPAD_SELECT)) ret0 ^= (JOY_LEFT | JOY_RIGHT);
+			if (res & (1 << RETRO_DEVICE_ID_JOYPAD_SELECT)) ret0 &= ~(JOY_LEFT | JOY_RIGHT);
 		break;
 
 	case PAD_CPSF_MD:

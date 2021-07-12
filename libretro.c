@@ -28,11 +28,18 @@ char slash = '\\';
 char slash = '/';
 #endif
 
-#define MODE_HIGH 55.5  /* 31.50 kHz - commonly used  */
-#define MODE_NORM 59.94 /* 15.98 kHz - actual value should be ~61.46 fps. this is lowered to
+#define MODE_HIGH_ACTUAL 55.46 /* floor((10*100*1000^2 / VSYNC_HIGH)) / 100 */
+#define MODE_NORM_ACTUAL 61.46 /* floor((10*100*1000^2 / VSYNC_NORM)) / 100 */
+#define MODE_HIGH_COMPAT 55.5  /* 31.50 kHz - commonly used  */
+#define MODE_NORM_COMPAT 59.94 /* 15.98 kHz - actual value should be ~61.46 fps. this is lowered to
                      * reduced the chances of audio stutters due to mismatch
                      * fps when vsync is used since most monitors are only capable
                      * of upto 60Hz refresh rate. */
+enum { MODES_ACTUAL, MODES_COMPAT, MODE_NORM = 0, MODE_HIGH, MODES };
+const float framerates[][MODES] = {
+   { MODE_NORM_ACTUAL, MODE_HIGH_ACTUAL },
+   { MODE_NORM_COMPAT, MODE_HIGH_COMPAT }
+};
 
 #define SOUNDRATE 44100.0
 #define SNDSZ round(SOUNDRATE / FRAMERATE)
@@ -56,9 +63,10 @@ int retrow = 800;
 int retroh = 600;
 int CHANGEAV = 0;
 int CHANGEAV_TIMING = 0; /* Separate change of geometry from change of refresh rate */
-int VID_MODE = 1;
-float FRAMERATE = MODE_NORM;
+int VID_MODE = MODE_NORM; /* what framerate we start in */
+static float FRAMERATE;
 DWORD libretro_supports_input_bitmasks = 0;
+unsigned int total_usec = (unsigned int) -1;
 
 static signed short soundbuf[1024 * 2];
 static int soundbuf_size;
@@ -1059,6 +1067,41 @@ static void update_variables(void)
       else if (!strcmp(var.value, "Full Frame"))
          Config.FrameRate = 1;
    }
+
+   var.key = "px68k_push_video_before_audio";
+   var.value = NULL;
+
+   if (environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE, &var) && var.value)
+   {
+      if (!strcmp(var.value, "disabled"))
+         Config.PushVideoBeforeAudio = 0;
+      else if (!strcmp(var.value, "enabled"))
+         Config.PushVideoBeforeAudio = 1;
+   }
+
+   var.key = "px68k_adjust_frame_rates";
+   var.value = NULL;
+
+   if (environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE, &var) && var.value)
+   {
+      int temp = Config.AdjustFrameRates;
+      if (!strcmp(var.value, "disabled"))
+         Config.AdjustFrameRates = 0;
+      else if (!strcmp(var.value, "enabled"))
+         Config.AdjustFrameRates = 1;
+      CHANGEAV_TIMING = CHANGEAV_TIMING || Config.AdjustFrameRates != temp;
+   }
+
+   var.key = "px68k_audio_desync_hack";
+   var.value = NULL;
+
+   if (environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE, &var) && var.value)
+   {
+      if (!strcmp(var.value, "disabled"))
+         Config.AudioDesyncHack = 0;
+      else if (!strcmp(var.value, "enabled"))
+         Config.AudioDesyncHack = 1;
+   }
 }
 
 /************************************
@@ -1102,13 +1145,34 @@ void update_geometry(void)
    environ_cb(RETRO_ENVIRONMENT_SET_GEOMETRY, &system_av_info);
 }
 
+static void frame_time_cb(retro_usec_t usec)
+{
+   total_usec += usec;
+   /* -1 is reserved as an error code for unavailable a la stdlib clock() */
+   if (total_usec == (unsigned int) -1)
+      total_usec = 0;
+}
+
+static void setup_frame_time_cb(void)
+{
+   struct retro_frame_time_callback cb;
+
+   cb.callback = frame_time_cb;
+   cb.reference = ceil(1000000 / FRAMERATE);
+   if (!environ_cb(RETRO_ENVIRONMENT_SET_FRAME_TIME_CALLBACK, &cb))
+      total_usec = (unsigned int) -1;
+   else if (total_usec == (unsigned int) -1)
+      total_usec = 0;
+}
+
 void update_timing(void)
 {
    struct retro_system_av_info system_av_info;
    retro_get_system_av_info(&system_av_info);
-   FRAMERATE = (VID_MODE ? MODE_HIGH : MODE_NORM);
+   FRAMERATE = framerates[Config.AdjustFrameRates][VID_MODE];
    system_av_info.timing.fps = FRAMERATE;
    environ_cb(RETRO_ENVIRONMENT_SET_SYSTEM_AV_INFO, &system_av_info);
+   setup_frame_time_cb();
 }
 
 size_t retro_serialize_size(void)
@@ -1268,6 +1332,9 @@ void retro_init(void)
 
    memset(Core_Key_State, 0, 512);
    memset(Core_old_Key_State, 0, sizeof(Core_old_Key_State));
+
+   FRAMERATE = framerates[Config.AdjustFrameRates][VID_MODE];
+   setup_frame_time_cb();
 }
 
 void retro_deinit(void)
@@ -1322,6 +1389,11 @@ void retro_run(void)
       return;
    }
 
+   if (environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE_UPDATE, &updated) && updated)
+   {
+      update_variables();
+   }
+
    if (CHANGEAV || CHANGEAV_TIMING)
    {
       if (CHANGEAV_TIMING)
@@ -1340,11 +1412,6 @@ void retro_run(void)
       p6logd("fps:%.2f soundrate:%d\n", FRAMERATE, (int)SOUNDRATE);
    }
 
-   if (environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE_UPDATE, &updated) && updated)
-   {
-      update_variables();
-   }
-
    input_poll_cb();
 
    rumbleFrames();
@@ -1353,8 +1420,19 @@ void retro_run(void)
 
    exec_app_retro();
 
+   if (Config.AudioDesyncHack)
+   {
+      int nsamples = audio_samples_avail();
+      if (nsamples > soundbuf_size)
+         audio_samples_discard(nsamples - soundbuf_size);
+   }
    raudio_callback(soundbuf, NULL, soundbuf_size << 2);
+
+   if (Config.PushVideoBeforeAudio)
+      video_cb(videoBuffer, retrow, retroh, /*retrow*/ 800 << 1/*2*/);
+
    audio_batch_cb((const int16_t*)soundbuf, soundbuf_size);
 
-   video_cb(videoBuffer, retrow, retroh, /*retrow*/ 800 << 1/*2*/);
+   if (!Config.PushVideoBeforeAudio)
+      video_cb(videoBuffer, retrow, retroh, /*retrow*/ 800 << 1/*2*/);
 }

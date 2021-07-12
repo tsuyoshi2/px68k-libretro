@@ -237,6 +237,9 @@ static void LoadDefaults(void)
 		Config.HwJoyBtn[i] = i;
 
 	Config.NoWaitMode = 0;
+	Config.PushVideoBeforeAudio = 0;
+	Config.AdjustFrameRates = 1;
+	Config.AudioDesyncHack = 0;
 
 	for (i = 0; i < 2; i++)
 		for (j = 0; j < 8; j++)

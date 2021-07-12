@@ -307,7 +307,7 @@ struct retro_core_option_definition option_defs_us[] = {
    {
       "px68k_no_wait_mode",
       "No Wait Mode",
-      "When set to [enabled], core runs as fast as possible. Can cause audio desync but allows fast-forward. Setting this [disabled] is recommended.",
+      "When set to [enabled], core runs as fast as possible. Can cause audio desync. Setting this [disabled] is recommended.",
       {
          { "disabled", NULL},
          { "enabled",  NULL},
@@ -334,6 +334,39 @@ struct retro_core_option_definition option_defs_us[] = {
          { NULL,   NULL },
       },
       "Full Frame"
+   },
+   {
+      "px68k_push_video_before_audio",
+      "Push Video before Audio",
+      "Prioritize reducing video latency over audio latency and/or stuttering.",
+      {
+         { "disabled", NULL},
+         { "enabled",  NULL},
+         { NULL,       NULL },
+      },
+      "disabled"
+   },
+   {
+      "px68k_adjust_frame_rates",
+      "Adjust Frame Rates",
+      "For compatibility with modern displays, slightly adjust frame rates reported to frontend in order to reduce the chances of audio stuttering.  Disable to use actual frame rates.",
+      {
+         { "disabled", NULL},
+         { "enabled",  NULL},
+         { NULL,       NULL },
+      },
+      "enabled"
+   },
+   {
+      "px68k_audio_desync_hack",
+      "Audio Desync Hack",
+      "Prevents audio from desynchronizing by simply discarding any audio samples generated past the requested amount per frame slice.  Forces 'No Wait Mode' to [enabled], use appropriate frontend settings to properly throttle content.",
+      {
+         { "disabled", NULL},
+         { "enabled",  NULL},
+         { NULL,       NULL },
+      },
+      "disabled"
    },
 
    { NULL, NULL, NULL, {{0}}, NULL }
