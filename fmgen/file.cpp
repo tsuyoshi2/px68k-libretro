@@ -33,8 +33,6 @@ bool FileIO::Open(const char* filename, uint32_t flg)
 {
 	Close();
 
-	strncpy(path, filename, MAX_PATH);
-
 	DWORD access = (flg & readonly ? 0 : GENERIC_WRITE) | GENERIC_READ;
 	DWORD share = (flg & readonly) ? FILE_SHARE_READ : 0;
 	DWORD creation = flg & create ? CREATE_ALWAYS : OPEN_EXISTING;
@@ -42,39 +40,6 @@ bool FileIO::Open(const char* filename, uint32_t flg)
 	hfile = CreateFile(filename, access, share, 0, creation, 0, 0);
 	
 	flags = (flg & readonly) | (hfile == INVALID_HANDLE_VALUE ? 0 : open);
-	if (!(flags & open))
-	{
-		switch (FAKE_GetLastError())
-		{
-		case ERROR_FILE_NOT_FOUND:		error = file_not_found; break;
-		case ERROR_SHARING_VIOLATION:	error = sharing_violation; break;
-		default: error = unknown; break;
-		}
-	}
-	SetLogicalOrigin(0);
-
-	return !!(flags & open);
-}
-
-// ---------------------------------------------------------------------------
-//	ファイルがない場合は作成
-// ---------------------------------------------------------------------------
-
-bool FileIO::CreateNew(const char* filename)
-{
-	Close();
-
-	strncpy(path, filename, MAX_PATH);
-
-	DWORD access = GENERIC_WRITE | GENERIC_READ;
-	DWORD share = 0;
-	DWORD creation = CREATE_NEW;
-
-	hfile = CreateFile(filename, access, share, 0, creation, 0, 0);
-	
-	flags = (hfile == INVALID_HANDLE_VALUE ? 0 : open);
-	SetLogicalOrigin(0);
-
 	return !!(flags & open);
 }
 
@@ -84,7 +49,8 @@ bool FileIO::CreateNew(const char* filename)
 
 void FileIO::Close()
 {
-	if (GetFlags() & open)
+	uint32_t flags = GetFlags();
+	if (flags & open)
 	{
 		FAKE_CloseHandle(hfile);
 		flags = 0;
@@ -97,7 +63,8 @@ void FileIO::Close()
 
 int32_t FileIO::Read(void* dest, int32_t size)
 {
-	if (!(GetFlags() & open))
+	uint32_t flags = GetFlags();
+	if (!(flags & open))
 		return -1;
 	
 	DWORD readsize;
@@ -110,31 +77,21 @@ int32_t FileIO::Read(void* dest, int32_t size)
 //	ファイルへの書き出し
 // ---------------------------------------------------------------------------
 
-int32_t FileIO::Write(const void* dest, int32_t size)
-{
-	if (!(GetFlags() & open) || (GetFlags() & readonly))
-		return -1;
-	
-	DWORD writtensize;
-	if (!WriteFile(hfile, dest, size, &writtensize, 0))
-		return -1;
-	return writtensize;
-}
-
 // ---------------------------------------------------------------------------
 //	ファイルをシーク
 // ---------------------------------------------------------------------------
 
 bool FileIO::Seek(int32_t pos, SeekMethod method)
 {
-	if (!(GetFlags() & open))
+        uint32_t flags = GetFlags();
+	if (!(flags & open))
 		return false;
 	
 	DWORD wmethod;
 	switch (method)
 	{
 	case begin:	
-		wmethod = FILE_BEGIN; pos += lorigin; 
+		wmethod = FILE_BEGIN; 
 		break;
 	case current:	
 		wmethod = FILE_CURRENT; 
