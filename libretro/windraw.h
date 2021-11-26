@@ -17,7 +17,6 @@ extern	int	WindowY;
 extern	int	kbd_x, kbd_y, kbd_w, kbd_h;
 
 void WinDraw_InitWindowSize(WORD width, WORD height);
-void WinDraw_ChangeMode(int flag);
 int WinDraw_Init(void);
 void WinDraw_Cleanup(void);
 void WinDraw_Redraw(void);

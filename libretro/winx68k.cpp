@@ -520,7 +520,6 @@ extern "C" int pmain(int argc, char *argv[])
 
 	StatBar_Show(Config.WindowFDDStat);
 	WinDraw_ChangeSize();
-	WinDraw_ChangeMode(FALSE);
 
 	WinUI_Init();
 	WinDraw_StartupScreen();

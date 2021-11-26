@@ -165,13 +165,6 @@ void WinDraw_CleanupScreen(void)
 {
 }
 
-void WinDraw_ChangeMode(int flag)
-{
-
-	/* full screen mode(TRUE) <-> window mode(FALSE) */
-	(void)flag;
-}
-
 static void draw_kbd_to_tex(void);
 
 int WinDraw_Init(void)
