@@ -550,7 +550,6 @@ extern "C" int pmain(int argc, char *argv[])
 	if (set_modulepath(winx68k_dir, sizeof(winx68k_dir)))
 		return 1;
 
-	dosio_init();
 	file_setcd(winx68k_dir);
 	p6logd("%s\n", winx68k_dir);
 
