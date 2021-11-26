@@ -26,8 +26,6 @@
 #include "fmgen.h"
 #include "fmgeninl.h"
 
-#define LOGNAME "fmgen"
-
 // ---------------------------------------------------------------------------
 
 #define FM_EG_BOTTOM 955
@@ -212,15 +210,8 @@ void MakeLFOTable()
 			double pmb = pms[type][i];
 			for (int j=0; j<FM_LFOENTS; j++)
 			{
-				//double v = pow(2.0, pmb * (2 * j - FM_LFOENTS+1) / (FM_LFOENTS-1));
 				double w = 0.6 * pmb * sin(2 * j * 3.14159265358979323846 / FM_LFOENTS) + 1;
-//				pmtable[type][i][j] = int(0x10000 * (v - 1));
-//				if (type == 0)
-					pmtable[type][i][j] = int(0x10000 * (w - 1));
-//				else
-//					pmtable[type][i][j] = int(0x10000 * (v - 1));
-
-//				printf("pmtable[%d][%d][%.2x] = %5d  %7.5f %7.5f\n", type, i, j, pmtable[type][i][j], v, w);
+				pmtable[type][i][j] = int(0x10000 * (w - 1));
 			}
 		}
 		for (i=0; i<4; i++)
@@ -344,9 +335,6 @@ void Operator::MakeTable()
 		p++;
 	}
 
-//	for (i=0; i<13*256; i++)
-//		printf("%4d, %d, %d\n", i, cltable[i*2], cltable[i*2+1]);
-
 	// サインテーブルの作成
 	double log2 = log(2.);
 	for (i=0; i<FM_OPSINENTS/2; i++)
@@ -354,7 +342,6 @@ void Operator::MakeTable()
 		double r = (i * 2 + 1) * FM_PI / FM_OPSINENTS;
 		double q = -256 * log(sin(r)) / log2;
 		uint32_t s = (int) (floor(q + 0.5)) + 1;
-//		printf("%d, %d\n", s, cltable[s * 2] / 8);
 		sinetable[i]                  = s * 2 ;
 		sinetable[FM_OPSINENTS / 2 + i] = s * 2 + 1;
 	}
@@ -767,12 +754,9 @@ void Channel4::SetKCKF(uint32_t kc, uint32_t kf)
 
 	int oct = 19 - ((kc >> 4) & 7);
 
-//printf("%p", this);
 	uint32_t kcv = kctable[kc & 0x0f];
 	kcv = (kcv + 2) / 4 * 4;
-//printf(" %.4x", kcv);
 	uint32_t dp = kcv * kftable[kf & 0x3f];
-//printf(" %.4x %.4x %.8x", kcv, kftable[kf & 0x3f], dp >> oct);
 	dp >>= 16 + 3;
 	dp <<= 16 + 3;
 	dp >>= oct;	
@@ -781,7 +765,6 @@ void Channel4::SetKCKF(uint32_t kc, uint32_t kf)
 	op[1].SetDPBN(dp, bn);
 	op[2].SetDPBN(dp, bn);
 	op[3].SetDPBN(dp, bn);
-//printf(" %.8x\n", dp);
 }
 
 //	キー制御

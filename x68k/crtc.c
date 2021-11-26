@@ -16,6 +16,7 @@ static WORD FastClearMask[16] = {
 	0xffff, 0xfff0, 0xff0f, 0xff00, 0xf0ff, 0xf0f0, 0xf00f, 0xf000,
 	0x0fff, 0x0ff0, 0x0f0f, 0x0f00, 0x00ff, 0x00f0, 0x000f, 0x0000
 };
+
 	uint8_t	CRTC_Regs[24*2];
 	uint8_t	CRTC_Mode = 0;
 	DWORD	TextDotX = 768, TextDotY = 512;
@@ -46,11 +47,9 @@ static WORD FastClearMask[16] = {
 // -----------------------------------------------------------------------
 void CRTC_RasterCopy(void)
 {
-	DWORD src, dst, line;
-
-	line = (((DWORD)CRTC_Regs[0x2d])<<2);
-	src = (((DWORD)CRTC_Regs[0x2c])<<9);
-	dst = (((DWORD)CRTC_Regs[0x2d])<<9);
+	DWORD line = (((DWORD)CRTC_Regs[0x2d])<<2);
+	DWORD src  = (((DWORD)CRTC_Regs[0x2c])<<9);
+	DWORD dst  = (((DWORD)CRTC_Regs[0x2d])<<9);
 
 {
 	static const DWORD off[4] = { 0, 0x20000, 0x40000, 0x60000 };
@@ -345,12 +344,6 @@ void FASTCALL CRTC_Write(DWORD adr, uint8_t data)
 			CRTC_FastClrLine = vline;
 						// この時点のマスクが有効らしい（クォース）
 			CRTC_FastClrMask = FastClearMask[CRTC_Regs[0x2b]&15];
-/*{
-FILE *fp;
-fp=fopen("_crtc.txt", "a");
-fprintf(fp, "FastClr\n");
-fclose(fp);
-}*/
 		}
 	}
 }

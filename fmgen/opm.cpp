@@ -96,14 +96,7 @@ void OPM::RebuildTimeTable()
 	rateratio = ((fmclock << FM_RATIOBITS) + rate/2) / rate;
 	SetTimerBase(fmclock);
 	
-//	FM::MakeTimeTable(rateratio);
 	chip.SetRatio(rateratio);
-
-//	lfo_diff_ = 
-
-
-//	lfodcount = (16 + (lfofreq & 15)) << (lfofreq >> 4);
-//	lfodcount = lfodcount * rateratio >> FM_RATIOBITS;
 }
 
 // ---------------------------------------------------------------------------
@@ -370,10 +363,8 @@ inline void OPM::LFO()
 {
 	if (lfowaveform != 3)
 	{
-//		if ((lfo_count_ ^ lfo_count_prev_) & ~((1 << 15) - 1))
 		{
 			int c = (lfo_count_ >> 15) & 0x1fe;
-//	fprintf(stderr, "%.8x %.2x\n", lfo_count_, c);
 			chip.SetPML(pmtable[lfowaveform][c] * pmd / 128 + 0x80);
 			chip.SetAML(amtable[lfowaveform][c] * amd / 128);
 		}
@@ -458,7 +449,6 @@ inline void OPM::MixSubL(int activech, ISample** idest)
 void OPM::Mix(Sample* buffer, int nsamples, int rate, uint8_t* pbsp, uint8_t* pbep)
 {
 #define IStoSample(s)	((Limit(s, 0xffff, -0x10000) * fmvolume) >> 14)
-//#define IStoSample(s)	((s * fmvolume) >> 14)
 
 #define CHECK_BUF_END() if ((uint8_t*)dest >= pbep) {dest = (Sample *)pbsp;}
 
