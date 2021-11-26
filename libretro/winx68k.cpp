@@ -50,14 +50,6 @@ extern "C" {
 int rfd_sock;
 #endif
 
-  //#define WIN68DEBUG
-
-#ifdef WIN68DEBUG
-#include "d68k.h"
-#endif
-
-//#include "../icons/keropi_mono.xbm"
-
 #define	APPNAME	"Keropi"
 
 extern	WORD	BG_CHREND;
