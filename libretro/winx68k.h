@@ -37,8 +37,6 @@ extern	char	winx68k_ini[MAX_PATH];
 extern	int	BIOS030Flag;
 extern	uint8_t	FrameChanged;
 
-extern const uint8_t PrgTitle[];
-
 #if defined(ANDROID) || TARGET_OS_IPHONE
 extern int realdisp_w, realdisp_h;
 #endif

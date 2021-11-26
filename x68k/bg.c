@@ -225,8 +225,6 @@ void FASTCALL BG_Write(DWORD adr, uint8_t data)
 		case 0x0b:
 			break;
 		}
-		Draw_DrawFlag = 1;
-
 	}
 	else if ((adr>=0xeb8000)&&(adr<0xec0000))
 	{

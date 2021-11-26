@@ -3,10 +3,8 @@
 
 #include <stdint.h>
 
-extern uint8_t Draw_DrawFlag;
 extern int winx, winy;
 extern int winh, winw;
-extern int FullScreenFlag;
 extern uint8_t Draw_ClrMenu;
 extern WORD FrameCount;
 extern WORD WinDraw_Pal16B, WinDraw_Pal16R, WinDraw_Pal16G;
@@ -26,7 +24,6 @@ void WinDraw_Redraw(void);
 void FASTCALL WinDraw_Draw(void);
 void WinDraw_ShowMenu(int flag);
 void WinDraw_DrawLine(void);
-void WinDraw_HideSplash(void);
 void WinDraw_ChangeSize(void);
 
 void WinDraw_StartupScreen(void);

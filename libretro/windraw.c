@@ -48,9 +48,7 @@ extern uint8_t Debug_Text, Debug_Grp, Debug_Sp;
 WORD *ScrBuf = 0;
 
 int Draw_Opaque;
-int FullScreenFlag = 0;
 extern uint8_t Draw_RedrawAllFlag;
-uint8_t Draw_DrawFlag = 1;
 uint8_t Draw_ClrMenu = 0;
 
 uint8_t Draw_BitMask[800];
@@ -60,7 +58,6 @@ int winx = 0, winy = 0;
 DWORD winh = 0, winw = 0;
 DWORD root_width, root_height;
 WORD FrameCount = 0;
-int SplashFlag = 0;
 
 WORD WinDraw_Pal16B, WinDraw_Pal16R, WinDraw_Pal16G;
 
@@ -175,15 +172,6 @@ void WinDraw_ChangeMode(int flag)
 	(void)flag;
 }
 
-void WinDraw_ShowSplash(void)
-{
-}
-
-void WinDraw_HideSplash(void)
-{
-}
-
-
 static void draw_kbd_to_tex(void);
 
 int WinDraw_Init(void)
@@ -244,12 +232,6 @@ WinDraw_Draw(void)
 	videoBuffer=(uint16_t*)ScrBuf;
 
 	FrameCount++;
-	if (!Draw_DrawFlag/* && is_installed_idle_process()*/)
-		return;
-	Draw_DrawFlag = 0;
-
-	if (SplashFlag)
-		WinDraw_ShowSplash();
 }
 
 #define WD_MEMCPY(src) memcpy(&ScrBuf[adr], (src), TextDotX * 2)
@@ -474,8 +456,6 @@ if(VLINE==-1){
 }
 	if (!TextDirtyLine[VLINE]) return;
 	TextDirtyLine[VLINE] = 0;
-	Draw_DrawFlag = 1;
-
 
 	if (Debug_Grp)
 	{

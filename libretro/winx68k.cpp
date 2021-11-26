@@ -59,9 +59,6 @@ extern	WORD	BG_BGTOP;
 extern	WORD	BG_BGEND;
 extern	uint8_t	BG_CHRSIZE;
 
-const	uint8_t	PrgName[] = "Keropi";
-const	uint8_t	PrgTitle[] = APPNAME;
-
 char	winx68k_dir[MAX_PATH];
 char	winx68k_ini[MAX_PATH];
 
@@ -69,16 +66,9 @@ WORD	VLINE_TOTAL = 567;
 DWORD	VLINE = 0;
 DWORD	vline = 0;
 
-extern	int	SplashFlag;
-
 uint8_t DispFrame = 0;
 DWORD SoundSampleRate;
 
-unsigned int hTimerID = 0;
-DWORD TimerICount = 0;
-extern DWORD timertick;
-
-uint8_t ForceDebugMode = 0;
 DWORD skippedframes = 0;
 
 static int ClkUsed = 0;
@@ -463,7 +453,6 @@ void WinX68k_Exec(void)
 	FDD_SetFDInt();
 	if ( !DispFrame )
 		WinDraw_Draw();
-	TimerICount += clk_total;
 
 	t_end = timeGetTime();
 	if ( (int)(t_end-t_start)>((CRTC_Regs[0x29]&0x10)?14:16) ) {
@@ -527,7 +516,6 @@ extern "C" int pmain(int argc, char *argv[])
 		return 1;
 	}
 
-	SplashFlag = 20;
 	SoundSampleRate = Config.SampleRate;
 
 	StatBar_Show(Config.WindowFDDStat);
@@ -775,15 +763,8 @@ extern "C" void exec_app_retro(){
 		// OPM_RomeoOut(Config.BufferSize * 5);
 		if (menu_mode == menu_out
 		    && (Config.AudioDesyncHack ||
-                        Config.NoWaitMode || Timer_GetCount())) {
+                        Config.NoWaitMode || Timer_GetCount()))
 			WinX68k_Exec();
-
-			if (SplashFlag) {
-				SplashFlag--;
-				if (SplashFlag == 0)
-					WinDraw_HideSplash();
-			}
-		}
 
 		menu_key_down = -1;
  		//end_loop=1;
