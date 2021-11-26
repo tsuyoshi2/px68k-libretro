@@ -37,8 +37,6 @@ extern "C" {
 // setting
 ///////////
 
-//#define NEOCD_HLE
-
 //#define C68K_GEN
 #define C68K_BYTE_SWAP_OPT
 

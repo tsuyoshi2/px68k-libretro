@@ -3654,65 +3654,6 @@ static void Gen1111()
     terminate_op(4);
 }
 
-#ifdef NEOCD_HLE
-static void Gen0xFABE()
-{
-    start_all(GEN_ALL);
-
-    wf_op("\tneogeo_exit();\n");
-
-    terminate_op(0);
-}
-
-static void Gen0xFABF()
-{
-    start_all(GEN_ALL);
-
-    wf_op("\timg_display = 1;\n");
-    wf_op("\tcdrom_load_files();\n");
-
-    terminate_op(0);
-}
-
-static void Gen0xFAC0()
-{
-    start_all(GEN_ALL);
-
-    wf_op("\timg_display = 0;\n");
-    wf_op("\tcdrom_load_files();\n");
-
-    terminate_op(0);
-}
-
-static void Gen0xFAC1()
-{
-    start_all(GEN_ALL);
-
-    wf_op("\tneogeo_upload();\n");
-
-    terminate_op(0);
-}
-
-static void Gen0xFAC2()
-{
-    start_all(GEN_ALL);
-
-    wf_op("\tneogeo_prio_switch();\n");
-
-    terminate_op(0);
-}
-
-static void Gen0xFAC3()
-{
-    start_all(GEN_ALL);
-
-    wf_op("\tneogeo_cdda_control();\n");
-
-    terminate_op(0);
-}
-#endif
-
-
 // main function
 /////////////////
 int main(void)

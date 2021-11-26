@@ -220,20 +220,8 @@ static void GenROXL(void);
 static void GenROL(void);
 static void Gen1010(void);
 static void Gen1111(void);
-#ifdef NEOCD_HLE
-static void Gen0xFABE(void);
-static void Gen0xFABF(void);
-static void Gen0xFAC0(void);
-static void Gen0xFAC1(void);
-static void Gen0xFAC2(void);
-static void Gen0xFAC3(void);
-#endif
 
-#ifdef NEOCD_HLE
-#define OP_INFO_TABLE_LEN   (142 + 6)
-#else
 #define OP_INFO_TABLE_LEN   144
-#endif
 
 static c68k_op_info_struc op_info_table[OP_INFO_TABLE_LEN] =
 {   //                                                       DAAAAddaaddi    DAAAAddaaddi
@@ -409,16 +397,6 @@ static c68k_op_info_struc op_info_table[OP_INFO_TABLE_LEN] =
     {   "LSL",      0xE3C0, 0xFFC0, 0,  0,  3,  0,  -1, -1, "--ooooooo---", "------------", GenLSL      },
     {   "ROXL",     0xE5C0, 0xFFC0, 0,  0,  3,  0,  -1, -1, "--ooooooo---", "------------", GenROXL     },
     {   "ROL",      0xE7C0, 0xFFC0, 0,  0,  3,  0,  -1, -1, "--ooooooo---", "------------", GenROL      }
-
-#ifdef NEOCD_HLE
-    ,
-    {   "0xFABE",   0xFABE, 0xFFFF, 0,  0,  -1, -1, -1, -1, "------------", "------------", Gen0xFABE   },
-    {   "0xFABF",   0xFABF, 0xFFFF, 0,  0,  -1, -1, -1, -1, "------------", "------------", Gen0xFABF   },
-    {   "0xFAC0",   0xFAC0, 0xFFFF, 0,  0,  -1, -1, -1, -1, "------------", "------------", Gen0xFAC0   },
-    {   "0xFAC1",   0xFAC1, 0xFFFF, 0,  0,  -1, -1, -1, -1, "------------", "------------", Gen0xFAC1   },
-    {   "0xFAC2",   0xFAC2, 0xFFFF, 0,  0,  -1, -1, -1, -1, "------------", "------------", Gen0xFAC2   },
-    {   "0xFAC3",   0xFAC3, 0xFFFF, 0,  0,  -1, -1, -1, -1, "------------", "------------", Gen0xFAC3   }
-#endif
 };
 
 #ifndef C68K_NO_JUMP_TABLE
