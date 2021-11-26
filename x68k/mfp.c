@@ -9,7 +9,6 @@
 #include "winx68k.h"
 #include "keyboard.h"
 
-extern BYTE traceflag;
 BYTE testflag=0;
 BYTE LastKey = 0;
 
@@ -269,7 +268,6 @@ fclose(fp);
 }
 
 
-short timertrace = 0;
 //static int TimerACounted = 0;
 // -----------------------------------------------------------------------
 //   たいまの時間を進める（も少し奇麗に書き直そう……）

@@ -42,8 +42,6 @@ struct keyboard_key kbd_key[] = {
 #include "keytbl.inc"
 };
 
-extern BYTE traceflag;
-
 void
 Keyboard_Init(void)
 {

@@ -564,7 +564,6 @@ void Memory_ErrTrace(void)
 	else
 		fprintf(fp, "BusErr - Read from $%08X  @ $%08X\n", BusErrAdr, regs.pc);
 	fclose(fp);
-//	traceflag ++;
 //	m68000_ICount = 0;
 #endif
 }
