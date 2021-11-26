@@ -485,9 +485,6 @@ int menu_mode = menu_out;
 #endif
 extern "C" int pmain(int argc, char *argv[])
 {
-
-	int raudio = -1;
-
 	p6logd("PX68K Ver.%s\n", PX68KVERSTR);
 
 #ifdef RFMDRV
@@ -570,7 +567,7 @@ extern "C" int pmain(int argc, char *argv[])
 	MIDI_SetMimpiMap(Config.ToneMapFile);	// ToneMap file usage
 	MIDI_EnableMimpiDef(Config.ToneMap);
 
-	if (/*raudio == 0 &&*/ !DSound_Init(Config.SampleRate, Config.BufferSize)) {
+	if (!DSound_Init(Config.SampleRate, Config.BufferSize)) {
 
 		if (Config.DSAlert)
 			fprintf(stderr, "Can't init sound.\n");
