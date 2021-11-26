@@ -6,6 +6,8 @@
 #ifndef FM_OPM_H
 #define FM_OPM_H
 
+#include <stdint.h>
+
 #include "fmgen.h"
 #include "fmtimer.h"
 #include "psg.h"
@@ -88,7 +90,7 @@ namespace FM
 		uint	GetReg(uint addr);
 		uint	ReadStatus() { return status & 0x03; }
 		
-		void 	Mix(Sample* buffer, int nsamples, int rate, BYTE* pbsp, BYTE* pbep);
+		void 	Mix(Sample* buffer, int nsamples, int rate, uint8_t* pbsp, uint8_t* pbep);
 		
 		void	SetVolume(int db);
 		void	SetChannelMask(uint mask);

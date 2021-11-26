@@ -16,8 +16,8 @@ static WORD FastClearMask[16] = {
 	0xffff, 0xfff0, 0xff0f, 0xff00, 0xf0ff, 0xf0f0, 0xf00f, 0xf000,
 	0x0fff, 0x0ff0, 0x0f0f, 0x0f00, 0x00ff, 0x00f0, 0x000f, 0x0000
 };
-	BYTE	CRTC_Regs[24*2];
-	BYTE	CRTC_Mode = 0;
+	uint8_t	CRTC_Regs[24*2];
+	uint8_t	CRTC_Mode = 0;
 	DWORD	TextDotX = 768, TextDotY = 512;
 	WORD	CRTC_VSTART, CRTC_VEND;
 	WORD	CRTC_HSTART, CRTC_HEND;
@@ -25,18 +25,18 @@ static WORD FastClearMask[16] = {
 	DWORD	GrphScrollX[4] = {0, 0, 0, 0};		// 配列にしちゃった…
 	DWORD	GrphScrollY[4] = {0, 0, 0, 0};
 
-	BYTE	CRTC_FastClr = 0;
-	BYTE	CRTC_SispScan = 0;
+	uint8_t	CRTC_FastClr = 0;
+	uint8_t	CRTC_SispScan = 0;
 	DWORD	CRTC_FastClrLine = 0;
 	WORD	CRTC_FastClrMask = 0;
 	WORD	CRTC_IntLine = 0;
-	BYTE	CRTC_VStep = 2;
+	uint8_t	CRTC_VStep = 2;
 
-	BYTE	VCReg0[2] = {0, 0};
-	BYTE	VCReg1[2] = {0, 0};
-	BYTE	VCReg2[2] = {0, 0};
+	uint8_t	VCReg0[2] = {0, 0};
+	uint8_t	VCReg1[2] = {0, 0};
+	uint8_t	VCReg2[2] = {0, 0};
 
-	BYTE	CRTC_RCFlag[2] = {0, 0};
+	uint8_t	CRTC_RCFlag[2] = {0, 0};
 	int HSYNC_CLK = 324;
 	extern int VID_MODE, CHANGEAV_TIMING;
 
@@ -84,9 +84,9 @@ void CRTC_RasterCopy(void)
 // 方も許されるのれす。
 // コットン起動時やYs（電波版）OPなどで使われてまふ。
 
-BYTE FASTCALL VCtrl_Read(DWORD adr)
+uint8_t FASTCALL VCtrl_Read(DWORD adr)
 {
-	BYTE ret = 0xff;
+	uint8_t ret = 0xff;
 	switch(adr&0x701)
 	{
 	case 0x400:
@@ -106,9 +106,9 @@ BYTE FASTCALL VCtrl_Read(DWORD adr)
 }
 
 
-void FASTCALL VCtrl_Write(DWORD adr, BYTE data)
+void FASTCALL VCtrl_Write(DWORD adr, uint8_t data)
 {
-	BYTE old;
+	uint8_t old;
 	switch(adr&0x701)
 	{
 	case 0x401:
@@ -153,9 +153,9 @@ void CRTC_Init(void)
 }
 
 
-BYTE FASTCALL CRTC_Read(DWORD adr)
+uint8_t FASTCALL CRTC_Read(DWORD adr)
 {
-	BYTE ret;
+	uint8_t ret;
 	if (adr<0xe803ff) {
 		int reg = adr&0x3f;
 		if ( (reg>=0x28)&&(reg<=0x2b) ) return CRTC_Regs[reg];
@@ -177,10 +177,10 @@ BYTE FASTCALL CRTC_Read(DWORD adr)
 }
 
 
-void FASTCALL CRTC_Write(DWORD adr, BYTE data)
+void FASTCALL CRTC_Write(DWORD adr, uint8_t data)
 {
-	BYTE old;
-	BYTE reg = (BYTE)(adr&0x3f);
+	uint8_t old;
+	uint8_t reg = (uint8_t)(adr&0x3f);
 	int old_vidmode = VID_MODE;
 	if (adr<0xe80400)
 	{

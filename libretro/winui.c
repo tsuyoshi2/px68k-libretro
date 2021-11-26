@@ -27,6 +27,7 @@
  *  WINUI.C - UI                                                              *
  * -------------------------------------------------------------------------- */
 
+#include <stdint.h>
 #include <sys/stat.h>
 #include <errno.h>
 
@@ -77,9 +78,9 @@ extern	int		FullScreenFlag;
 	int		UI_MouseFlag = 0;
 	int		UI_MouseX = -1, UI_MouseY = -1;
 
-	BYTE		MenuClearFlag = 0;
+	uint8_t		MenuClearFlag = 0;
 
-	BYTE		Debug_Text=1, Debug_Grp=1, Debug_Sp=1;
+	uint8_t		Debug_Text=1, Debug_Grp=1, Debug_Sp=1;
 
 	char		filepath[MAX_PATH] = ".";
 	int		fddblink = 0;
@@ -511,7 +512,7 @@ int WinUI_Menu(int first)
 {
 	int i, n;
 	int cursor0;
-	BYTE joy;
+	uint8_t joy;
 	int menu_redraw = 0;
 	int pad_changed = 0;
 	int mfile_redraw = 0;

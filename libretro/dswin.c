@@ -23,6 +23,7 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+#include        <stdint.h>
 #include	"windows.h"
 #include	"common.h"
 #include	"dswin.h"
@@ -34,14 +35,14 @@
 short	playing = FALSE;
 
 #define PCMBUF_SIZE 2*2*48000
-BYTE pcmbuffer[PCMBUF_SIZE];
-BYTE *pcmbufp = pcmbuffer;
-BYTE *pbsp = pcmbuffer;
-BYTE *pbrp = pcmbuffer, *pbwp = pcmbuffer;
-BYTE *pbep = &pcmbuffer[PCMBUF_SIZE];
+uint8_t pcmbuffer[PCMBUF_SIZE];
+uint8_t *pcmbufp = pcmbuffer;
+uint8_t *pbsp = pcmbuffer;
+uint8_t *pbrp = pcmbuffer, *pbwp = pcmbuffer;
+uint8_t *pbep = &pcmbuffer[PCMBUF_SIZE];
 DWORD ratebase = 22050;
 long DSound_PreCounter = 0;
-BYTE rsndbuf[PCMBUF_SIZE];
+uint8_t rsndbuf[PCMBUF_SIZE];
 
 int audio_fd = 1;
 
@@ -75,8 +76,8 @@ void
 DSound_Play(void)
 {
    	if (audio_fd >= 0) {
-		ADPCM_SetVolume((BYTE)Config.PCM_VOL);
-		OPM_SetVolume((BYTE)Config.OPM_VOL);	
+		ADPCM_SetVolume((uint8_t)Config.PCM_VOL);
+		OPM_SetVolume((uint8_t)Config.OPM_VOL);	
 	}
 }
 
@@ -180,7 +181,7 @@ void
 raudio_callback(void *userdata, unsigned char *stream, int len)
 {
    int lena, lenb, datalen, rate;
-   BYTE *buf;
+   uint8_t *buf;
 
 cb_start:
    if (pbrp <= pbwp)

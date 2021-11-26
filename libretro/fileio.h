@@ -1,6 +1,7 @@
 #ifndef winx68k_fileio_h
 #define winx68k_fileio_h
 
+#include <stdint.h>
 #include "common.h"
 #include "dosio.h"
 
@@ -12,8 +13,8 @@
 
 LPSTR getFileName(LPSTR filename);
 
-FILEH	File_Open(BYTE *filename);
-FILEH	File_Create(BYTE *filename);
+FILEH	File_Open(uint8_t *filename);
+FILEH	File_Create(uint8_t *filename);
 DWORD	File_Seek(FILEH handle, long pointer, short mode);
 DWORD	File_Read(FILEH handle, void *data, DWORD length);
 DWORD	File_Write(FILEH handle, void *data, DWORD length);
@@ -25,8 +26,8 @@ short	File_Close(FILEH handle);
 #define	File_Write	file_lwrite
 #define	File_Close	file_close
 
-FILEH	File_OpenCurDir(BYTE *filename);
-FILEH	File_CreateCurDir(BYTE *filename);
+FILEH	File_OpenCurDir(uint8_t *filename);
+FILEH	File_CreateCurDir(uint8_t *filename);
 #define	File_OpenCurDir		file_open_c
 #define	File_CreateCurDir	file_create_c
 

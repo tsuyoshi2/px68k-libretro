@@ -10,23 +10,23 @@
 
 signed char MouseX = 0;
 signed char MouseY = 0;
-BYTE MouseSt = 0;
+uint8_t MouseSt = 0;
 
-BYTE SCC_RegsA[16] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
-BYTE SCC_RegNumA = 0;
-BYTE SCC_RegSetA = 0;
-BYTE SCC_RegsB[16] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
-BYTE SCC_RegNumB = 0;
-BYTE SCC_RegSetB = 0;
-BYTE SCC_Vector = 0;
-BYTE SCC_Dat[3] = {0, 0, 0};
-BYTE SCC_DatNum = 0;
+uint8_t SCC_RegsA[16] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
+uint8_t SCC_RegNumA = 0;
+uint8_t SCC_RegSetA = 0;
+uint8_t SCC_RegsB[16] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
+uint8_t SCC_RegNumB = 0;
+uint8_t SCC_RegSetB = 0;
+uint8_t SCC_Vector = 0;
+uint8_t SCC_Dat[3] = {0, 0, 0};
+uint8_t SCC_DatNum = 0;
 
 
 // -----------------------------------------------------------------------
 //   わりこみ
 // -----------------------------------------------------------------------
-DWORD FASTCALL SCC_Int(BYTE irq)
+DWORD FASTCALL SCC_Int(uint8_t irq)
 {
 	DWORD ret = (DWORD)(-1);
 	IRQH_IRQCallBack(irq);
@@ -83,7 +83,7 @@ void SCC_Init(void)
 // -----------------------------------------------------------------------
 //   I/O Write
 // -----------------------------------------------------------------------
-void FASTCALL SCC_Write(DWORD adr, BYTE data)
+void FASTCALL SCC_Write(DWORD adr, uint8_t data)
 {
 	if (adr>=0xe98008) return;
 
@@ -171,9 +171,9 @@ fclose(fp);
 // -----------------------------------------------------------------------
 //   I/O Read
 // -----------------------------------------------------------------------
-BYTE FASTCALL SCC_Read(DWORD adr)
+uint8_t FASTCALL SCC_Read(DWORD adr)
 {
-	BYTE ret=0;
+	uint8_t ret=0;
 
 	if (adr>=0xe98008) return ret;
 

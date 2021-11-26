@@ -10,12 +10,12 @@
 #include	"m68000.h"
 #include	"scsi.h"
 
-	BYTE	SCSIIPL[0x2000];
+	uint8_t	SCSIIPL[0x2000];
 
 // オリジナルのSCSI ROM
 // 動作：SCSI IOCSが呼ばれると、SCSI IOCS番号を $e9f800 に出力します。
 // SCSIデバイスからの起動は不可、初期化ルーチンはSCSI IOCS($F5)のベクタ設定のみを行います。
-static	BYTE	SCSIIMG[] = {
+static	uint8_t	SCSIIMG[] = {
 			0x00, 0xea, 0x00, 0x34,			// $ea0020 SCSI起動用のエントリアドレス
 			0x00, 0xea, 0x00, 0x36,			// $ea0024 IOCSベクタ設定のエントリアドレス(必ず"Human"の8バイト前)
 			0x00, 0xea, 0x00, 0x4a,			// $ea0028 SCSI IOCSエントリアドレス
@@ -38,7 +38,7 @@ static	BYTE	SCSIIMG[] = {
 void SCSI_Init(void)
 {
 	int i;
-	BYTE tmp;
+	uint8_t tmp;
 	memset(SCSIIPL, 0, 0x2000);
 	memcpy(&SCSIIPL[0x20], SCSIIMG, sizeof(SCSIIMG));
 	for (i=0; i<0x2000; i+=2)
@@ -61,9 +61,9 @@ void SCSI_Cleanup(void)
 // -----------------------------------------------------------------------
 //   りーど
 // -----------------------------------------------------------------------
-BYTE FASTCALL SCSI_Read(DWORD adr)
+uint8_t FASTCALL SCSI_Read(DWORD adr)
 {
-	BYTE ret = 0xff;
+	uint8_t ret = 0xff;
 	ret = SCSIIPL[(adr^1)&0x1fff];
 	return ret;
 }
@@ -72,7 +72,7 @@ BYTE FASTCALL SCSI_Read(DWORD adr)
 // -----------------------------------------------------------------------
 //   らいと
 // -----------------------------------------------------------------------
-void FASTCALL SCSI_Write(DWORD adr, BYTE data)
+void FASTCALL SCSI_Write(DWORD adr, uint8_t data)
 {
 
 	(void)adr;

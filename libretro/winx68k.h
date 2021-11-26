@@ -1,6 +1,7 @@
 #ifndef winx68k_wincore_h
 #define winx68k_wincore_h
 
+#include <stdint.h>
 #include "common.h"
 
 #ifdef RFMDRV
@@ -25,7 +26,7 @@ extern int rfd_sock;
 #define _TOSTR(s) TOSTR(s)
 #define PX68KVERSTR _TOSTR(PX68K_VERSION)
 
-extern	BYTE*	FONT;
+extern	uint8_t*	FONT;
 
 extern	WORD	VLINE_TOTAL;
 extern	DWORD	VLINE;
@@ -34,9 +35,9 @@ extern	DWORD	vline;
 extern	char	winx68k_dir[MAX_PATH];
 extern	char	winx68k_ini[MAX_PATH];
 extern	int	BIOS030Flag;
-extern	BYTE	FrameChanged;
+extern	uint8_t	FrameChanged;
 
-extern const BYTE PrgTitle[];
+extern const uint8_t PrgTitle[];
 
 #if defined(ANDROID) || TARGET_OS_IPHONE
 extern int realdisp_w, realdisp_h;

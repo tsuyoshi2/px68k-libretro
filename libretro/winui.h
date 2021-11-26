@@ -1,9 +1,10 @@
 #ifndef _winx68k_winui_h
 #define _winx68k_winui_h
 
+#include <stdint.h>
 #include "common.h"
 
-extern	BYTE	Debug_Text, Debug_Grp, Debug_Sp;
+extern	uint8_t	Debug_Text, Debug_Grp, Debug_Sp;
 extern	DWORD	LastClock[4];
 
 extern char cur_dir_str[];

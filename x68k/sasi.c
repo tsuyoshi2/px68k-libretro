@@ -11,21 +11,21 @@
 #include "sasi.h"
 #include "irqh.h"
 
-BYTE SASI_Buf[256];
-BYTE SASI_Phase = 0;
+uint8_t SASI_Buf[256];
+uint8_t SASI_Phase = 0;
 DWORD SASI_Sector = 0;
 DWORD SASI_Blocks = 0;
-BYTE SASI_Cmd[6];
-BYTE SASI_CmdPtr = 0;
+uint8_t SASI_Cmd[6];
+uint8_t SASI_CmdPtr = 0;
 WORD SASI_Device = 0;
-BYTE SASI_Unit = 0;
+uint8_t SASI_Unit = 0;
 short SASI_BufPtr = 0;
-BYTE SASI_RW = 0;
-BYTE SASI_Stat = 0;
-BYTE SASI_Mes = 0;
-BYTE SASI_Error = 0;
-BYTE SASI_SenseStatBuf[4];
-BYTE SASI_SenseStatPtr = 0;
+uint8_t SASI_RW = 0;
+uint8_t SASI_Stat = 0;
+uint8_t SASI_Mes = 0;
+uint8_t SASI_Error = 0;
+uint8_t SASI_SenseStatBuf[4];
+uint8_t SASI_SenseStatPtr = 0;
 
 
 
@@ -41,7 +41,7 @@ int SASI_IsReady(void)
 // -----------------------------------------------------------------------
 //   わりこみ~
 // -----------------------------------------------------------------------
-DWORD FASTCALL SASI_Int(BYTE irq)
+DWORD FASTCALL SASI_Int(uint8_t irq)
 {
 	IRQH_IRQCallBack(irq);
 	if (irq==1)
@@ -126,9 +126,9 @@ short SASI_Flush(void)
 // -----------------------------------------------------------------------
 //   I/O Read
 // -----------------------------------------------------------------------
-BYTE FASTCALL SASI_Read(DWORD adr)
+uint8_t FASTCALL SASI_Read(DWORD adr)
 {
-	BYTE ret = 0;
+	uint8_t ret = 0;
 	short result;
 
 	if (adr==0xe96003)
@@ -241,9 +241,9 @@ void SASI_CheckCmd(void)
 		break;
 	case 0x03:					// Request Sense Status
 		SASI_SenseStatBuf[0] = SASI_Error;
-		SASI_SenseStatBuf[1] = (BYTE)((SASI_Unit<<5)|((SASI_Sector>>16)&0x1f));
-		SASI_SenseStatBuf[2] = (BYTE)(SASI_Sector>>8);
-		SASI_SenseStatBuf[3] = (BYTE)SASI_Sector;
+		SASI_SenseStatBuf[1] = (uint8_t)((SASI_Unit<<5)|((SASI_Sector>>16)&0x1f));
+		SASI_SenseStatBuf[2] = (uint8_t)(SASI_Sector>>8);
+		SASI_SenseStatBuf[3] = (uint8_t)SASI_Sector;
 		SASI_Error = 0;
 		SASI_Phase=9;
 		SASI_Stat = 0;
@@ -315,11 +315,11 @@ void SASI_CheckCmd(void)
 // -----------------------------------------------------------------------
 //   I/O Write
 // -----------------------------------------------------------------------
-void FASTCALL SASI_Write(DWORD adr, BYTE data)
+void FASTCALL SASI_Write(DWORD adr, uint8_t data)
 {
 	short result;
 	int i;
-	BYTE bit;
+	uint8_t bit;
 
 	if ( (adr==0xe96007)&&(SASI_Phase==0) )
 	{

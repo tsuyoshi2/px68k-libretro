@@ -1,3 +1,4 @@
+#include <stdint.h>
 
 // X68KのCGROMを作る
 // buf:           作る領域 (0xc0000バイト分のバッファ)
@@ -8,4 +9,4 @@
 // 戻り値:         FALSE: 失敗, TRUE: 成功
 
 
-int make_cgromdat(BYTE *buf, int x68030, LPSTR primaryface, LPSTR secondaryface);
+int make_cgromdat(uint8_t *buf, int x68030, LPSTR primaryface, LPSTR secondaryface);

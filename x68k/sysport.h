@@ -1,12 +1,13 @@
 #ifndef _winx68k_sysport
 #define _winx68k_sysport
 
+#include <stdint.h>
 #include "common.h"
 
-extern	BYTE	SysPort[7];
+extern	uint8_t	SysPort[7];
 
 void SysPort_Init(void);
-BYTE FASTCALL SysPort_Read(DWORD adr);
-void FASTCALL SysPort_Write(DWORD adr, BYTE data);
+uint8_t FASTCALL SysPort_Read(DWORD adr);
+void FASTCALL SysPort_Write(DWORD adr, uint8_t data);
 
 #endif

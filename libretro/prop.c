@@ -35,20 +35,20 @@
 #include "fileio.h"
 #include "prop.h"
 
-BYTE	LastCode = 0;
-BYTE	KEYCONFFILE[] = "xkeyconf.dat";
+uint8_t	LastCode = 0;
+uint8_t	KEYCONFFILE[] = "xkeyconf.dat";
 
 int	CurrentHDDNo = 0;
 
-BYTE ini_title[] = "WinX68k";
+uint8_t ini_title[] = "WinX68k";
 
-BYTE initialized = 0;
+uint8_t initialized = 0;
 
 static const char MIDI_TYPE_NAME[4][3] = {
 	"LA", "GM", "GS", "XG"
 };
 
-BYTE KeyTableBk[512];
+uint8_t KeyTableBk[512];
 
 Win68Conf Config;
 Win68Conf ConfBk;
@@ -62,7 +62,7 @@ extern char winx68k_ini[MAX_PATH];
 extern int winx, winy;
 extern char joyname[2][MAX_PATH];
 extern char joybtnname[2][MAX_BUTTON][MAX_PATH];
-extern BYTE joybtnnum[2];
+extern uint8_t joybtnnum[2];
 
 #define CFGLEN MAX_PATH
 

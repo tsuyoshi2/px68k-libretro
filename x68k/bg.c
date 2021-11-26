@@ -14,31 +14,31 @@
 #include "m68000.h"
 #include <string.h>
 
-	BYTE	BG[0x8000];
-	BYTE	Sprite_Regs[0x800];
-	BYTE	BG_Regs[0x12];
-	WORD	BG_CHREND = 0;
-	WORD	BG_BG0TOP = 0;
-	WORD	BG_BG0END = 0;
-	WORD	BG_BG1TOP = 0;
-	WORD	BG_BG1END = 0;
-	BYTE	BG_CHRSIZE = 16;
-	DWORD	BG_AdrMask = 511;
-	DWORD	BG0ScrollX = 0, BG0ScrollY = 0;
-	DWORD	BG1ScrollX = 0, BG1ScrollY = 0;
+uint8_t	BG[0x8000];
+uint8_t	Sprite_Regs[0x800];
+uint8_t	BG_Regs[0x12];
+WORD	BG_CHREND = 0;
+WORD	BG_BG0TOP = 0;
+WORD	BG_BG0END = 0;
+WORD	BG_BG1TOP = 0;
+WORD	BG_BG1END = 0;
+uint8_t	BG_CHRSIZE = 16;
+DWORD	BG_AdrMask = 511;
+DWORD	BG0ScrollX = 0, BG0ScrollY = 0;
+DWORD	BG1ScrollX = 0, BG1ScrollY = 0;
 
-	long	BG_HAdjust = 0;
-	long	BG_VLINE = 0;
+long	BG_HAdjust = 0;
+long	BG_VLINE = 0;
 
-	BYTE	BG_Dirty0[64*64];
-	BYTE	BG_Dirty1[64*64];
-	BYTE	BGCHR8[8*8*256];
-	BYTE	BGCHR16[16*16*256];
+uint8_t	BG_Dirty0[64*64];
+uint8_t	BG_Dirty1[64*64];
+uint8_t	BGCHR8[8*8*256];
+uint8_t	BGCHR16[16*16*256];
 
-	WORD	BG_LineBuf[1600];
-	WORD	BG_PriBuf[1600];
+WORD	BG_LineBuf[1600];
+WORD	BG_PriBuf[1600];
 
-	DWORD	VLINEBG = 0;
+DWORD	VLINEBG = 0;
 
 
 // -----------------------------------------------------------------------
@@ -61,7 +61,7 @@ void BG_Init(void)
 // -----------------------------------------------------------------------
 //   I/O Read
 // -----------------------------------------------------------------------
-BYTE FASTCALL BG_Read(DWORD adr)
+uint8_t FASTCALL BG_Read(DWORD adr)
 {
 	if ((adr>=0xeb0000)&&(adr<0xeb0400))
 	{
@@ -81,7 +81,7 @@ BYTE FASTCALL BG_Read(DWORD adr)
 // -----------------------------------------------------------------------
 //   I/O Write
 // -----------------------------------------------------------------------
-void FASTCALL BG_Write(DWORD adr, BYTE data)
+void FASTCALL BG_Write(DWORD adr, uint8_t data)
 {
 	DWORD bg16chr;
 	int s1, s2, v = 0;
@@ -264,8 +264,8 @@ struct SPRITECTRLTBL {
 	WORD	sprite_posx;
 	WORD	sprite_posy;
 	WORD	sprite_ctrl;
-	BYTE	sprite_ply;
-	BYTE	dummy;
+	uint8_t	sprite_ply;
+	uint8_t	dummy;
 } __attribute__ ((packed));
 typedef struct SPRITECTRLTBL SPRITECTRLTBL_T;
 
@@ -293,10 +293,10 @@ Sprite_DrawLineMcr(int pri)
 
 			// add y, 16; jnc .spline_lpcnt
 			if (y <= 15) {
-				BYTE *p;
+				uint8_t *p;
 				DWORD pal;
 				int i, d;
-				BYTE bh, dat;
+				uint8_t bh, dat;
 				
 				if (sctp->sprite_ctrl < 0x4000) {
 					p = &BGCHR16[((sctp->sprite_ctrl * 256) & 0xffff)  + (y * 16)];
@@ -361,7 +361,7 @@ void bg_drawline_loopx8(WORD BGTOP, DWORD BGScrollX, DWORD BGScrollY, long adjus
        int i, j, d;
        DWORD ebp, edx, edi, ecx;
        WORD si;
-       BYTE *esi;
+       uint8_t *esi;
 
        ebp = ((BGScrollY + VLINEBG - BG_VLINE) & 7) << 3;
        edx = BGTOP + (((BGScrollY + VLINEBG - BG_VLINE) & 0x1f8) << 4);
@@ -401,7 +401,7 @@ void bg_drawline_loopx16(WORD BGTOP, DWORD BGScrollX, DWORD BGScrollY, long adju
        int i, j, d;
        DWORD ebp, edx, edi, ecx;
        WORD si;
-       BYTE *esi;
+       uint8_t *esi;
 
        ebp = ((BGScrollY + VLINEBG - BG_VLINE) & 15) << 4;
        edx = BGTOP + (((BGScrollY + VLINEBG - BG_VLINE) & 0x3f0) << 3);

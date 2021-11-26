@@ -1,6 +1,8 @@
 #ifndef _winx68k_dim
 #define _winx68k_dim
 
+#include <stdint.h>
+
 void DIM_Init(void);
 void DIM_Cleanup(void);
 int DIM_SetFD(int drive, char* filename);

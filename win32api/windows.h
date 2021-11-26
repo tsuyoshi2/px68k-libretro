@@ -97,7 +97,7 @@ typedef	void *		DRAWITEMSTRUCT;
 #define	INLINE	static inline
 #endif
 
-#define	RGB(r,g,b)	((DWORD)((BYTE)(r))|((WORD)((BYTE)(g)))|((DWORD)((BYTE)(b))))
+#define	RGB(r,g,b)	((DWORD)((uint8_t)(r))|((WORD)((uint8_t)(g)))|((DWORD)((uint8_t)(b))))
 
 #define	MB_APPLMODAL		0
 

@@ -1,6 +1,7 @@
 #ifndef _winx68k_config
 #define _winx68k_config
 
+#include <stdint.h>
 #include "common.h"
 
 typedef struct
@@ -52,7 +53,7 @@ typedef struct
 	int HwJoyHat;
 	int HwJoyBtn[8];
 	int NoWaitMode;
-	BYTE FrameRate;
+	uint8_t FrameRate;
 	int PushVideoBeforeAudio;
 	int AdjustFrameRates;
 	int AudioDesyncHack;

@@ -1,13 +1,14 @@
 #ifndef _winx68k_fdd
 #define _winx68k_fdd
 
+#include <stdint.h>
 #include "common.h"
 
 typedef struct {
-	BYTE c;
-	BYTE h;
-	BYTE r;
-	BYTE n;
+	uint8_t c;
+	uint8_t h;
+	uint8_t r;
+	uint8_t n;
 } FDCID;
 
 enum {
@@ -17,7 +18,7 @@ enum {
 	FD_DIM,
 };
 
-DWORD FASTCALL FDD_Int(BYTE irq);
+DWORD FASTCALL FDD_Int(uint8_t irq);
 void FDD_SetFD(int drive, char* filename, int readonly);
 void FDD_EjectFD(int drive);
 void FDD_Init(void);

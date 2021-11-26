@@ -41,8 +41,8 @@ static DWORD ADPCM_SampleRate = 44100*12;
 static DWORD ADPCM_Count = 0;
 static int ADPCM_Step = 0;
 static int ADPCM_Out = 0;
-static BYTE ADPCM_Playing = 0;
-       BYTE ADPCM_Clock = 0;
+static uint8_t ADPCM_Playing = 0;
+       uint8_t ADPCM_Clock = 0;
 static int ADPCM_PreCounter = 0;
 static int ADPCM_DifBuf = 0;
 
@@ -114,7 +114,7 @@ void FASTCALL ADPCM_PreUpdate(DWORD clock)
 // -----------------------------------------------------------------------
 //   DSoundが指定してくる分だけバッファにデータを書き出す
 // -----------------------------------------------------------------------
-void FASTCALL ADPCM_Update(signed short *buffer, DWORD length, int rate, BYTE *pbsp, BYTE *pbep)
+void FASTCALL ADPCM_Update(signed short *buffer, DWORD length, int rate, uint8_t *pbsp, uint8_t *pbep)
 {
 	int outs;
 	signed int outl, outr;
@@ -255,7 +255,7 @@ INLINE void ADPCM_WriteOne(int val)
 // -----------------------------------------------------------------------
 //   I/O Write
 // -----------------------------------------------------------------------
-void FASTCALL ADPCM_Write(DWORD adr, BYTE data)
+void FASTCALL ADPCM_Write(DWORD adr, uint8_t data)
 {
 	if ( adr==0xe92001 ) {
 		if ( data&1 ) {
@@ -281,7 +281,7 @@ void FASTCALL ADPCM_Write(DWORD adr, BYTE data)
 // -----------------------------------------------------------------------
 //   I/O Read（ステータスチェック）
 // -----------------------------------------------------------------------
-BYTE FASTCALL ADPCM_Read(DWORD adr)
+uint8_t FASTCALL ADPCM_Read(DWORD adr)
 {
 	if ( adr==0xe92001 )
 		return ((ADPCM_Playing)?0xc0:0x40);
@@ -293,10 +293,9 @@ BYTE FASTCALL ADPCM_Read(DWORD adr)
 // -----------------------------------------------------------------------
 //   ぼりゅーむ
 // -----------------------------------------------------------------------
-void ADPCM_SetVolume(BYTE vol)
+void ADPCM_SetVolume(uint8_t vol)
 {
 	if ( vol>16 ) vol=16;
-//	if ( vol<0  ) vol=0;
 
 	if ( vol )
 		ADPCM_VolumeShift = (int)((double)16/pow(1.189207115, (16-vol)));

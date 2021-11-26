@@ -42,7 +42,7 @@ void DMA_SetReadyCB(int ch, int (*func)(void))
 // -----------------------------------------------------------------------
 //   割り込みベクタを返す
 // -----------------------------------------------------------------------
-DWORD FASTCALL DMA_Int(BYTE irq)
+DWORD FASTCALL DMA_Int(uint8_t irq)
 {
 	DWORD ret = 0xffffffff;
 	int bit = 0;
@@ -71,7 +71,7 @@ DWORD FASTCALL DMA_Int(BYTE irq)
 // -----------------------------------------------------------------------
 //   I/O Read
 // -----------------------------------------------------------------------
-BYTE FASTCALL DMA_Read(DWORD adr)
+uint8_t FASTCALL DMA_Read(DWORD adr)
 {
 	unsigned char* p;
 	int off = adr&0x3f, ch = ((adr-0xe84000)>>6);
@@ -109,21 +109,15 @@ BYTE FASTCALL DMA_Read(DWORD adr)
 // -----------------------------------------------------------------------
 //   I/O Write
 // -----------------------------------------------------------------------
-void FASTCALL DMA_Write(DWORD adr, BYTE data)
+void FASTCALL DMA_Write(DWORD adr, uint8_t data)
 {
 	unsigned char* p;
 	int off = adr&0x3f, ch = ((adr-0xe84000)>>6);
-	BYTE old;
+	uint8_t old;
 
 	if ( adr>=0xe84100 ) return;		// ばすえらー？
 
 	p = (unsigned char*)&DMA[ch];
-
-/*if (ch==3) {
-FILE* fp = fopen("_dma.txt", "a");
-fprintf(fp, "W $%02X $%02X\n", off, data);
-fclose(fp);
-}*/
 
 	switch ( off ) {
 	case 0x0a: case 0x0b: case 0x1a: case 0x1b:

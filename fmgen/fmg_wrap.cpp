@@ -27,7 +27,7 @@ extern "C" {
 typedef struct {
 	unsigned int time;
 	int reg;
-	BYTE data;
+	uint8_t data;
 } RMDATA;
 
 };
@@ -41,7 +41,7 @@ class MyOPM : public FM::OPM
 public:
 	MyOPM();
 	virtual ~MyOPM() {}
-	void WriteIO(DWORD adr, BYTE data);
+	void WriteIO(DWORD adr, uint8_t data);
 	void Count2(DWORD clock);
 private:
 	virtual void Intr(bool);
@@ -55,7 +55,7 @@ MyOPM::MyOPM()
 	CurReg = 0;
 }
 
-void MyOPM::WriteIO(DWORD adr, BYTE data)
+void MyOPM::WriteIO(DWORD adr, uint8_t data)
 {
 	if( adr&1 ) {
 		if ( CurReg==0x1b ) {
@@ -139,9 +139,9 @@ void OPM_Reset(void)
 }
 
 
-BYTE FASTCALL OPM_Read(WORD adr)
+uint8_t FASTCALL OPM_Read(WORD adr)
 {
-	BYTE ret = 0;
+	uint8_t ret = 0;
 	(void)adr;
 	if ( opm ) ret = opm->ReadStatus();
 	if ( (juliet_YM2151IsEnable())&&(Config.SoundROMEO) ) {
@@ -152,13 +152,13 @@ BYTE FASTCALL OPM_Read(WORD adr)
 }
 
 
-void FASTCALL OPM_Write(DWORD adr, BYTE data)
+void FASTCALL OPM_Write(DWORD adr, uint8_t data)
 {
 	if ( opm ) opm->WriteIO(adr, data);
 }
 
 
-void OPM_Update(short *buffer, int length, int rate, BYTE *pbsp, BYTE *pbep)
+void OPM_Update(short *buffer, int length, int rate, uint8_t *pbsp, uint8_t *pbep)
 {
 	if ( (!juliet_YM2151IsEnable())||(!Config.SoundROMEO) )
 		if ( opm ) opm->Mix((FM::Sample*)buffer, length, rate, pbsp, pbep);
@@ -171,7 +171,7 @@ void FASTCALL OPM_Timer(DWORD step)
 }
 
 
-void OPM_SetVolume(BYTE vol)
+void OPM_SetVolume(uint8_t vol)
 {
 	int v = (vol)?((16-vol)*4):192;		// このくらいかなぁ
 	if ( opm ) opm->SetVolume(-v);
@@ -202,8 +202,8 @@ class YMF288 : public FM::Y288
 public:
 	YMF288();
 	virtual ~YMF288() {}
-	void WriteIO(DWORD adr, BYTE data);
-	BYTE ReadIO(DWORD adr);
+	void WriteIO(DWORD adr, uint8_t data);
+	uint8_t ReadIO(DWORD adr);
 	void Count2(DWORD clock);
 	void SetInt(int f) { IntrFlag = f; };
 private:
@@ -220,7 +220,7 @@ YMF288::YMF288()
 	IntrFlag = 0;
 }
 
-void YMF288::WriteIO(DWORD adr, BYTE data)
+void YMF288::WriteIO(DWORD adr, uint8_t data)
 {
 	if( adr&1 ) {
 		SetReg(((adr&2)?(CurReg[1]+0x100):CurReg[0]), (int)data);
@@ -230,9 +230,9 @@ void YMF288::WriteIO(DWORD adr, BYTE data)
 }
 
 
-BYTE YMF288::ReadIO(DWORD adr)
+uint8_t YMF288::ReadIO(DWORD adr)
 {
-	BYTE ret = 0;
+	uint8_t ret = 0;
 	if ( adr&1 ) {
 		ret = GetReg(((adr&2)?(CurReg[1]+0x100):CurReg[0]));
 	} else {
@@ -300,7 +300,7 @@ void M288_Reset(void)
 }
 
 
-BYTE FASTCALL M288_Read(WORD adr)
+uint8_t FASTCALL M288_Read(WORD adr)
 {
 	if ( adr<=3 ) {
 		if ( ymf288a )
@@ -316,7 +316,7 @@ BYTE FASTCALL M288_Read(WORD adr)
 }
 
 
-void FASTCALL M288_Write(DWORD adr, BYTE data)
+void FASTCALL M288_Write(DWORD adr, uint8_t data)
 {
 	if ( adr<=3 ) {
 		if ( ymf288a ) ymf288a->WriteIO(adr, data);
@@ -340,7 +340,7 @@ void FASTCALL M288_Timer(DWORD step)
 }
 
 
-void M288_SetVolume(BYTE vol)
+void M288_SetVolume(uint8_t vol)
 {
 	int v1 = (vol)?((16-vol)*4-24):192;		// このくらいかなぁ
 	int v2 = (vol)?((16-vol)*4):192;		// 少し小さめに

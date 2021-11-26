@@ -1,7 +1,8 @@
 // -----------------------------------------------------------------------
 //   CGROM作成～  ゆいさんに作ってもらったお
 // -----------------------------------------------------------------------
-#include	<windows.h>
+#include <stdint.h>
+#include <windows.h>
 
 static char *str_x68k[14] = {
 						"　！”＃＄％＆’（）＊＋，－．／",
@@ -28,7 +29,7 @@ static int deltable[] = {
 			0x19, 0x21, 0x39, 0x5f, 0,
 			0x22, 0x31, 0x52, 0x5f, 0};
 
-static BYTE x68c8[] = {
+static uint8_t x68c8[] = {
 			0x60,0x80,0x60,0x12,0xF2,0x1E,0x12,0x12,
 			0x60,0x80,0x60,0x12,0xF2,0x0C,0x12,0x12,
 			0xF0,0x80,0xE0,0x92,0xF2,0x0C,0x12,0x12,
@@ -837,7 +838,7 @@ jis2sjis1b:		add		al, 1fh
 
 static void setmonobmphead(BITMAPINFO *bi, int x, int y) {
 
-	BYTE	i;
+	uint8_t	i;
 
 	memset(&bi->bmiHeader, 0, sizeof(BITMAPINFOHEADER));
 	bi->bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
@@ -861,14 +862,14 @@ static void setmonobmphead(BITMAPINFO *bi, int x, int y) {
 }
 
 
-static int getfont_sub(BYTE *dest, char *str, char *fontname,
+static int getfont_sub(uint8_t *dest, char *str, char *fontname,
 									int fntx, int fnty, int bmpx, int bmpy) {
 
 	HDC			hdc;
 	HDC			hdcimage;
 	HBITMAP		hBitmap;
 	HBITMAP		hBitmapbak;
-	BYTE		*image;
+	uint8_t		*image;
 	HFONT		hfont;
 	HFONT		hfontbak;
 	RECT		rect;
@@ -904,7 +905,7 @@ static int getfont_sub(BYTE *dest, char *str, char *fontname,
 }
 
 
-static int getfont(BYTE *dest, char *fontface, int base, int size) {
+static int getfont(uint8_t *dest, char *fontface, int base, int size) {
 
 	int		i;
 	char	textbuf[256];
@@ -912,12 +913,12 @@ static int getfont(BYTE *dest, char *fontface, int base, int size) {
 
 	if (!base) {
 		for (i=0; i<0x5f; i++) {
-			textbuf[i] = (BYTE)(i + 0x20);
+			textbuf[i] = (uint8_t)(i + 0x20);
 		}
 		textbuf[0x5f] = ' ';
 		textbuf[0x60] = ' ';
 		for (i=0x01; i<0x40; i++) {
-			textbuf[i+0x60] = (BYTE)(i + 0xa0);
+			textbuf[i+0x60] = (uint8_t)(i + 0xa0);
 		}
 		textbuf[0xa0] = '\0';
 	}
@@ -965,7 +966,7 @@ static int getfont(BYTE *dest, char *fontface, int base, int size) {
 
 // ---------------------------------------------------------------------------
 
-static void cpyank2cgrom(BYTE *dst, BYTE *src, int length) {
+static void cpyank2cgrom(uint8_t *dst, uint8_t *src, int length) {
 
 	int		y;
 
@@ -977,7 +978,7 @@ static void cpyank2cgrom(BYTE *dst, BYTE *src, int length) {
 	}
 }
 
-static void cpy12fnt2cgrom(BYTE *dst, BYTE *src, int bmpx, int bmpy) {
+static void cpy12fnt2cgrom(uint8_t *dst, uint8_t *src, int bmpx, int bmpy) {
 
 	int		i, j;
 
@@ -995,7 +996,7 @@ static void cpy12fnt2cgrom(BYTE *dst, BYTE *src, int bmpx, int bmpy) {
 	}
 }
 
-static void cpysmall2cgrom(BYTE *dst, BYTE *src, int line) {
+static void cpysmall2cgrom(uint8_t *dst, uint8_t *src, int line) {
 
 	int		i, j;
 
@@ -1009,7 +1010,7 @@ static void cpysmall2cgrom(BYTE *dst, BYTE *src, int line) {
 	}
 }
 
-static void cpybig2cgrom(BYTE *dst, BYTE *src, int line) {
+static void cpybig2cgrom(uint8_t *dst, uint8_t *src, int line) {
 
 	int		i, j;
 
@@ -1026,9 +1027,9 @@ static void cpybig2cgrom(BYTE *dst, BYTE *src, int line) {
 
 // ---------------------------------------------------------------------------
 
-int make_cgromdat(BYTE *buf, int x68030, LPSTR primaryface, LPSTR secondaryface) {
+int make_cgromdat(uint8_t *buf, int x68030, LPSTR primaryface, LPSTR secondaryface) {
 
-	BYTE	fnt[24*256*24/8];
+	uint8_t	fnt[24*256*24/8];
 	int		i;
 
 	memset(buf, 0, 0xc0000);

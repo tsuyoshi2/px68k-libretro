@@ -11,7 +11,7 @@ extern struct Cyclone m68k;
 typedef signed int  FASTCALL C68K_INT_CALLBACK(signed int level);
 #endif /* HAVE_CYCLONE */
 
-	BYTE	IRQH_IRQ[8];
+	uint8_t	IRQH_IRQ[8];
 	void	*IRQH_CallBack[8];
 
 // -----------------------------------------------------------------------
@@ -26,7 +26,7 @@ void IRQH_Init(void)
 // -----------------------------------------------------------------------
 //   デフォルトのベクタを返す（これが起こったら変だお）
 // -----------------------------------------------------------------------
-DWORD FASTCALL IRQH_DefaultVector(BYTE irq)
+DWORD FASTCALL IRQH_DefaultVector(uint8_t irq)
 {
 	IRQH_IRQCallBack(irq);
 	return -1;
@@ -37,7 +37,7 @@ DWORD FASTCALL IRQH_DefaultVector(BYTE irq)
 //   他の割り込みのチェック
 //   各デバイスのベクタを返すルーチンから呼ばれます
 // -----------------------------------------------------------------------
-void IRQH_IRQCallBack(BYTE irq)
+void IRQH_IRQCallBack(uint8_t irq)
 {
 	IRQH_IRQ[irq&7] = 0;
 int i;
@@ -65,7 +65,7 @@ int i;
 // -----------------------------------------------------------------------
 //   割り込み発生
 // -----------------------------------------------------------------------
-void IRQH_Int(BYTE irq, void* handler)
+void IRQH_Int(uint8_t irq, void* handler)
 {
 	int i;
 	IRQH_IRQ[irq&7] = 1;

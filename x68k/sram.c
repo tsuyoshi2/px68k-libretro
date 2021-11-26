@@ -10,8 +10,8 @@
 #include	"x68kmemory.h"
 #include	"sram.h"
 
-BYTE	SRAM[0x4000];
-BYTE	SRAMFILE[] = "sram.dat";
+uint8_t	SRAM[0x4000];
+uint8_t	SRAMFILE[] = "sram.dat";
 
 // -----------------------------------------------------------------------
 //   役に立たないうぃるすチェック
@@ -35,7 +35,7 @@ void SRAM_VirusCheck(void)
 void SRAM_Init(void)
 {
 	int i;
-	BYTE tmp;
+	uint8_t tmp;
 	FILEH fp;
 
 	for (i=0; i<0x4000; i++)
@@ -62,7 +62,7 @@ void SRAM_Init(void)
 void SRAM_Cleanup(void)
 {
 	int i;
-	BYTE tmp;
+	uint8_t tmp;
 	FILEH fp;
 
 	for (i=0; i<0x4000; i+=2)
@@ -86,7 +86,7 @@ void SRAM_Cleanup(void)
 // -----------------------------------------------------------------------
 //   りーど
 // -----------------------------------------------------------------------
-BYTE FASTCALL SRAM_Read(DWORD adr)
+uint8_t FASTCALL SRAM_Read(DWORD adr)
 {
 	adr &= 0xffff;
 	adr ^= 1;
@@ -99,7 +99,7 @@ BYTE FASTCALL SRAM_Read(DWORD adr)
 // -----------------------------------------------------------------------
 //   らいと
 // -----------------------------------------------------------------------
-void FASTCALL SRAM_Write(DWORD adr, BYTE data)
+void FASTCALL SRAM_Write(DWORD adr, uint8_t data)
 {
 	if ( (SysPort[5]==0x31)&&(adr<0xed4000) )
 	{

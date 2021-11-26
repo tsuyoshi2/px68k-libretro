@@ -1,17 +1,18 @@
 #ifndef _winx68k_keyboard
 #define _winx68k_keyboard
 
+#include <stdint.h>
 #include "common.h"
 
 #define KeyBufSize 128
 
-extern	BYTE	KeyBuf[KeyBufSize];
-extern	BYTE	KeyBufWP;
-extern	BYTE	KeyBufRP;
-extern	BYTE	KeyTable[512];
-extern	BYTE	KeyTableMaster[512];
-extern	BYTE	KeyEnable;
-extern	BYTE	KeyIntFlag;
+extern	uint8_t	KeyBuf[KeyBufSize];
+extern	uint8_t	KeyBufWP;
+extern	uint8_t	KeyBufRP;
+extern	uint8_t	KeyTable[512];
+extern	uint8_t	KeyTableMaster[512];
+extern	uint8_t	KeyEnable;
+extern	uint8_t	KeyIntFlag;
 
 struct keyboard_key {
 	int x;
@@ -30,7 +31,7 @@ void Keyboard_Init(void);
 void Keyboard_KeyDown(DWORD vkcode);
 void Keyboard_KeyUp(DWORD vkcode);
 void Keyboard_Int(void);
-void send_keycode(BYTE code, int flag);
+void send_keycode(uint8_t code, int flag);
 int Keyboard_get_key_ptr(int x, int y);
 void Keyboard_skbd(void);
 int Keyboard_IsSwKeyboard(void);

@@ -1,16 +1,18 @@
 #ifndef _winx68k_windraw_h
 #define _winx68k_windraw_h
 
-extern BYTE Draw_DrawFlag;
+#include <stdint.h>
+
+extern uint8_t Draw_DrawFlag;
 extern int winx, winy;
 extern int winh, winw;
 extern int FullScreenFlag;
-extern BYTE Draw_ClrMenu;
+extern uint8_t Draw_ClrMenu;
 extern WORD FrameCount;
 extern WORD WinDraw_Pal16B, WinDraw_Pal16R, WinDraw_Pal16G;
 
-extern	BYTE	Draw_BitMask[800];
-extern	BYTE	Draw_TextBitMask[800];
+extern	uint8_t	Draw_BitMask[800];
+extern	uint8_t	Draw_TextBitMask[800];
 
 extern	int	WindowX;
 extern	int	WindowY;

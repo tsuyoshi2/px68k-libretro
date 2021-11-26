@@ -7,15 +7,15 @@
 
 // セクター部 (16 Bytes)
 typedef struct {
-	BYTE	c;
-	BYTE	h;
-	BYTE	r;
-	BYTE	n;
+	uint8_t	c;
+	uint8_t	h;
+	uint8_t	r;
+	uint8_t	n;
 	WORD	sectors;		// Sector Count
-	BYTE	mfm_flg;		// sides
-	BYTE	del_flg;		// DELETED DATA
-	BYTE	stat;			// STATUS (FDC ret)
-	BYTE	reserved2[5];		// Reserved
+	uint8_t	mfm_flg;		// sides
+	uint8_t	del_flg;		// DELETED DATA
+	uint8_t	stat;			// STATUS (FDC ret)
+	uint8_t	reserved2[5];		// Reserved
 	WORD	size;			// Sector Size
 //	byte	data[0];		// Sector Data
 } D88_SECTOR;

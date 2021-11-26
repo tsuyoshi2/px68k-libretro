@@ -44,19 +44,19 @@ extern unsigned short *videoBuffer;
 #endif
 WORD menu_buffer[800*600];
 
-extern BYTE Debug_Text, Debug_Grp, Debug_Sp;
+extern uint8_t Debug_Text, Debug_Grp, Debug_Sp;
 
 
 WORD *ScrBuf = 0;
 
 int Draw_Opaque;
 int FullScreenFlag = 0;
-extern BYTE Draw_RedrawAllFlag;
-BYTE Draw_DrawFlag = 1;
-BYTE Draw_ClrMenu = 0;
+extern uint8_t Draw_RedrawAllFlag;
+uint8_t Draw_DrawFlag = 1;
+uint8_t Draw_ClrMenu = 0;
 
-BYTE Draw_BitMask[800];
-BYTE Draw_TextBitMask[800];
+uint8_t Draw_BitMask[800];
+uint8_t Draw_TextBitMask[800];
 
 int winx = 0, winy = 0;
 DWORD winh = 0, winw = 0;
@@ -879,7 +879,7 @@ int scr_type = x68k;
 /* sjis→jisコード変換 */
 static WORD sjis2jis(WORD w)
 {
-	BYTE wh, wl;
+	uint8_t wh, wl;
 
 	wh = w / 256, wl = w % 256;
 
@@ -919,7 +919,7 @@ static WORD jis2idx(WORD jc)
 static DWORD get_font_addr(WORD sjis, int fs)
 {
 	WORD jis, j_idx;
-	BYTE jhi;
+	uint8_t jhi;
 	int fsb; // file size in bytes
 
 	// 半角文字
@@ -947,7 +947,7 @@ static DWORD get_font_addr(WORD sjis, int fs)
 
 	jis = sjis2jis(sjis);
 	j_idx = (DWORD)jis2idx(jis);
-	jhi = (BYTE)(jis >> 8);
+	jhi = (uint8_t)(jis >> 8);
 
 	if (jhi >= 0x21 && jhi <= 0x28) {
 		// 非漢字
@@ -1010,7 +1010,7 @@ static void draw_char(WORD sjis)
 	DWORD f;
 	WORD *p;
 	int i, j, k, wc, w;
-	BYTE c;
+	uint8_t c;
 	WORD bc;
 
 	int h = p6m.mfs;
@@ -1047,12 +1047,10 @@ static void draw_char(WORD sjis)
 
 static void draw_str(char *cp)
 {
-	int i, len;
-	BYTE *s;
+	int i;
 	WORD wc;
-
-	len = strlen(cp);
-	s = (BYTE *)cp;
+	int len    = strlen(cp);
+	uint8_t *s = (uint8_t *)cp;
 
 	for (i = 0; i < len; i++) {
 		if (isHankaku(*s)) {

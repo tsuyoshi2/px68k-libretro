@@ -11,7 +11,7 @@
 #include	"m68000.h"
 #include	"palette.h"
 
-	BYTE	Pal_Regs[1024];
+	uint8_t	Pal_Regs[1024];
 	WORD	TextPal[256];
 	WORD	GrphPal[256];
 	WORD	Pal16[65536];
@@ -125,7 +125,7 @@ void Pal_Init(void)
 // -----------------------------------------------------------------------
 //   I/O Read
 // -----------------------------------------------------------------------
-BYTE FASTCALL Pal_Read(DWORD adr)
+uint8_t FASTCALL Pal_Read(DWORD adr)
 {
 	if (adr<0xe82400)
 		return Pal_Regs[adr-0xe82000];
@@ -136,7 +136,7 @@ BYTE FASTCALL Pal_Read(DWORD adr)
 // -----------------------------------------------------------------------
 //   I/O Write
 // -----------------------------------------------------------------------
-void FASTCALL Pal_Write(DWORD adr, BYTE data)
+void FASTCALL Pal_Write(DWORD adr, uint8_t data)
 {
 	WORD pal;
 

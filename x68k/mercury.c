@@ -19,8 +19,8 @@ long	Mcry_RdPtr = 0;
 long	Mcry_SampleRate = 44100;
 long	Mcry_ClockRate = 44100;
 long	Mcry_Count = 0;
-BYTE	Mcry_Status = 0;
-BYTE	Mcry_LRTiming = 0;
+uint8_t	Mcry_Status = 0;
+uint8_t	Mcry_LRTiming = 0;
 short	Mcry_OutDataL = 0;
 short	Mcry_OutDataR = 0;
 short	Mcry_BufL[Mcry_BufSize];
@@ -31,13 +31,13 @@ short	Mcry_OldR, Mcry_OldL;
 int	Mcry_DMABytes = 0;
 static double Mcry_VolumeShift = 65536;
 static int Mcry_SampleCnt = 0;
-static BYTE Mcry_Vector = 255;
+static uint8_t Mcry_Vector = 255;
 
 extern DWORD BusErrFlag;
 extern	m68k_regs regs;
 
 
-DWORD FASTCALL Mcry_IntCB(BYTE irq)
+DWORD FASTCALL Mcry_IntCB(uint8_t irq)
 {
 	DWORD ret = 0xffffffff;
 	IRQH_IRQCallBack(irq);
@@ -142,7 +142,7 @@ INLINE void Mcry_WriteOne(void)
 // -----------------------------------------------------------------------
 //   I/O Write
 // -----------------------------------------------------------------------
-void FASTCALL Mcry_Write(DWORD adr, BYTE data)
+void FASTCALL Mcry_Write(DWORD adr, uint8_t data)
 {
 	if ((adr == 0xecc080)||(adr == 0xecc081)||(adr == 0xecc000)||(adr == 0xecc001))	// Data Port
 	{
@@ -214,7 +214,7 @@ FILE* fp = fopen("_mercury.txt", "a");
 fprintf(fp, "W $%08X $%02X\n", adr, data);
 fclose(fp);
 }*/
-		M288_Write((BYTE)((adr>>1)&3), data);
+		M288_Write((uint8_t)((adr>>1)&3), data);
 	}
 }
 
@@ -222,9 +222,9 @@ fclose(fp);
 // -----------------------------------------------------------------------
 //   I/O Read
 // -----------------------------------------------------------------------
-BYTE FASTCALL Mcry_Read(DWORD adr)
+uint8_t FASTCALL Mcry_Read(DWORD adr)
 {
-	BYTE ret = 0;
+	uint8_t ret = 0;
 	if ((adr == 0xecc080)||(adr == 0xecc081)||(adr == 0xecc000)||(adr == 0xecc001))
 	{
 	}
@@ -246,7 +246,7 @@ BYTE FASTCALL Mcry_Read(DWORD adr)
 	}
 	else if ( (adr>=0xecc0c0)&&(adr<=0xecc0c7)&&(adr&1) )	// 満開版まーきゅりー OPN
 	{
-		ret = M288_Read((BYTE)((adr>>1)&3));
+		ret = M288_Read((uint8_t)((adr>>1)&3));
 /*{
 FILE* fp = fopen("_mercury.txt", "a");
 fprintf(fp, "R $%08X $%02X\n", adr, ret);
@@ -279,7 +279,7 @@ void Mcry_SetClock(void)
 // -----------------------------------------------------------------------
 //   ぼりゅーむ設定
 // -----------------------------------------------------------------------
-void Mcry_SetVolume(BYTE vol)
+void Mcry_SetVolume(uint8_t vol)
 {
 	if (vol>16) vol=16;
 //	if (vol<0) vol=0;

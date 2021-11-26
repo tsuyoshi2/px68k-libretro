@@ -30,25 +30,25 @@
 void AdrError(DWORD, DWORD);
 void BusError(DWORD, DWORD);
 
-static void wm_main(DWORD addr, BYTE val);
-static void wm_cnt(DWORD addr, BYTE val);
-static void wm_buserr(DWORD addr, BYTE val);
-static void wm_opm(DWORD addr, BYTE val);
-static void wm_e82(DWORD addr, BYTE val);
-static void wm_nop(DWORD addr, BYTE val);
+static void wm_main(DWORD addr, uint8_t val);
+static void wm_cnt(DWORD addr, uint8_t val);
+static void wm_buserr(DWORD addr, uint8_t val);
+static void wm_opm(DWORD addr, uint8_t val);
+static void wm_e82(DWORD addr, uint8_t val);
+static void wm_nop(DWORD addr, uint8_t val);
 
-static BYTE rm_main(DWORD addr);
-static BYTE rm_font(DWORD addr);
-static BYTE rm_ipl(DWORD addr);
-static BYTE rm_nop(DWORD addr);
-static BYTE rm_opm(DWORD addr);
-static BYTE rm_e82(DWORD addr);
-static BYTE rm_buserr(DWORD addr);
+static uint8_t rm_main(DWORD addr);
+static uint8_t rm_font(DWORD addr);
+static uint8_t rm_ipl(DWORD addr);
+static uint8_t rm_nop(DWORD addr);
+static uint8_t rm_opm(DWORD addr);
+static uint8_t rm_e82(DWORD addr);
+static uint8_t rm_buserr(DWORD addr);
 
 void cpu_setOPbase24(DWORD addr);
 void Memory_ErrTrace(void);
 
-BYTE (*MemReadTable[])(DWORD) = {
+uint8_t (*MemReadTable[])(DWORD) = {
 	TVRAM_Read, TVRAM_Read, TVRAM_Read, TVRAM_Read, TVRAM_Read, TVRAM_Read, TVRAM_Read, TVRAM_Read,
 	TVRAM_Read, TVRAM_Read, TVRAM_Read, TVRAM_Read, TVRAM_Read, TVRAM_Read, TVRAM_Read, TVRAM_Read,
 	TVRAM_Read, TVRAM_Read, TVRAM_Read, TVRAM_Read, TVRAM_Read, TVRAM_Read, TVRAM_Read, TVRAM_Read,
@@ -88,7 +88,7 @@ BYTE (*MemReadTable[])(DWORD) = {
 	rm_ipl, rm_ipl, rm_ipl, rm_ipl, rm_ipl, rm_ipl, rm_ipl, rm_ipl,
 };
 
-void (*MemWriteTable[])(DWORD, BYTE) = {
+void (*MemWriteTable[])(DWORD, uint8_t) = {
 	TVRAM_Write, TVRAM_Write, TVRAM_Write, TVRAM_Write, TVRAM_Write, TVRAM_Write, TVRAM_Write, TVRAM_Write,
 	TVRAM_Write, TVRAM_Write, TVRAM_Write, TVRAM_Write, TVRAM_Write, TVRAM_Write, TVRAM_Write, TVRAM_Write,
 	TVRAM_Write, TVRAM_Write, TVRAM_Write, TVRAM_Write, TVRAM_Write, TVRAM_Write, TVRAM_Write, TVRAM_Write,
@@ -128,10 +128,10 @@ void (*MemWriteTable[])(DWORD, BYTE) = {
 	wm_buserr, wm_buserr, wm_buserr, wm_buserr, wm_buserr, wm_buserr, wm_buserr, wm_buserr,
 };
 
-BYTE *IPL;
-BYTE *MEM;
-BYTE *OP_ROM;
-BYTE *FONT;
+uint8_t *IPL;
+uint8_t *MEM;
+uint8_t *OP_ROM;
+uint8_t *FONT;
 
 DWORD BusErrFlag = 0;
 DWORD BusErrHandling = 0;
@@ -142,7 +142,7 @@ DWORD MemByteAccess = 0;
  * write function
  */
 void 
-dma_writemem24(DWORD addr, BYTE val)
+dma_writemem24(DWORD addr, uint8_t val)
 {
 
 	MemByteAccess = 0;
@@ -243,7 +243,7 @@ cpu_writemem24_dword(DWORD addr, DWORD val)
 }
 
 static void 
-wm_main(DWORD addr, BYTE val)
+wm_main(DWORD addr, uint8_t val)
 {
 
 	if ((BusErrFlag & 7) == 0)
@@ -251,7 +251,7 @@ wm_main(DWORD addr, BYTE val)
 }
 
 static void 
-wm_cnt(DWORD addr, BYTE val)
+wm_cnt(DWORD addr, uint8_t val)
 {
 
 	addr &= 0x00ffffff;
@@ -265,7 +265,7 @@ wm_cnt(DWORD addr, BYTE val)
 }
 
 static void 
-wm_buserr(DWORD addr, BYTE val)
+wm_buserr(DWORD addr, uint8_t val)
 {
 
 	BusErrFlag = 2;
@@ -274,9 +274,9 @@ wm_buserr(DWORD addr, BYTE val)
 }
 
 static void 
-wm_opm(DWORD addr, BYTE val)
+wm_opm(DWORD addr, uint8_t val)
 {
-	BYTE t;
+	uint8_t t;
 #ifdef RFMDRV
 	char buf[2];
 #endif
@@ -295,7 +295,7 @@ wm_opm(DWORD addr, BYTE val)
 }
 
 static void 
-wm_e82(DWORD addr, BYTE val)
+wm_e82(DWORD addr, uint8_t val)
 {
 
 	if (addr < 0x00e82400) {
@@ -306,7 +306,7 @@ wm_e82(DWORD addr, BYTE val)
 }
 
 static void 
-wm_nop(DWORD addr, BYTE val)
+wm_nop(DWORD addr, uint8_t val)
 {
 
 	/* Nothing to do */
@@ -317,7 +317,7 @@ wm_nop(DWORD addr, BYTE val)
 /*
  * read function
  */
-BYTE 
+uint8_t 
 dma_readmem24(DWORD addr)
 {
 
@@ -359,7 +359,7 @@ dma_readmem24_dword(DWORD addr)
 DWORD 
 cpu_readmem24(DWORD addr)
 {
-	BYTE v;
+	uint8_t v;
 
 	v = rm_main(addr);
 	if (BusErrFlag & 1) {
@@ -414,10 +414,10 @@ cpu_readmem24_dword(DWORD addr)
 	return v;
 }
 
-static BYTE 
+static uint8_t 
 rm_main(DWORD addr)
 {
-	BYTE v;
+	uint8_t v;
 
 	addr &= 0x00ffffff;
 	if (addr < 0x00c00000) {	// Use RAM upto 12MB
@@ -431,21 +431,21 @@ rm_main(DWORD addr)
 	return v;
 }
 
-static BYTE 
+static uint8_t 
 rm_font(DWORD addr)
 {
 
 	return FONT[addr & 0xfffff];
 }
 
-static BYTE 
+static uint8_t 
 rm_ipl(DWORD addr)
 {
 
 	return IPL[(addr & 0x3ffff) ^ 1];
 }
 
-static BYTE 
+static uint8_t 
 rm_nop(DWORD addr)
 {
 
@@ -453,7 +453,7 @@ rm_nop(DWORD addr)
 	return 0;
 }
 
-static BYTE 
+static uint8_t 
 rm_opm(DWORD addr)
 {
 
@@ -463,7 +463,7 @@ rm_opm(DWORD addr)
 	return 0;
 }
 
-static BYTE 
+static uint8_t 
 rm_e82(DWORD addr)
 {
 
@@ -475,7 +475,7 @@ rm_e82(DWORD addr)
 	return 0;
 }
 
-static BYTE 
+static uint8_t 
 rm_buserr(DWORD addr)
 {
     p6logd("func = %s addr = %x flag = %d\n", __func__, addr, BusErrFlag);

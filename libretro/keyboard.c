@@ -32,11 +32,11 @@
 
 #include "libretro.h"
 
-BYTE	KeyBufWP;
-BYTE	KeyBufRP;
-BYTE	KeyBuf[KeyBufSize];
-BYTE	KeyEnable = 1;
-BYTE	KeyIntFlag = 0;
+uint8_t	KeyBufWP;
+uint8_t	KeyBufRP;
+uint8_t	KeyBuf[KeyBufSize];
+uint8_t	KeyEnable = 1;
+uint8_t	KeyIntFlag = 0;
 
 struct keyboard_key kbd_key[] = {
 #include "keytbl.inc"
@@ -62,7 +62,7 @@ Keyboard_Init(void)
 #define KEYTABLE_MAX 512
 
 
-BYTE KeyTable[KEYTABLE_MAX] = {
+uint8_t KeyTable[KEYTABLE_MAX] = {
 	//	    ,    ,    ,    ,    ,    ,    ,    		; 0x00
 		  NC,  NC,  NC,  NC,  NC,  NC,  NC,  NC,
 	//	  BS, TAB,    ,    ,    , RET,    ,    		; 0x08
@@ -196,7 +196,7 @@ BYTE KeyTable[KEYTABLE_MAX] = {
 		  NC,  NC,  NC,  NC,  NC,  NC,  NC,0x37
 };
 
-BYTE KeyTableMaster[KEYTABLE_MAX] = {
+uint8_t KeyTableMaster[KEYTABLE_MAX] = {
 	//	    ,    ,    ,    ,    ,    ,    ,    		; 0x00
 		  NC,  NC,  NC,  NC,  NC,  NC,  NC,  NC,
 	//	    ,    ,    ,    ,    ,    ,    ,    		; 0x08
@@ -335,9 +335,9 @@ BYTE KeyTableMaster[KEYTABLE_MAX] = {
 #define P6K_UP 1
 #define P6K_DOWN 2
 
-void send_keycode(BYTE code, int flag)
+void send_keycode(uint8_t code, int flag)
 {
-	BYTE newwp;
+	uint8_t newwp;
 
 	if (code != NC) {
 		newwp = ((KeyBufWP + 1) & (KeyBufSize - 1));
@@ -354,7 +354,7 @@ void send_keycode(BYTE code, int flag)
 	}
 }
 
-static BYTE get_x68k_keycode(DWORD wp)
+static uint8_t get_x68k_keycode(DWORD wp)
 {
 	if (wp < KEYTABLE_MAX/2) {
 		return KeyTable[wp];
@@ -463,8 +463,8 @@ void
 Keyboard_KeyDown(DWORD wp)
 {
 
-	BYTE code;
-	BYTE newwp;
+	uint8_t code;
+	uint8_t newwp;
 	code = get_x68k_keycode(wp);
 	if (code < 0) {
 		return;
@@ -525,9 +525,8 @@ Keyboard_KeyDown(DWORD wp)
 void
 Keyboard_KeyUp(DWORD wp)
 {
-	BYTE code;
-	BYTE newwp;
-	code = get_x68k_keycode(wp);
+	uint8_t newwp;
+	uint8_t code = get_x68k_keycode(wp);
 	if (code < 0)
 		return;
 	send_keycode(code, P6K_UP);

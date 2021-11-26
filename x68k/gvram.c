@@ -12,7 +12,7 @@
 #include	"m68000.h"
 #include	<string.h>
 
-	BYTE	GVRAM[0x80000];
+	uint8_t	GVRAM[0x80000];
 	WORD	Grp_LineBuf[1024];
 	WORD	Grp_LineBufSP[1024];		// 特殊プライオリティ／半透明用バッファ
 	WORD	Grp_LineBufSP2[1024];		// 半透明ベースプレーン用バッファ（非半透明ビット格納）
@@ -20,7 +20,7 @@
 	WORD	Pal16Adr[256];			// 16bit color パレットアドレス計算用
 
 // xxx: for little endian only
-#define GET_WORD_W8(src) (*(BYTE *)(src) | *((BYTE *)(src) + 1) << 8)
+#define GET_WORD_W8(src) (*(uint8_t *)(src) | *((uint8_t *)(src) + 1) << 8)
 
 
 // -----------------------------------------------------------------------
@@ -73,10 +73,10 @@ void FASTCALL GVRAM_FastClear(void)
 // -----------------------------------------------------------------------
 //   VRAM Read
 // -----------------------------------------------------------------------
-BYTE FASTCALL GVRAM_Read(DWORD adr)
+uint8_t FASTCALL GVRAM_Read(DWORD adr)
 {
-	BYTE ret=0;
-	BYTE page;
+	uint8_t ret=0;
+	uint8_t page;
 	WORD *ram = (WORD*)(&GVRAM[adr&0x7fffe]);
 	adr ^= 1;
 	adr -= 0xc00000;
@@ -92,13 +92,13 @@ BYTE FASTCALL GVRAM_Read(DWORD adr)
 				if (CRTC_Regs[0x28]&4)		// 1024dot
 				{
 					ram = (WORD*)(&GVRAM[((adr&0xff800)>>1)+(adr&0x3fe)]);
-					page = (BYTE)((adr>>17)&0x08);
-					page += (BYTE)((adr>>8)&4);
+					page = (uint8_t)((adr>>17)&0x08);
+					page += (uint8_t)((adr>>8)&4);
 					ret = (((*ram)>>page)&15);
 				}
 				else
 				{
-					page = (BYTE)((adr>>17)&0x0c);
+					page = (uint8_t)((adr>>17)&0x0c);
 					ret = (((*ram)>>page)&15);
 				}
 			}
@@ -109,8 +109,8 @@ BYTE FASTCALL GVRAM_Read(DWORD adr)
 			{
 				if (!(adr&1))
 				{
-					page = (BYTE)((adr>>16)&0x08);
-					ret = (BYTE)((*ram)>>page);
+					page = (uint8_t)((adr>>16)&0x08);
+					ret = (uint8_t)((*ram)>>page);
 				}
 			}
 //			else
@@ -131,9 +131,9 @@ BYTE FASTCALL GVRAM_Read(DWORD adr)
 // -----------------------------------------------------------------------
 //   VRAM Write
 // -----------------------------------------------------------------------
-void FASTCALL GVRAM_Write(DWORD adr, BYTE data)
+void FASTCALL GVRAM_Write(DWORD adr, uint8_t data)
 {
-	BYTE page;
+	uint8_t page;
 	int line = 1023, scr = 0;
 	WORD *ram = (WORD*)(&GVRAM[adr&0x7fffe]);
 	WORD temp;
@@ -159,15 +159,15 @@ void FASTCALL GVRAM_Write(DWORD adr, BYTE data)
 			if (CRTC_Regs[0x28]&4)		// 1024dot
 			{
 				ram = (WORD*)(&GVRAM[((adr&0xff800)>>1)+(adr&0x3fe)]);
-				page = (BYTE)((adr>>17)&0x08);
-				page += (BYTE)((adr>>8)&4);
+				page = (uint8_t)((adr>>17)&0x08);
+				page += (uint8_t)((adr>>8)&4);
 				temp = ((WORD)data&15)<<page;
 				*ram = ((*ram)&(~(0xf<<page)))|temp;
 				line = ((adr/2048)-GrphScrollY[0])&1023;
 			}
 			else
 			{
-				page = (BYTE)((adr>>17)&0x0c);
+				page = (uint8_t)((adr>>17)&0x0c);
 				temp = ((WORD)data&15)<<page;
 				*ram = ((*ram)&(~(0xf<<page)))|temp;
 				switch(adr/0x80000)

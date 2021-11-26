@@ -2,6 +2,8 @@
 extern "C" {
 #endif
 
+#include <stdint.h>
+
 #include "common.h"
 #include "fileio.h"
 #include "timer.h"
@@ -55,10 +57,10 @@ int rfd_sock;
 extern	WORD	BG_CHREND;
 extern	WORD	BG_BGTOP;
 extern	WORD	BG_BGEND;
-extern	BYTE	BG_CHRSIZE;
+extern	uint8_t	BG_CHRSIZE;
 
-const	BYTE	PrgName[] = "Keropi";
-const	BYTE	PrgTitle[] = APPNAME;
+const	uint8_t	PrgName[] = "Keropi";
+const	uint8_t	PrgTitle[] = APPNAME;
 
 char	winx68k_dir[MAX_PATH];
 char	winx68k_ini[MAX_PATH];
@@ -69,14 +71,14 @@ DWORD	vline = 0;
 
 extern	int	SplashFlag;
 
-BYTE DispFrame = 0;
+uint8_t DispFrame = 0;
 DWORD SoundSampleRate;
 
 unsigned int hTimerID = 0;
 DWORD TimerICount = 0;
 extern DWORD timertick;
 
-BYTE ForceDebugMode = 0;
+uint8_t ForceDebugMode = 0;
 DWORD skippedframes = 0;
 
 static int ClkUsed = 0;
@@ -94,7 +96,7 @@ static int old_clkdiv = 0;
 void
 WinX68k_SCSICheck(void)
 {
-	static const BYTE SCSIIMG[] = {
+	static const uint8_t SCSIIMG[] = {
 		0x00, 0xfc, 0x00, 0x14,				// $fc0000 SCSI boot entry address
 		0x00, 0xfc, 0x00, 0x16,				// $fc0004 IOCS vector setting entry address (always before "Human" 8 bytes)
 		0x00, 0x00, 0x00, 0x00,				// $fc0008 ?
@@ -150,7 +152,7 @@ WinX68k_LoadROMs(void)
 	static const char FONTFILETMP[] = "cgrom.tmp";
 	FILEH fp;
 	int i;
-	BYTE tmp;
+	uint8_t tmp;
 
 	for (fp = 0, i = 0; fp == 0 && i < NELEMENTS(BIOSFILE); ++i) {
 		fp = File_OpenCurDir((char *)BIOSFILE[i]);
@@ -250,9 +252,9 @@ WinX68k_Init(void)
 
 #define MEM_SIZE 0xc00000
 
-	IPL = (BYTE*)malloc(0x40000);
-	MEM = (BYTE*)malloc(MEM_SIZE);
-	FONT = (BYTE*)malloc(0xc0000);
+	IPL = (uint8_t*)malloc(0x40000);
+	MEM = (uint8_t*)malloc(MEM_SIZE);
+	FONT = (uint8_t*)malloc(0xc0000);
 
 	if (MEM)
 		memset(MEM, 0, MEM_SIZE);
@@ -587,10 +589,10 @@ extern "C" int pmain(int argc, char *argv[])
 			fprintf(stderr, "Can't init sound.\n");
 	}
 
-	ADPCM_SetVolume((BYTE)Config.PCM_VOL);
-	OPM_SetVolume((BYTE)Config.OPM_VOL);
+	ADPCM_SetVolume((uint8_t)Config.PCM_VOL);
+	OPM_SetVolume((uint8_t)Config.OPM_VOL);
 #ifndef	NO_MERCURY
-	Mcry_SetVolume((BYTE)Config.MCR_VOL);
+	Mcry_SetVolume((uint8_t)Config.MCR_VOL);
 #endif
 	DSound_Play();
 

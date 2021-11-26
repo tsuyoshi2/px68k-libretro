@@ -1,5 +1,5 @@
-
 #include <stdio.h>
+#include <stdint.h>
 #include <stdlib.h>
 #include <ctype.h>
 #include <string.h>
@@ -895,7 +895,7 @@ static void update_variables(void)
       if (snd_opt != Config.PCM_VOL)
       {
          Config.PCM_VOL = snd_opt;
-         ADPCM_SetVolume((BYTE)Config.PCM_VOL);
+         ADPCM_SetVolume((uint8_t)Config.PCM_VOL);
       }
    }
 
@@ -908,7 +908,7 @@ static void update_variables(void)
       if (snd_opt != Config.OPM_VOL)
       {
          Config.OPM_VOL = snd_opt;
-         OPM_SetVolume((BYTE)Config.OPM_VOL);
+         OPM_SetVolume((uint8_t)Config.OPM_VOL);
       }
    }
 
@@ -922,7 +922,7 @@ static void update_variables(void)
       if (snd_opt != Config.MCR_VOL)
       {
          Config.MCR_VOL = snd_opt;
-         Mcry_SetVolume((BYTE)Config.MCR_VOL);
+         Mcry_SetVolume((uint8_t)Config.MCR_VOL);
       }
    }
 #endif
