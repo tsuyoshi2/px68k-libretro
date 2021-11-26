@@ -171,7 +171,7 @@ void m68000_set_irq_callback(int (*callback)(int line))
 	レジスタ取得
 --------------------------------------------------------*/
 
-UINT32 m68000_get_reg(int regnum)
+uint32_t m68000_get_reg(int regnum)
 {
 #if defined (HAVE_CYCLONE)
 	switch (regnum)
@@ -232,7 +232,7 @@ UINT32 m68000_get_reg(int regnum)
 	レジスタ設定
 --------------------------------------------------------*/
 
-void m68000_set_reg(int regnum, UINT32 val)
+void m68000_set_reg(int regnum, uint32_t val)
 {
 #if defined (HAVE_CYCLONE)
 	switch (regnum)
@@ -304,7 +304,7 @@ STATE_SAVE( m68000 )
 // empty
 #elif defined (HAVE_C68K)
 	int i;
-	UINT32 pc = C68k_Get_Reg(&C68K, C68K_PC);
+	uint32_t pc = C68k_Get_Reg(&C68K, C68K_PC);
 
 	for (i = 0; i < 8; i++)
 		state_save_long(&C68K.D[i], 1);
@@ -332,7 +332,7 @@ STATE_LOAD( m68000 )
 // empty
 #elif defined (HAVE_C68K)
 	int i;
-	UINT32 pc;
+	uint32_t pc;
 
 	for (i = 0; i < 8; i++)
 		state_load_long(&C68K.D[i], 1);

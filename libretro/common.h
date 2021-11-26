@@ -33,13 +33,6 @@
 #define MAX_PATH 256
 #endif
 
-typedef unsigned char	UINT8;
-typedef unsigned short	UINT16;
-typedef unsigned int	UINT32;
-typedef signed char	INT8;
-typedef signed short	INT16;
-typedef signed int	INT32;
-
 typedef union {
 	struct {
 		BYTE l;

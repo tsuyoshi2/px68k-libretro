@@ -11,15 +11,10 @@
 #include <errno.h>
 #include <assert.h>
 
-typedef	signed char	CHAR;
-typedef signed short	SHORT;
 typedef	signed int	INT;
 typedef	signed long	LONG;
 
-typedef	unsigned char	UCHAR;
-typedef	unsigned short	USHORT;
 typedef	unsigned int	UINT;
-typedef	unsigned long	ULONG;
 
 #ifdef HAVE_C68k
 #include "/m68000/c68k/core.h"
