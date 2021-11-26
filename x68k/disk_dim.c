@@ -284,25 +284,7 @@ int DIM_ReadID(int drv, FDCID* id)
 
 int DIM_WriteID(int drv, int trk, unsigned char* buf, int num)
 {
-#if 0
-	int i;
-	unsigned char c = buf[num<<2];
-	if ( (drv<0)||(drv>3) ) return FALSE;
-	if ( (trk<0)||(trk>169) ) return FALSE;
-	if ( !DIMImg[drv] ) return FALSE;
-	if ( num!=8 ) return FALSE;
-	for (i=0; i<8; i++, buf+=4) {
-		if ( (((buf[0]<<1)+buf[1])!=trk)||(buf[2]<1)||(buf[2]>8)||(buf[3]!=3) ) return FALSE;
-	}
-	DIMTrk[drv] = trk;
-	return TRUE;
-#else
-	(void)drv;
-	(void)trk;
-	(void)buf;
-	(void)num;
 	return FALSE;
-#endif
 }
 
 

@@ -170,7 +170,6 @@ void FASTCALL ADPCM_Update(signed short *buffer, DWORD length, int rate, BYTE *p
 		OutsIpL[2] = OutsIpL[3];
 		OutsIpL[3] = outs;
 
-#if 1
 		tmpr = INTERPOLATE(OutsIpR, 0);
 		if ( tmpr>32767 ) tmpr = 32767; else if ( tmpr<(-32768) ) tmpr = -32768;
 		*(buffer++) = (short)tmpr;
@@ -201,10 +200,6 @@ void FASTCALL ADPCM_Update(signed short *buffer, DWORD length, int rate, BYTE *p
 			*(buffer++) = (short)tmpr;
 			*(buffer++) = (short)tmpl;
 		}
-#else
-		*(buffer++) = (short)OutsIpR[3];
-		*(buffer++) = (short)OutsIpL[3];
-#endif
 
 		length--;
 	}

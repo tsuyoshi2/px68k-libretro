@@ -66,14 +66,6 @@ void MyOPM::WriteIO(DWORD adr, BYTE data)
 		if ( (juliet_YM2151IsEnable())&&(Config.SoundROMEO) ) {
 			int newptr = (RMPtrW+1)%RMBUFSIZE;
 			if ( newptr!=RMPtrR ) {
-#if 0
-				RMData[RMPtrW].time = timeGetTime();
-				RMData[RMPtrW].reg  = CurReg;
-if ( CurReg==0x14 ) data &= 0xf3;	// Int Enableはマスクする
-				RMData[RMPtrW].data = data;
-				RMPtrW = newptr;
-			}
-#else
 				OPM_RomeoOut(Config.BufferSize*5);
 			}
 			RMData[RMPtrW].time = timeGetTime();
@@ -81,7 +73,6 @@ if ( CurReg==0x14 ) data &= 0xf3;	// Int Enableはマスクする
 if ( CurReg==0x14 ) data &= 0xf3;	// Int Enableはマスクする
 			RMData[RMPtrW].data = data;
 			RMPtrW = newptr;
-#endif
 		}
 	} else {
 		CurReg = (int)data;

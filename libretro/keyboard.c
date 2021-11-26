@@ -465,17 +465,6 @@ Keyboard_KeyDown(DWORD wp)
 
 	BYTE code;
 	BYTE newwp;
-#if 0
-	if (wp & ~0xff) {
-		if (wp == GDK_VoidSymbol)
-			code = NC;
-		else if ((wp & 0xff00) == 0xff00)
-			code = KeyTable[(wp & 0xff) | 0x100];
-		else
-			code = NC;
-	} else
-		code = KeyTable[wp & 0xff];
-#endif
 	code = get_x68k_keycode(wp);
 	if (code < 0) {
 		return;
@@ -483,22 +472,8 @@ Keyboard_KeyDown(DWORD wp)
 
 	p6logd("Keyboard_KeyDown: ");
 	p6logd("wp=0x%x, code=0x%x\n", wp, code);
-//	p6logd("RETROK_UP: 0x%x", RETROK_UP);
 
-#if 0
-	if (code != NC) {
-		newwp = ((KeyBufWP + 1) & (KeyBufSize - 1));
-		if (newwp != KeyBufRP) {
-			KeyBuf[KeyBufWP] = code;
-			KeyBufWP = newwp;
-			p6logd("KeyBufWP: %d\n", KeyBufWP);
-		}
-	}
-#else
 	send_keycode(code, P6K_DOWN);
-#endif
-//return;
-	p6logd("JoyKeyState: 0x%x\n", JoyKeyState);
 
 	switch (wp) {
 	case RETROK_UP:
@@ -555,34 +530,10 @@ Keyboard_KeyUp(DWORD wp)
 {
 	BYTE code;
 	BYTE newwp;
-#if 0
-	if (wp & ~0xff) {
-		if (wp == GDK_VoidSymbol)
-			code = NC;
-		else if ((wp & 0xff00) == 0xff00)
-			code = KeyTable[(wp & 0xff) | 0x100];
-		else
-			code = NC;
-	} else
-		code = KeyTable[wp & 0xff];
-#endif
 	code = get_x68k_keycode(wp);
-	if (code < 0) {
+	if (code < 0)
 		return;
-	}
-#if 0
-	if (code != NC) {
-		newwp = ((KeyBufWP + 1) & (KeyBufSize - 1));
-		if (newwp != KeyBufRP) {
-			KeyBuf[KeyBufWP] = code | 0x80;
-			KeyBufWP = newwp;
-		}
-	}
-#else
 	send_keycode(code, P6K_UP);
-#endif
-//return;
-	p6logd("JoyKeyState: 0x%x\n", JoyKeyState);
 
 	switch(wp) {
 	case RETROK_UP:

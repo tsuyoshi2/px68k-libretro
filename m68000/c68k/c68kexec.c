@@ -137,25 +137,10 @@ extern int img_display;
 s32 FASTCALL C68k_Exec(c68k_struc *cpu, s32 cycle)
 {
 #ifndef C68K_GEN
-#if 0
-    register c68k_struc *CPU asm ("ebx");
-    register pointer PC asm ("esi");
-    register s32 CCnt asm ("edi");
-//    register u32 Opcode asm ("edi");
-//    c68k_struc *CPU;
-//    u32 PC;
-//    s32 CCnt;
-    u32 Opcode;
-#else
-//    register c68k_struc *CPU asm ("r10");
-//    register u32 PC asm ("r11");
-//    register s32 CCnt asm ("r12");
-//    register u32 Opcode asm ("r13");
     c68k_struc *CPU;
     pointer PC;
     s32 CCnt;
     u32 Opcode;
-#endif
 #endif
 
 #ifndef C68K_GEN

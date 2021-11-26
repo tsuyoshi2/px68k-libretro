@@ -43,9 +43,6 @@
 extern unsigned short *videoBuffer;
 #endif
 WORD menu_buffer[800*600];
-#if 0
-#include "../icons/keropi.xpm"
-#endif
 
 extern BYTE Debug_Text, Debug_Grp, Debug_Sp;
 
@@ -397,17 +394,6 @@ INLINE void WinDraw_DrawBGLine(int opaq, int td)
 	WORD w;
 	int i;
 
-#if 0 // debug for segv
-	static int log_start = 0;
-
-	if (TextDotX == 128 && TextDotY == 128) {
-		log_start = 1;
-	}
-	if (log_start) {
-		printf("opaq/td: %d/%d VLINE: %d, TextDotX: %d\n", opaq, td, VLINE, TextDotX);
-	}
-#endif
-
 	if (opaq) {
 		WD_MEMCPY(&BG_LineBuf[16]);
 	} else {
@@ -702,36 +688,6 @@ if(VLINE==-1){
 	opaq = 1;
 
 
-#if 0
-					// Pri = 3（違反）に設定されている画面を表示
-		if ( ((VCReg1[0]&0x30)==0x30)&&(bgon) )
-		{
-			if ( ((VCReg2[0]&0x5d)==0x1d)&&((VCReg1[0]&0x03)!=0x03)&&(tron) )
-			{
-				if ( (VCReg1[0]&3)<((VCReg1[0]>>2)&3) )
-				{
-					WinDraw_DrawBGLineTR(opaq);
-					tdrawed = 1;
-					opaq = 0;
-				}
-			}
-			else
-			{
-				WinDraw_DrawBGLine(opaq, /*tdrawed*/0);
-				tdrawed = 1;
-				opaq = 0;
-			}
-		}
-		if ( ((VCReg1[0]&0x0c)==0x0c)&&(ton) )
-		{
-			if ( ((VCReg2[0]&0x5d)==0x1d)&&((VCReg1[0]&0x03)!=0x0c)&&(tron) )
-				WinDraw_DrawTextLineTR(opaq);
-			else
-				WinDraw_DrawTextLine(opaq, /*tdrawed*/((VCReg1[0]&0x30)==0x30));
-			opaq = 0;
-			tdrawed = 1;
-		}
-#endif
 					// Pri = 2 or 3（最下位）に設定されている画面を表示
 					// プライオリティが同じ場合は、GRP<SP<TEXT？（ドラスピ、桃伝、YsIII等）
 
@@ -992,12 +948,6 @@ static DWORD get_font_addr(WORD sjis, int fs)
 	jis = sjis2jis(sjis);
 	j_idx = (DWORD)jis2idx(jis);
 	jhi = (BYTE)(jis >> 8);
-
-#if 0
-	printf("sjis code = 0x%x\n", sjis);
-	printf("jis code = 0x%x\n", jis);
-	printf("jhi 0x%x j_idx 0x%x\n", jhi, j_idx);
-#endif
 
 	if (jhi >= 0x21 && jhi <= 0x28) {
 		// 非漢字

@@ -121,20 +121,12 @@ WinX68k_SCSICheck(void)
 		0x4e, 0x75,							// $fc002c "rts"
 	};
 
-#if 0
-	DWORD *p;
-#endif
 	WORD *p1, *p2;
 	int scsi;
 	int i;
 
 	scsi = 0;
 	for (i = 0x30600; i < 0x30c00; i += 2) {
-#if 0 // If not a multiple of 4, the even number address 4 bytes length access doesn't need MIPS
-		p = (DWORD *)(&IPL[i]);
-		if (*p == 0x0000fc00)
-			scsi = 1;
-#else
 		p1 = (WORD *)(&IPL[i]);
 		p2 = p1 + 1;
 		// xxx: works only for little endian guys
@@ -142,7 +134,6 @@ WinX68k_SCSICheck(void)
 			scsi = 1;
 			break;
 		}
-#endif
 	}
 
 	// SCSI model time
@@ -195,28 +186,9 @@ WinX68k_LoadROMs(void)
 		// cgrom.tmp present?
 		fp = File_OpenCurDir((char *)FONTFILETMP);
 		if (fp == 0) {
-#if 1
 			// font creation XXX
 			printf("Font ROM image can't be found.\n");
 			return FALSE;
-#else
-			MessageBox(hWndMain,
-				"Font ROM image can't be found.\nNew one will be generated from Windows font.",
-				"Message from Keropi.", MB_ICONWARNING | MB_OK);
-			SSTP_SendMes(SSTPMES_MAKEFONT);
-			make_cgromdat(FONT, FALSE, "MS GOTHIC", "MS MINCHO");
-			//WinX68k_MakeFont();
-			//DialogBox(hInst, MAKEINTRESOURCE(IDD_PROGBAR),
-			//		hWndMain, (DLGPROC)MakeFontProc);
-			fp = File_CreateCurDir(FONTFILETMP);
-			if (fp)
-			{
-				File_Write(fp, FONT, 0xc0000);
-				File_Close(fp);
-				return TRUE;
-			}
-			return TRUE;
-#endif
 		}
 	}
 	File_Read(fp, FONT, 0xc0000);
@@ -660,30 +632,8 @@ extern "C" int pmain(int argc, char *argv[])
 		send_keycode(b, 1);\
 }
 
-extern "C" void handle_retrok(){
-
-#if 0
-	int key_shift,key_control,key_alt;
-
-	/* SHIFT STATE */
-	if ((Core_Key_State[RETROK_LSHIFT]) || (Core_Key_State[RETROK_RSHIFT]))
-		key_shift = 1;
-	else
-		key_shift = 0;
-
-	/* CONTROL STATE */
-	if ((Core_Key_State[RETROK_LCTRL]) || (Core_Key_State[RETROK_RCTRL]))
-		key_control = 1;
-	else
-		key_control = 0;
-
-	/* ALT STATE */
-	if ((Core_Key_State[RETROK_LALT]) || (Core_Key_State[RETROK_RALT]))
-		key_alt = 1;
-	else
-		key_alt = 0;
-#endif
-
+extern "C" void handle_retrok(void)
+{
 	if(Core_Key_State[RETROK_F12] && Core_Key_State[RETROK_F12]!=Core_old_Key_State[RETROK_F12]  )
 	{
 		if (menu_mode == menu_out) {

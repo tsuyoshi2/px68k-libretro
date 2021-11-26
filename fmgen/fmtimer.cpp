@@ -30,8 +30,6 @@ void Timer::SetTimerControl(uint data)
 		timerb_count = (data & 2) ? timerb : 0;
 }
 
-#if 1
-
 // ---------------------------------------------------------------------------
 //	タイマーA 周期設定
 //
@@ -108,84 +106,3 @@ void Timer::SetTimerBase(uint clock)
 {
 	timer_step = int32(1000000. * 65536 / clock);
 }
-
-#else
-
-// ---------------------------------------------------------------------------
-//	タイマーA 周期設定
-//
-void Timer::SetTimerA(uint addr, uint data)
-{
-	regta[addr & 1] = uint8(data);
-	timera = (1024 - ((regta[0] << 2) + (regta[1] & 3))) << 16;
-}
-
-// ---------------------------------------------------------------------------
-//	タイマーB 周期設定
-//
-void Timer::SetTimerB(uint data)
-{
-	timerb = (256-data) << (16 + 4);
-}
-
-// ---------------------------------------------------------------------------
-//	タイマー時間処理
-//
-bool Timer::Count(int32 us)
-{
-	bool event = false;
-
-	int tick = us * timer_step;
-
-	if (timera_count)
-	{
-		timera_count -= tick;
-		if (timera_count <= 0)
-		{
-			event = true;
-			TimerA();
-
-			while (timera_count <= 0)
-				timera_count += timera;
-			
-			if (regtc & 4)
-				SetStatus(1);
-		}
-	}
-	if (timerb_count)
-	{
-		timerb_count -= tick;
-		if (timerb_count <= 0)
-		{
-			event = true;
-			while (timerb_count <= 0)
-				timerb_count += timerb;
-			
-			if (regtc & 8)
-				SetStatus(2);
-		}
-	}
-	return event;
-}
-
-// ---------------------------------------------------------------------------
-//	次にタイマーが発生するまでの時間を求める
-//
-int32 Timer::GetNextEvent()
-{
-	uint32 ta = timera_count - 1;
-	uint32 tb = timerb_count - 1;
-	uint32 t = (ta < tb ? ta : tb) + 1;
-
-	return (t+timer_step-1) / timer_step;
-}
-
-// ---------------------------------------------------------------------------
-//	タイマー基準値設定
-//
-void Timer::SetTimerBase(uint clock)
-{
-	timer_step = clock * 1024 / 15625;
-}
-
-#endif

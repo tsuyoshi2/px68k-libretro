@@ -516,11 +516,7 @@ void Operator::SetFNum(uint f)
 
 inline FM::ISample Operator::LogToLin(uint a)
 {
-#if 1 // FM_CLENTS < 0xc00		// 400 for TL, 400 for ENV, 400 for LFO.
 	return (a < FM_CLENTS) ? cltable[a] : 0;
-#else
-	return cltable[a];
-#endif
 }
 
 inline void Operator::EGUpdate()
