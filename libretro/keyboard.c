@@ -477,7 +477,6 @@ Keyboard_KeyDown(DWORD wp)
 
 	switch (wp) {
 	case RETROK_UP:
-		puts("key up");
 		if (!(JoyKeyState&JOY_DOWN))
 			JoyKeyState |= JOY_UP;
 		break;
@@ -505,7 +504,6 @@ Keyboard_KeyDown(DWORD wp)
 		break;
 
 	case RETROK_z:
-		puts("key z");
 		if (Config.JoyKeyReverse)
 			JoyKeyState |= JOY_TRG2;
 		else
@@ -513,7 +511,6 @@ Keyboard_KeyDown(DWORD wp)
 		break;
 
 	case RETROK_x:
-		puts("key x");
 		if (Config.JoyKeyReverse)
 			JoyKeyState |= JOY_TRG1;
 		else
