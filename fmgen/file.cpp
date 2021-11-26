@@ -79,31 +79,6 @@ bool FileIO::CreateNew(const char* filename)
 }
 
 // ---------------------------------------------------------------------------
-//	ファイルを作り直す
-// ---------------------------------------------------------------------------
-
-bool FileIO::Reopen(uint32_t flg)
-{
-	if (!(flags & open)) return false;
-	if ((flags & readonly) && (flg & create)) return false;
-
-	if (flags & readonly) flg |= readonly;
-
-	Close();
-
-	DWORD access = (flg & readonly ? 0 : GENERIC_WRITE) | GENERIC_READ;
-	DWORD share = flg & readonly ? FILE_SHARE_READ : 0;
-	DWORD creation = flg & create ? CREATE_ALWAYS : OPEN_EXISTING;
-
-	hfile = CreateFile(path, access, share, 0, creation, 0, 0);
-	
-	flags = (flg & readonly) | (hfile == INVALID_HANDLE_VALUE ? 0 : open);
-	SetLogicalOrigin(0);
-
-	return !!(flags & open);
-}
-
-// ---------------------------------------------------------------------------
 //	ファイルを閉じる
 // ---------------------------------------------------------------------------
 
@@ -172,27 +147,4 @@ bool FileIO::Seek(int32_t pos, SeekMethod method)
 	}
 
 	return 0xffffffff != SetFilePointer(hfile, pos, 0, wmethod);
-}
-
-// ---------------------------------------------------------------------------
-//	ファイルの位置を得る
-// ---------------------------------------------------------------------------
-
-int32_t FileIO::Tellp()
-{
-	if (!(GetFlags() & open))
-		return 0;
-
-	return SetFilePointer(hfile, 0, 0, FILE_CURRENT) - lorigin;
-}
-
-// ---------------------------------------------------------------------------
-//	現在の位置をファイルの終端とする
-// ---------------------------------------------------------------------------
-
-bool FileIO::SetEndOfFile()
-{
-	if (!(GetFlags() & open))
-		return false;
-	return ::SetEndOfFile(hfile) != 0;
 }

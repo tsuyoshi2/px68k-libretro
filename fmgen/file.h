@@ -37,15 +37,12 @@ public:
 
 	bool Open(const char* filename, uint32_t flg = 0);
 	bool CreateNew(const char* filename);
-	bool Reopen(uint32_t flg = 0);
 	void Close();
 	Error GetError() { return error; }
 
 	int32_t Read(void* dest, int32_t len);
 	int32_t Write(const void* src, int32_t len);
 	bool Seek(int32_t fpos, SeekMethod method);
-	int32_t Tellp();
-	bool SetEndOfFile();
 
 	uint32_t GetFlags() { return flags; }
 	void SetLogicalOrigin(int32_t origin) { lorigin = origin; }

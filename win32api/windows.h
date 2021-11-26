@@ -200,12 +200,9 @@ typedef struct {
 #ifdef __cplusplus
 extern "C" {
 #endif
-int	WINAPI MessageBox(HWND, LPCSTR, LPCSTR, UINT);
-void	WINAPI PostQuitMessage(int);
 BOOL	WINAPI WritePrivateProfileString(LPCSTR, LPCSTR, LPCSTR, LPCSTR);
 
 DWORD	WINAPI FAKE_GetLastError(void);
-BOOL	WINAPI SetEndOfFile(HANDLE hFile);
 #ifdef __cplusplus
 };
 #endif
