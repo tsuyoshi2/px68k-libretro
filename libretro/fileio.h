@@ -15,10 +15,10 @@ LPSTR getFileName(LPSTR filename);
 
 FILEH	File_Open(uint8_t *filename);
 FILEH	File_Create(uint8_t *filename);
-DWORD	File_Seek(FILEH handle, long pointer, short mode);
+DWORD	File_Seek(FILEH handle, long pointer, int16_t mode);
 DWORD	File_Read(FILEH handle, void *data, DWORD length);
 DWORD	File_Write(FILEH handle, void *data, DWORD length);
-short	File_Close(FILEH handle);
+int16_t	File_Close(FILEH handle);
 #define	File_Open	file_open
 #define	File_Create	file_create
 #define	File_Seek	file_seek

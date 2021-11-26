@@ -7,7 +7,7 @@ extern uint8_t ADPCM_Clock;
 extern DWORD ADPCM_ClockRate;
 
 void FASTCALL ADPCM_PreUpdate(DWORD clock);
-void FASTCALL ADPCM_Update(signed short *buffer, DWORD length, int rate, uint8_t *pbsp, uint8_t *pbep);
+void FASTCALL ADPCM_Update(int16_t *buffer, DWORD length, int rate, uint8_t *pbsp, uint8_t *pbep);
 
 void FASTCALL ADPCM_Write(DWORD adr, uint8_t data);
 uint8_t FASTCALL ADPCM_Read(DWORD adr);

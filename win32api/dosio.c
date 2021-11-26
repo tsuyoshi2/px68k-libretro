@@ -30,6 +30,7 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+#include <stdint.h>
 #include <sys/param.h>
 #include <time.h>
 
@@ -72,7 +73,7 @@ file_create(LPSTR filename, int ftype)
 }
 
 DWORD
-file_seek(FILEH handle, long pointer, short mode)
+file_seek(FILEH handle, long pointer, int16_t mode)
 {
 
 	return SetFilePointer(handle, pointer, 0, mode);
@@ -118,7 +119,7 @@ file_write(FILEH handle, void *data, WORD length)
 	return (WORD)writesize;
 }
 
-short
+int16_t
 file_close(FILEH handle)
 {
 

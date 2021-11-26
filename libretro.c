@@ -68,7 +68,7 @@ static float FRAMERATE;
 DWORD libretro_supports_input_bitmasks = 0;
 unsigned int total_usec = (unsigned int) -1;
 
-static signed short soundbuf[1024 * 2];
+static int16_t soundbuf[1024 * 2];
 static int soundbuf_size;
 
 uint16_t *videoBuffer;

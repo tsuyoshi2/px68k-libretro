@@ -19,7 +19,7 @@ uint8_t SASI_Cmd[6];
 uint8_t SASI_CmdPtr = 0;
 WORD SASI_Device = 0;
 uint8_t SASI_Unit = 0;
-short SASI_BufPtr = 0;
+int16_t SASI_BufPtr = 0;
 uint8_t SASI_RW = 0;
 uint8_t SASI_Stat = 0;
 uint8_t SASI_Mes = 0;
@@ -72,7 +72,7 @@ void SASI_Init(void)
 // -----------------------------------------------------------------------
 //   し−く（リード時）
 // -----------------------------------------------------------------------
-short SASI_Seek(void)
+int16_t SASI_Seek(void)
 {
 	FILEH fp;
 
@@ -102,7 +102,7 @@ short SASI_Seek(void)
 // -----------------------------------------------------------------------
 //   しーく（ライト時）
 // -----------------------------------------------------------------------
-short SASI_Flush(void)
+int16_t SASI_Flush(void)
 {	FILEH fp;
 
 	fp = File_Open(Config.HDImage[SASI_Device*2+SASI_Unit]);
@@ -129,7 +129,7 @@ short SASI_Flush(void)
 uint8_t FASTCALL SASI_Read(DWORD adr)
 {
 	uint8_t ret = 0;
-	short result;
+	int16_t result;
 
 	if (adr==0xe96003)
 	{
@@ -211,7 +211,7 @@ uint8_t FASTCALL SASI_Read(DWORD adr)
 //   - 06h（フォーマット？）。論理ブロック指定あり（21hおきに指定している）。ブロック数のとこは6が指定されている。
 void SASI_CheckCmd(void)
 {
-	short result;
+	int16_t result;
 	SASI_Unit = (SASI_Cmd[1]>>5)&1;			// X68kでは、ユニット番号は0か1しか取れない
 
 	switch(SASI_Cmd[0])
@@ -317,7 +317,7 @@ void SASI_CheckCmd(void)
 // -----------------------------------------------------------------------
 void FASTCALL SASI_Write(DWORD adr, uint8_t data)
 {
-	short result;
+	int16_t result;
 	int i;
 	uint8_t bit;
 

@@ -31,8 +31,8 @@ static const int index_shift[16] = {
 static const int ADPCM_Clocks[8] = {
 	93750, 125000, 187500, 125000, 46875, 62500, 93750, 62500 };
 static int dif_table[49*16];
-static signed short ADPCM_BufR[ADPCM_BufSize];
-static signed short ADPCM_BufL[ADPCM_BufSize];
+static int16_t ADPCM_BufR[ADPCM_BufSize];
+static int16_t ADPCM_BufL[ADPCM_BufSize];
 
 static long ADPCM_WrPtr = 0;
 static long ADPCM_RdPtr = 0;
@@ -114,7 +114,7 @@ void FASTCALL ADPCM_PreUpdate(DWORD clock)
 // -----------------------------------------------------------------------
 //   DSoundが指定してくる分だけバッファにデータを書き出す
 // -----------------------------------------------------------------------
-void FASTCALL ADPCM_Update(signed short *buffer, DWORD length, int rate, uint8_t *pbsp, uint8_t *pbep)
+void FASTCALL ADPCM_Update(int16_t *buffer, DWORD length, int rate, uint8_t *pbsp, uint8_t *pbep)
 {
 	int outs;
 	signed int outl, outr;
@@ -122,9 +122,8 @@ void FASTCALL ADPCM_Update(signed short *buffer, DWORD length, int rate, uint8_t
 	if ( length<=0 ) return;
 
 	while ( length ) {
-		if (buffer >= (signed short *)pbep) {
-			buffer = (signed short *)pbsp;
-		}
+		if (buffer >= (int16_t *)pbep)
+			buffer = (int16_t*)pbsp;
 		int tmpl, tmpr;
 
 		if ( (ADPCM_WrPtr==ADPCM_RdPtr)&&(!(DMA[3].CCR&0x40)) ) DMA_Exec(3);
@@ -172,33 +171,30 @@ void FASTCALL ADPCM_Update(signed short *buffer, DWORD length, int rate, uint8_t
 
 		tmpr = INTERPOLATE(OutsIpR, 0);
 		if ( tmpr>32767 ) tmpr = 32767; else if ( tmpr<(-32768) ) tmpr = -32768;
-		*(buffer++) = (short)tmpr;
+		*(buffer++) = (int16_t)tmpr;
 		tmpl = INTERPOLATE(OutsIpL, 0);
 		if ( tmpl>32767 ) tmpl = 32767; else if ( tmpl<(-32768) ) tmpl = -32768;
-		*(buffer++) = (short)tmpl;
+		*(buffer++) = (int16_t)tmpl;
 		// PSP以外はrateは0
 		if (rate == 22050) {
-			if (buffer >= (signed short *)pbep) {
-				buffer = (signed short *)pbsp;
+			if (buffer >= (int16_t *)pbep) {
+				buffer = (int16_t *)pbsp;
 			}
-			*(buffer++) = (short)tmpr;
-			*(buffer++) = (short)tmpl;
+			*(buffer++) = (int16_t)tmpr;
+			*(buffer++) = (int16_t)tmpl;
 		} else if (rate == 11025) {
-			if (buffer >= (signed short *)pbep) {
-				buffer = (signed short *)pbsp;
-			}
-			*(buffer++) = (short)tmpr;
-			*(buffer++) = (short)tmpl;
-			if (buffer >= (signed short *)pbep) {
-				buffer = (signed short *)pbsp;
-			}
-			*(buffer++) = (short)tmpr;
-			*(buffer++) = (short)tmpl;
-			if (buffer >= (signed short *)pbep) {
-				buffer = (signed short *)pbsp;
-			}
-			*(buffer++) = (short)tmpr;
-			*(buffer++) = (short)tmpl;
+			if (buffer >= (int16_t *)pbep)
+				buffer = (int16_t *)pbsp;
+			*(buffer++) = (int16_t)tmpr;
+			*(buffer++) = (int16_t)tmpl;
+			if (buffer >= (int16_t *)pbep)
+				buffer = (int16_t *)pbsp;
+			*(buffer++) = (int16_t)tmpr;
+			*(buffer++) = (int16_t)tmpl;
+			if (buffer >= (int16_t *)pbep)
+				buffer = (int16_t *)pbsp;
+			*(buffer++) = (int16_t)tmpr;
+			*(buffer++) = (int16_t)tmpl;
 		}
 
 		length--;
@@ -237,11 +233,11 @@ INLINE void ADPCM_WriteOne(int val)
 			int tmp = INTERPOLATE(OutsIp, ratio);
 			if ( tmp>ADPCMMAX ) tmp = ADPCMMAX; else if ( tmp<ADPCMMIN ) tmp = ADPCMMIN;
 			if ( !(ADPCM_Pan&1) )
-				ADPCM_BufR[ADPCM_WrPtr] = (short)tmp;
+				ADPCM_BufR[ADPCM_WrPtr] = (int16_t)tmp;
 			else
 				ADPCM_BufR[ADPCM_WrPtr] = 0;
 			if ( !(ADPCM_Pan&2) )
-				ADPCM_BufL[ADPCM_WrPtr++] = (short)tmp;
+				ADPCM_BufL[ADPCM_WrPtr++] = (int16_t)tmp;
 			else
 				ADPCM_BufL[ADPCM_WrPtr++] = 0;
 			if ( ADPCM_WrPtr>=ADPCM_BufSize ) ADPCM_WrPtr = 0;
