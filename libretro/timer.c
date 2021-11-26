@@ -18,8 +18,7 @@ unsigned int timeGetUsec()
 	extern unsigned int total_usec;		/* from libretro.c */
 	if (total_usec == (unsigned int) -1)
 		return timeGetTime() * 1000;
-	else
-		return total_usec;
+	return total_usec;
 }
 
 void Timer_Init(void)
@@ -34,18 +33,16 @@ void Timer_Reset(void)
 
 WORD Timer_GetCount(void)
 {
-	DWORD ticknow = timeGetUsec();
-	DWORD dif = ticknow-tick;
-	DWORD TIMEBASE = ((CRTC_Regs[0x29]&0x10)?VSYNC_HIGH:VSYNC_NORM);
-
-	/*timercnt += dif*10000;*/
-	timercnt += dif*10;  /* switch from msec to usec */
+	DWORD ticknow   = timeGetUsec();
+	DWORD dif       = ticknow-tick;
+	DWORD TIMEBASE  = ((CRTC_Regs[0x29]&0x10)?VSYNC_HIGH:VSYNC_NORM);
+	timercnt       += dif*10;  /* switch from msec to usec */
 	tick = ticknow;
-	if ( timercnt>=TIMEBASE ) {
-//		timercnt = 0;
+	if ( timercnt>=TIMEBASE )
+	{
 		timercnt -= TIMEBASE;
 		if ( timercnt>=(TIMEBASE*2) ) timercnt = 0;
 		return 1;
-	} else
-		return 0;
+	}
+	return 0;
 }
