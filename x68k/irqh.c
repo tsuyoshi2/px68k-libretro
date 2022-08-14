@@ -9,7 +9,9 @@
 #if defined (HAVE_CYCLONE)
 extern struct Cyclone m68k;
 typedef signed int  FASTCALL C68K_INT_CALLBACK(signed int level);
-#endif /* HAVE_CYCLONE */
+#elif defined (HAVE_MUSASHI)
+typedef signed int  FASTCALL C68K_INT_CALLBACK(signed int level);
+#endif /* HAVE_CYCLONE */ /* HAVE_MUSASHI */
 
 	uint8_t	IRQH_IRQ[8];
 	void	*IRQH_CallBack[8];
@@ -46,7 +48,9 @@ int i;
 	m68k.irq =0;
 #elif defined (HAVE_C68K)
 	C68k_Set_IRQ(&C68K, 0);
-#endif /* HAVE_C68K */
+#elif defined (HAVE_MUSASHI)
+	m68k_set_irq(0);
+#endif /* HAVE_C68K */ /* HAVE_MUSASHI */
 
 	for (i=7; i>0; i--)
 	{
@@ -56,7 +60,9 @@ int i;
 			m68k.irq = i;
 #elif defined (HAVE_C68K)
 			C68k_Set_IRQ(&C68K, i);
-#endif /* HAVE_C68K */
+#elif defined (HAVE_MUSASHI)
+			m68k_set_irq(i);
+#endif /* HAVE_C68K */ /* HAVE_MUSASHI */
 		return;
 	    }
 	}
@@ -82,7 +88,9 @@ void IRQH_Int(uint8_t irq, void* handler)
 	        m68k.irq = i;
 #elif defined (HAVE_C68K)
 	        C68k_Set_IRQ(&C68K, i);
-#endif /* HAVE_C68K */
+#elif defined (HAVE_MUSASHI)
+		m68k_set_irq(i);
+#endif /* HAVE_C68K */ /* HAVE_MUSASHI */
 	        return;
 	    }
 	}
@@ -102,7 +110,9 @@ signed int  my_irqh_callback(signed int  level)
 			m68k.irq = i;
 #elif defined (HAVE_C68K)
 	    	C68k_Set_IRQ(&C68K, i);
-#endif /* HAVE_C68K */
+#elif defined (HAVE_MUSASHI)
+		m68k_set_irq(i);
+#endif /* HAVE_C68K */ /* HAVE_MUSASHI */
 			break;
 		}
     }
