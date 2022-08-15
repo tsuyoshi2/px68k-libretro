@@ -76,8 +76,6 @@ typedef unsigned long pointer;
 
 #else /* ! GEKKO */
 
-#ifdef HAVE_STDINT_H
-
 #include <stdint.h>
 typedef uint8_t u8;
 typedef  int8_t s8;
@@ -89,48 +87,6 @@ typedef uint64_t u64;
 typedef  int64_t s64;
 typedef uintptr_t pointer;
 
-#else  // !HAVE_STDINT_H
-
-typedef unsigned char u8;
-typedef unsigned short u16;
-
-typedef signed char s8;
-typedef signed short s16;
-
-#if defined(__LP64__)
-// Generic 64-bit
-typedef unsigned int u32;
-typedef unsigned long u64;
-typedef unsigned long pointer;
-
-typedef signed int s32;
-typedef signed long s64;
-
-#elif defined(_MSC_VER)
-typedef unsigned long u32;
-typedef unsigned __int64 u64;
-typedef unsigned long long u64;
-#ifdef _WIN64
-typedef __int64 pointer;
-#else
-typedef unsigned long pointer;
-#endif
-
-typedef signed long s32;
-typedef __int64 s64;
-typedef signed long long s64;
-
-#else
-// 32-bit Linux GCC/MINGW/etc.
-typedef unsigned long u32;
-typedef unsigned long long u64;
-typedef unsigned long pointer;
-
-typedef signed long s32;
-typedef signed long long s64;
-#endif
-
-#endif  // !HAVE_STDINT_H
 
 #endif // !GEKKO
 
