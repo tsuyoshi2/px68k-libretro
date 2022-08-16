@@ -1,5 +1,5 @@
-#ifndef _winx68k_config
-#define _winx68k_config
+#ifndef _WINX68K_CONFIG_H
+#define _WINX68K_CONFIG_H
 
 #include <stdint.h>
 #include "common.h"
@@ -57,7 +57,7 @@ typedef struct
 	int PushVideoBeforeAudio;
 	int AdjustFrameRates;
 	int AudioDesyncHack;
-	int MenuFontSize; // font size of menu, 0 = normal, 1 = large
+	int MenuFontSize; /* font size of menu, 0 = normal, 1 = large */
 	int joy1_select_mapping; /* used for keyboard to joypad map for P1 Select */
 	int save_fdd_path;
 	int save_hdd_path;
@@ -80,4 +80,4 @@ void PropPage_Init(void);
 
 int set_modulepath(char *path, size_t len);
 
-#endif //_winx68k_config
+#endif /* _WINX68K_CONFIG_H */

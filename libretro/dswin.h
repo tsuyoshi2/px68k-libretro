@@ -1,5 +1,5 @@
-#ifndef dswin_h__
-#define dswin_h__
+#ifndef _DSWIN_H
+#define _DSWIN_H
 
 #include "common.h"
 
@@ -14,8 +14,8 @@ void DS_SetVolumeOPM(long vol);
 void DS_SetVolumeADPCM(long vol);
 void DS_SetVolumeMercury(long vol);
 
-int audio_samples_avail();
+int audio_samples_avail(void);
 void audio_samples_discard(int discard);
 void raudio_callback(void *userdata, unsigned char *stream, int len);
 
-#endif /* dswin_h__ */
+#endif /* _DSWIN_H */

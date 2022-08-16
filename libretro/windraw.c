@@ -56,7 +56,6 @@ uint8_t Draw_TextBitMask[800];
 int winx = 0, winy = 0;
 DWORD winh = 0, winw = 0;
 DWORD root_width, root_height;
-WORD FrameCount = 0;
 
 WORD WinDraw_Pal16B, WinDraw_Pal16R, WinDraw_Pal16G;
 
@@ -210,8 +209,6 @@ WinDraw_Draw(void)
 	}
 
 	videoBuffer=(uint16_t*)ScrBuf;
-
-	FrameCount++;
 }
 
 #define WD_MEMCPY(src) memcpy(&ScrBuf[adr], (src), TextDotX * 2)

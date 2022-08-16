@@ -69,7 +69,6 @@
 
 #include "fmg_wrap.h"
 
-extern	WORD		FrameCount;
 	int		UI_MouseFlag = 0;
 	int		UI_MouseX = -1, UI_MouseY = -1;
 
@@ -80,8 +79,6 @@ extern	WORD		FrameCount;
 	char		filepath[MAX_PATH] = ".";
 	int		fddblink = 0;
 	int		fddblinkcount = 0;
-
-	DWORD		LastClock[4] = {0, 0, 0, 0};
 
 char cur_dir_str[MAX_PATH];
 int cur_dir_slen;

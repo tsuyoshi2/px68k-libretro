@@ -1,12 +1,11 @@
-#ifndef _winx68k_windraw_h
-#define _winx68k_windraw_h
+#ifndef _WINX68K_WINDRAW_H
+#define _WINX68K_WINDRAW_H
 
 #include <stdint.h>
 
 extern int winx, winy;
 extern int winh, winw;
 extern uint8_t Draw_ClrMenu;
-extern WORD FrameCount;
 extern WORD WinDraw_Pal16B, WinDraw_Pal16R, WinDraw_Pal16G;
 
 extern	uint8_t	Draw_BitMask[800];
@@ -36,6 +35,4 @@ void WinDraw_DrawMenufile(struct menu_flist *mfl);
 void WinDraw_ClearMenuBuffer(void);
 void WinDraw_reverse_key(int x, int y);
 
-#endif //winx68k_windraw_h
-
-
+#endif /* _WINX68K_WINDRAW_H */
