@@ -52,8 +52,6 @@ extern "C" {
 int rfd_sock;
 #endif
 
-#define	APPNAME	"Keropi"
-
 extern	WORD	BG_CHREND;
 extern	WORD	BG_BGTOP;
 extern	WORD	BG_BGEND;
@@ -67,9 +65,7 @@ DWORD	VLINE = 0;
 DWORD	vline = 0;
 
 uint8_t DispFrame = 0;
-DWORD SoundSampleRate;
-
-DWORD skippedframes = 0;
+static DWORD SoundSampleRate;
 
 static int ClkUsed = 0;
 static int FrameSkipCount = 0;
@@ -82,9 +78,7 @@ static int old_clkdiv = 0;
 };
 #endif
 
-
-void
-WinX68k_SCSICheck(void)
+void WinX68k_SCSICheck(void)
 {
 	static const uint8_t SCSIIMG[] = {
 		0x00, 0xfc, 0x00, 0x14,				// $fc0000 SCSI boot entry address
@@ -179,8 +173,7 @@ WinX68k_LoadROMs(void)
 	return TRUE;
 }
 
-int
-WinX68k_Reset(void)
+int WinX68k_Reset(void)
 {
 	OPM_Reset();
 
@@ -234,9 +227,7 @@ WinX68k_Reset(void)
 	return TRUE;
 }
 
-
-int
-WinX68k_Init(void)
+int WinX68k_Init(void)
 {
 
 #define MEM_SIZE 0xc00000
@@ -248,11 +239,12 @@ WinX68k_Init(void)
 	if (MEM)
 		memset(MEM, 0, MEM_SIZE);
 
-	if (MEM && FONT && IPL) {
+	if (MEM && FONT && IPL)
+	{
 	  	m68000_init();
 		return TRUE;
-	} else
-		return FALSE;
+	}
+	return FALSE;
 }
 
 void
@@ -748,8 +740,8 @@ extern "C" void handle_retrok(void)
 
 }
 
-extern "C" void exec_app_retro(){
-
+extern "C" void exec_app_retro(void
+){
 	int menu_key_down;
 	//while (1) {
 		// OPM_RomeoOut(Config.BufferSize * 5);
@@ -865,4 +857,3 @@ extern "C" void end_loop_retro(void)
 
    SaveConfig();
 }
-

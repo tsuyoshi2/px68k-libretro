@@ -35,17 +35,11 @@ extern	DWORD	vline;
 extern	char	winx68k_dir[MAX_PATH];
 extern	char	winx68k_ini[MAX_PATH];
 extern	int	BIOS030Flag;
-extern	uint8_t	FrameChanged;
-
-#if defined(ANDROID) || TARGET_OS_IPHONE
-extern int realdisp_w, realdisp_h;
-#endif
 
 int WinX68k_Reset(void);
 int pmain(int argc, char *argv[]);
 void end_loop_retro(void);
-void exec_app_retro();
-
+void exec_app_retro(void);
 
 #ifndef	winx68k_gtkwarpper_h
 #define	winx68k_gtkwarpper_h
@@ -56,10 +50,6 @@ void exec_app_retro();
 #include <unistd.h>
 #endif
 #include <signal.h>
-
-BOOL is_installed_idle_process(void);
-void install_idle_process(void);
-void uninstall_idle_process(void);
 
 #define	NELEMENTS(array)	((int)(sizeof(array) / sizeof(array[0])))
 
