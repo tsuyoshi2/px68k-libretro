@@ -1,5 +1,5 @@
-#ifndef _winx68k_tvram
-#define _winx68k_tvram
+#ifndef _WINX68K_TVRAM_H
+#define _WINX68K_TVRAM_H
 
 #include <stdint.h>
 #include "common.h"
@@ -19,4 +19,4 @@ void FASTCALL TVRAM_Write(DWORD adr, uint8_t data);
 void FASTCALL TVRAM_RCUpdate(void);
 void FASTCALL Text_DrawLine(int opaq);
 
-#endif
+#endif /* _WINX68K_TVRAM_H */

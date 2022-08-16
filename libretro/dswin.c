@@ -48,8 +48,6 @@ int audio_fd = 1;
 
 void raudio_callback(void *userdata, unsigned char *stream, int len);
 
-#ifndef NOSOUND
-
 int
 DSound_Init(unsigned long rate, unsigned long buflen)
 {
@@ -59,7 +57,7 @@ DSound_Init(unsigned long rate, unsigned long buflen)
 		return FALSE;
 
 	if (rate == 0)
-   {
+	{
 		audio_fd = -1;
 		return TRUE;
 	}
@@ -206,7 +204,6 @@ cb_start:
 
       buf = pbrp;
       pbrp += len;
-      //printf("TYPEA: ");
    }
    else
    {
@@ -224,7 +221,6 @@ cb_start:
       {
          buf = pbrp;
          pbrp += len;
-         //printf("TYPEC: ");
       }
       else
       {
@@ -237,37 +233,7 @@ cb_start:
          memcpy(&rsndbuf[lena], pbsp, lenb);
          buf = rsndbuf;
          pbrp = pbsp + lenb;
-         //printf("TYPED: ");
       }
    }
    memcpy(userdata, buf, len);
 }
-
-#else	/* NOSOUND */
-int
-DSound_Init(unsigned long rate, unsigned long buflen)
-{
-	return FALSE;
-}
-
-void
-DSound_Play(void)
-{
-}
-
-void
-DSound_Stop(void)
-{
-}
-
-int
-DSound_Cleanup(void)
-{
-	return TRUE;
-}
-
-void FASTCALL
-DSound_Send0(long clock)
-{
-}
-#endif	/* !NOSOUND */

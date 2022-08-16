@@ -1,5 +1,5 @@
-#ifndef _winx68k_d88
-#define _winx68k_d88
+#ifndef _WINX68K_D88_H
+#define _WINX68K_D88_H
 
 #include <stdint.h>
 
@@ -24,4 +24,4 @@ int D88_ReadDiag(int drv, FDCID* id, FDCID* retid, unsigned char* buf);
 int D88_Write(int drv, FDCID* id, unsigned char* buf, int del);
 int D88_GetCurrentID(int drv, FDCID* id);
 
-#endif
+#endif /* WINX68K_D88_H */

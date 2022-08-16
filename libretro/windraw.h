@@ -33,6 +33,5 @@ extern struct menu_flist mfl;
 
 void WinDraw_DrawMenufile(struct menu_flist *mfl);
 void WinDraw_ClearMenuBuffer(void);
-void WinDraw_reverse_key(int x, int y);
 
 #endif /* _WINX68K_WINDRAW_H */

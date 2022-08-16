@@ -1,5 +1,5 @@
-#ifndef _winx68k_gvram
-#define _winx68k_gvram
+#ifndef _WINX68K_GVRAM_H
+#define _WINX68K_GVRAM_H
 
 #include <stdint.h>
 #include "common.h"
@@ -27,5 +27,5 @@ void FASTCALL Grp_DrawLine4hSP(void);
 void FASTCALL Grp_DrawLine8TR(int page, int opaq);
 void FASTCALL Grp_DrawLine8TR_GT(int page, int opaq);
 void FASTCALL Grp_DrawLine4TR(DWORD page, int opaq);
-#endif
 
+#endif /* _WINX68K_GVRAM_H */

@@ -1,5 +1,5 @@
-#ifndef _winx68k_irqh
-#define _winx68k_irqh
+#ifndef _WINX68K_IRQ_H
+#define _WINX68K_IRQ_H
 
 #include <stdint.h>
 #include "common.h"
@@ -9,4 +9,4 @@ DWORD FASTCALL IRQH_DefaultVector(uint8_t irq);
 void IRQH_IRQCallBack(uint8_t irq);
 void IRQH_Int(uint8_t irq, void* handler);
 
-#endif
+#endif /* WINX68K_IRQ_H */

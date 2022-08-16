@@ -1,5 +1,5 @@
-#ifndef _winx68k_ioc
-#define _winx68k_ioc
+#ifndef _WINX68K_IOC_H
+#define _WINX68K_IOC_H
 
 #include <stdint.h>
 #include "common.h"
@@ -11,4 +11,4 @@ void IOC_Init(void);
 uint8_t FASTCALL IOC_Read(DWORD adr);
 void FASTCALL IOC_Write(DWORD adr, uint8_t data);
 
-#endif
+#endif /* WINX68K_IOC_H */

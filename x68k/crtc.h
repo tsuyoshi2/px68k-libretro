@@ -1,5 +1,5 @@
-#ifndef _winx68k_crtc
-#define _winx68k_crtc
+#ifndef _WINX68K_CRTC_H
+#define _WINX68K_CRTC_H
 
 #include <stdint.h>
 #include "common.h"
@@ -37,4 +37,4 @@ void FASTCALL CRTC_Write(DWORD adr, uint8_t data);
 uint8_t FASTCALL VCtrl_Read(DWORD adr);
 void FASTCALL VCtrl_Write(DWORD adr, uint8_t data);
 
-#endif
+#endif /* _WINX68K_CRTC_H */

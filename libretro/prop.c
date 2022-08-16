@@ -194,7 +194,6 @@ void SaveConfig(void)
 	if (Config.save_fdd_path)
 		for (i = 0; i < 2; i++)
 		{
-			/* printf("i: %d", i); */
 			sprintf(buf, "FDD%d", i);
 			WritePrivateProfileString(ini_title, buf, Config.FDDImage[i], winx68k_ini);
 		}

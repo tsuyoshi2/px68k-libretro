@@ -1,5 +1,5 @@
-#ifndef _winx68k_mouse
-#define _winx68k_mouse
+#ifndef _WINX68K_MOUSE_H
+#define _WINX68K_MOUSE_H
 
 #include <stdint.h>
 #include "common.h"
@@ -15,4 +15,4 @@ void Mouse_SetData(void);
 void Mouse_StartCapture(int flag);
 void Mouse_ChangePos(void);
 
-#endif //_winx68k_mouse
+#endif /* _WINX68K_MOUSE_H */

@@ -1,5 +1,5 @@
-#ifndef _winx68k_fdc
-#define _winx68k_fdc
+#ifndef _WINX68K_FDC_H
+#define _WINX68K_FDC_H
 
 #include <stdint.h>
 #include "common.h"
@@ -12,5 +12,4 @@ void FDC_EPhaseEnd(void);
 void FDC_SetForceReady(int n);
 int FDC_IsDataReady(void);
 
-#endif //_winx68k_fdc
-
+#endif /* _WINX68K_FDC_H */

@@ -1,5 +1,5 @@
-#ifndef _winx68k_adpcm_h
-#define _winx68k_adpcm_h
+#ifndef _WINX68K_ADPCM_H
+#define _WINX68K_ADPCM_H
 
 #include <stdint.h>
 
@@ -19,4 +19,4 @@ void ADPCM_SetClock(int n);
 void ADPCM_Init(DWORD samplerate);
 int ADPCM_IsReady(void);
 
-#endif
+#endif /* _WINX68K_ADPCM_H */

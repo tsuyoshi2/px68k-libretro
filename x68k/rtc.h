@@ -1,5 +1,5 @@
-#ifndef _x68k_rtc
-#define _x68k_rtc
+#ifndef _X68K_RTC_H
+#define _X68K_RTC_H
 
 #include <stdint.h>
 
@@ -8,4 +8,4 @@ uint8_t FASTCALL RTC_Read(DWORD adr);
 void FASTCALL RTC_Write(DWORD adr, uint8_t data);
 void RTC_Timer(int clock);
 
-#endif
+#endif /* _X68K_RTC_H */

@@ -1235,7 +1235,7 @@ void WinDraw_ClearMenuBuffer(void)
 #define KBD_FS 16 // keyboard font size : 16
 
 // キーを反転する
-void WinDraw_reverse_key(int x, int y)
+static void WinDraw_reverse_key(int x, int y)
 {
 	int i, j;
 	int kp = Keyboard_get_key_ptr(kbd_kx, kbd_ky);

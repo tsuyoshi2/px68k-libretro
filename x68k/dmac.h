@@ -1,5 +1,5 @@
-#ifndef _winx68k_dmac
-#define _winx68k_dmac
+#ifndef _WINX68K_DMAC_H
+#define _WINX68K_DMAC_H
 
 #include <stdint.h>
 #include "common.h"
@@ -48,4 +48,4 @@ int FASTCALL DMA_Exec(int ch);
 void DMA_Init(void);
 void DMA_SetReadyCB(int ch, int (*func)(void));
 
-#endif //_winx68k_dmac
+#endif /* _WINX68K_DMAC_H */

@@ -1,5 +1,5 @@
-#ifndef _winx68k_bg
-#define _winx68k_bg
+#ifndef _WINX68K_BG_H
+#define _WINX68K_BG_H
 
 #include <stdint.h>
 #include "common.h"
@@ -27,4 +27,4 @@ void FASTCALL BG_Write(DWORD adr, uint8_t data);
 
 void FASTCALL BG_DrawLine(int opaq, int gd);
 
-#endif
+#endif /* _WINX68K_BG_H */

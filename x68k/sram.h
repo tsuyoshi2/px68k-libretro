@@ -1,5 +1,5 @@
-#ifndef _winx68k_sram
-#define _winx68k_sram
+#ifndef _WINX68K_SRAM_H
+#define _WINX68K_SRAM_H
 
 #include "common.h"
 
@@ -12,5 +12,4 @@ void SRAM_VirusCheck(void);
 uint8_t FASTCALL SRAM_Read(DWORD adr);
 void FASTCALL SRAM_Write(DWORD adr, uint8_t data);
 
-#endif
-
+#endif /* _WINX68K_SRAM_H */

@@ -1,5 +1,5 @@
-#ifndef _winx68k_dim
-#define _winx68k_dim
+#ifndef _WINX68K_DIM_H
+#define _WINX68K_DIM_H
 
 #include <stdint.h>
 
@@ -15,4 +15,4 @@ int DIM_ReadDiag(int drv, FDCID* id, FDCID* retid, unsigned char* buf);
 int DIM_Write(int drv, FDCID* id, unsigned char* buf, int del);
 int DIM_GetCurrentID(int drv, FDCID* id);
 
-#endif
+#endif /* _WINX68K_DIM_H */

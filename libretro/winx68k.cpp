@@ -11,7 +11,6 @@ extern "C" {
 #include "prop.h"
 #include "status.h"
 #include "joystick.h"
-#include "mkcgrom.h"
 #include "winx68k.h"
 #include "windraw.h"
 #include "winui.h"
@@ -119,7 +118,6 @@ void WinX68k_SCSICheck(void)
 		memset(IPL, 0, 0x2000);				// main is 8kb
 		memset(&IPL[0x2000], 0xff, 0x1e000);	// remaining is 0xff
 		memcpy(IPL, SCSIIMG, sizeof(SCSIIMG));	// fake­SCSI BIOS
-//		Memory_SetSCSIMode();
 	} else {
 		// SASI model sees the IPL as it is
 		memcpy(IPL, &IPL[0x20000], 0x20000);
@@ -161,11 +159,9 @@ WinX68k_LoadROMs(void)
 	if (fp == 0) {
 		// cgrom.tmp present?
 		fp = file_open_c((char *)FONTFILETMP);
-		if (fp == 0) {
-			// font creation XXX
-			printf("Font ROM image can't be found.\n");
+		// font creation XXX - Font ROM image can't be found
+		if (fp == 0)
 			return FALSE;
-		}
 	}
 	File_Read(fp, FONT, 0xc0000);
 	File_Close(fp);
@@ -555,11 +551,7 @@ extern "C" int pmain(int argc, char *argv[])
 	MIDI_SetMimpiMap(Config.ToneMapFile);	// ToneMap file usage
 	MIDI_EnableMimpiDef(Config.ToneMap);
 
-	if (!DSound_Init(Config.SampleRate, Config.BufferSize)) {
-
-		if (Config.DSAlert)
-			fprintf(stderr, "Can't init sound.\n");
-	}
+	if (!DSound_Init(Config.SampleRate, Config.BufferSize)) { }
 
 	ADPCM_SetVolume((uint8_t)Config.PCM_VOL);
 	OPM_SetVolume((uint8_t)Config.OPM_VOL);

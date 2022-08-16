@@ -211,7 +211,7 @@ void FASTCALL MIDI_Timer(DWORD clk)
 // -----------------------------------------------------------------------
 //   MIDIモジュールの設定
 // -----------------------------------------------------------------------
-void MIDI_SetModule(void)
+static void MIDI_SetModule(void)
 {
 	if (Config.MIDI_SW)
 		MIDI_MODULE = MIDI_ResetType[Config.MIDI_Type];
@@ -964,8 +964,8 @@ static void mimpidefline_analaize(char *buf) {
 	}
 }
 
-int MIDI_SetMimpiMap(char *filename) {
-
+int MIDI_SetMimpiMap(char *filename)
+{
 	uint8_t		b;
 	FILEH		fh;
 	char		buf[128];
