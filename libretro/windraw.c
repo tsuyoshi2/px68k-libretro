@@ -951,7 +951,7 @@ static void set_mfs(int fs)
 	p6m.mfs = fs;
 }
 
-static WORD *get_ml_ptr()
+static WORD *get_ml_ptr(void)
 {
 	p6m.mlp = p6m.sbp + MENU_WIDTH * p6m.ml_y + p6m.ml_x;
 	return p6m.mlp;
@@ -962,17 +962,12 @@ static WORD *get_ml_ptr()
 // ・表示した分cursorは先に移動する
 static void draw_char(WORD sjis)
 {
-	DWORD f;
-	WORD *p;
 	int i, j, k, wc, w;
 	uint8_t c;
 	WORD bc;
-
-	int h = p6m.mfs;
-
-	p = get_ml_ptr();
-
-	f = get_font_addr(sjis, h);
+	int h    = p6m.mfs;
+	WORD *p = get_ml_ptr();
+	DWORD f  = get_font_addr(sjis, h);
 
 	if (f < 0)
 		return;
@@ -1050,8 +1045,6 @@ void WinDraw_DrawMenu(int menu_state, int mkey_pos, int mkey_y, int *mval_y)
 {
 	int i, drv;
 	char tmp[256];
-
-// ソフトウェアキーボード描画時にset_sbp(kbd_buffer)されているので戻す
 
 	set_sbp(menu_buffer);
 	set_mfs(Config.MenuFontSize ? 24 : 16);
@@ -1137,11 +1130,10 @@ void WinDraw_DrawMenu(int menu_state, int mkey_pos, int mkey_y, int *mval_y)
 		drv = WinUI_get_drv_num(i + mkey_pos);
 		if (drv >= 0  && mval_y[i + mkey_pos] == 0) {
 			char *p;
-			if (drv < 2) {
+			if (drv < 2)
 				p = Config.FDDImage[drv];
-			} else {
+			else
 				p = Config.HDImage[drv - 2];
-			}
 
 			if (p[0] == '\0') {
 				draw_str(" -- no disk --");
@@ -1168,8 +1160,6 @@ void WinDraw_DrawMenu(int menu_state, int mkey_pos, int mkey_y, int *mval_y)
 		draw_str(swaku_str);
 		set_mlocateC(0, 12);
 		draw_str(swaku2_str);
-		//set_mlocateC(0, 15);
-		//draw_str(swaku2_str);
 		set_mlocateC(0, 13);
 		draw_str(swaku3_str);
 	}
@@ -1179,10 +1169,6 @@ void WinDraw_DrawMenu(int menu_state, int mkey_pos, int mkey_y, int *mval_y)
 	set_mbcolor(0x0);
 	set_mlocateC(2, 12);
 	draw_str(menu_item_desc[mkey_y]);
-	//if (menu_state == ms_value) {
-		//set_mlocateC(2, 15);
-		//draw_str(item_cap2[mkey_y]);
-	//}
 
 	videoBuffer=(uint16_t*)menu_buffer;
 
@@ -1193,9 +1179,6 @@ void WinDraw_DrawMenufile(struct menu_flist *mfl)
 	int i;
 	char ptr[PATH_MAX];
 
-	// 下枠
-	//set_mcolor(0xf800); // red
-	//set_mcolor(0xf81f); // magenta
 	set_mcolor(0xffff);
 	set_mbcolor(0x1); // 0x0だと透過モード
 	set_mlocateC(1, 1);
@@ -1254,13 +1237,9 @@ void WinDraw_ClearMenuBuffer(void)
 // キーを反転する
 void WinDraw_reverse_key(int x, int y)
 {
-	WORD *p;
-	int kp;
 	int i, j;
-	
-	kp = Keyboard_get_key_ptr(kbd_kx, kbd_ky);
-
-	p = kbd_buffer + KBDBUF_WIDTH * kbd_key[kp].y + kbd_key[kp].x;
+	int kp = Keyboard_get_key_ptr(kbd_kx, kbd_ky);
+	WORD *p = kbd_buffer + KBDBUF_WIDTH * kbd_key[kp].y + kbd_key[kp].x;
 
 	for (i = 0; i < kbd_key[kp].h; i++) {
 		for (j = 0; j < kbd_key[kp].w; j++) {
@@ -1271,7 +1250,7 @@ void WinDraw_reverse_key(int x, int y)
 	}
 }
 
-static void draw_kbd_to_tex()
+static void draw_kbd_to_tex(void)
 {
 	int i, x, y;
 	WORD *p;
