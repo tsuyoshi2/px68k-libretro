@@ -28,31 +28,22 @@ typedef	unsigned int	DWORD;
 #endif
 
 typedef	int		BOOL;
-typedef	WORD		WPARAM;
-typedef	DWORD		LPARAM;
-typedef	LONG		LRESULT;
 
 typedef	void		VOID;
 typedef	void		*PVOID;
 typedef	void		*LPVOID;
 typedef	const void	*PCVOID;
 typedef	long		*PLONG;
-typedef	BYTE		*LPBYTE;
-typedef	WORD		*LPWORD;
 typedef	DWORD		*PDWORD;
-typedef	DWORD		*LPDWORD;
 typedef char		*LPSTR;
 typedef const char	*LPCSTR;
 
 typedef	void *		LPSECURITY_ATTRIBUTES;
 typedef	void *		LPOVERLAPPED;
 
-typedef	int		HWND;
 typedef void *		HANDLE;
 typedef	HANDLE		HLOCAL;
 typedef	HANDLE		HGLOBAL;
-
-typedef	void *		DRAWITEMSTRUCT;
 
 #ifndef FASTCALL
 #define FASTCALL
@@ -68,10 +59,6 @@ typedef	void *		DRAWITEMSTRUCT;
 
 #ifndef	MAX_PATH
 #define	MAX_PATH	MAXPATHLEN
-#endif
-
-#ifndef	AVE
-#define	AVE(a, b)	(((a)+(b))/2)
 #endif
 
 /*
@@ -93,15 +80,6 @@ typedef	void *		DRAWITEMSTRUCT;
 #endif
 
 #define	RGB(r,g,b)	((DWORD)((uint8_t)(r))|((WORD)((uint8_t)(g)))|((DWORD)((uint8_t)(b))))
-
-#define	MB_APPLMODAL		0
-
-#define	MB_ICONSTOP		16
-#define	MB_ICONINFORMATION	64
-
-#define	MB_OK			0
-
-#define	GPTR			64
 
 /* for BITMAP */
 #define BI_RGB			0

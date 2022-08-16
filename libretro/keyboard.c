@@ -343,13 +343,7 @@ void send_keycode(uint8_t code, int flag)
 		newwp = ((KeyBufWP + 1) & (KeyBufSize - 1));
 		if (newwp != KeyBufRP) {
 			KeyBuf[KeyBufWP] = code | ((flag == P6K_UP)? 0x80 : 0);
-#ifdef DEBUG
-			p6logd("KeyBuf: %x\n", KeyBuf[KeyBufWP]);
-#endif
 			KeyBufWP = newwp;
-#ifdef DEBUG
-			p6logd("KeyBufWP: %d\n", KeyBufWP);
-#endif
 		}
 	}
 }
@@ -462,16 +456,10 @@ static uint8_t get_x68k_keycode(DWORD wp)
 void
 Keyboard_KeyDown(DWORD wp)
 {
-
-	uint8_t code;
 	uint8_t newwp;
-	code = get_x68k_keycode(wp);
-	if (code < 0) {
+	uint8_t code = get_x68k_keycode(wp);
+	if (code < 0)
 		return;
-	}
-
-	p6logd("Keyboard_KeyDown: ");
-	p6logd("wp=0x%x, code=0x%x\n", wp, code);
 
 	send_keycode(code, P6K_DOWN);
 
@@ -581,19 +569,18 @@ Keyboard_KeyUp(DWORD wp)
 void
 Keyboard_Int(void)
 {
-	if (KeyBufRP != KeyBufWP) {
-#ifdef DEBUG
-		p6logd("KeyBufRP:%d, KeyBufWP:%d\n", KeyBufRP, KeyBufWP);
-#endif
-		if (!KeyIntFlag) {
+	if (KeyBufRP != KeyBufWP)
+	{
+		if (!KeyIntFlag)
+		{
 			LastKey = KeyBuf[KeyBufRP];
 			KeyBufRP = ((KeyBufRP+1)&(KeyBufSize-1));
 			KeyIntFlag = 1;
 			MFP_Int(3);
 		}
-	} else if (!KeyIntFlag) {
-		LastKey = 0;
 	}
+	else if (!KeyIntFlag)
+		LastKey = 0;
 }
 
 /********** ソフトウェアキーボード **********/

@@ -534,8 +534,8 @@ static int pre_main(void)
    for (i = 0; i < 64; i++)
       xargv_cmd[i] = NULL;
 
-   if (no_content) {
-      p6logd("PARAMCOUNT = %d\n", PARAMCOUNT);
+   if (no_content)
+   {
       PARAMCOUNT = 0;
       goto run_pmain;
    }
@@ -573,22 +573,7 @@ static int pre_main(void)
    }
 
    for (i = 0; i < PARAMCOUNT; i++)
-   {
       xargv_cmd[i] = (char*)(XARGV[i]);
-   }
-
-   /* Log successfully loaded paths when loading from m3u */
-   if (isM3U)
-   {
-      p6logd("%s\n", "Loading from an m3u file ...");
-      for (i = 0; i < disk.total_images; i++)
-         p6logd("index %d: %s\n", i + 1, disk.path[i]);
-   }
-
-   /* List arguments to be passed to core */
-   p6logd("%s\n", "Parsing arguments ...");
-   for (i = 0; i < PARAMCOUNT; i++)
-      p6logd("%d : %s\n", i, xargv_cmd[i]);
 
 run_pmain:
    pmain(PARAMCOUNT, (char **)xargv_cmd);
@@ -1205,7 +1190,8 @@ bool retro_load_game(const struct retro_game_info *info)
    no_content = 1;
    RPATH[0] = '\0';
 
-   if (info && info->path) {
+   if (info && info->path)
+   {
       const char *full_path = 0;
       no_content = 0;
       full_path = info->path;
@@ -1215,8 +1201,6 @@ bool retro_load_game(const struct retro_game_info *info)
       if (!load(RPATH))
          return false;
    }
-
-   p6logd("LOAD EMU\n");
 
    return true;
 }
@@ -1340,7 +1324,6 @@ void retro_init(void)
 void retro_deinit(void)
 {
    end_loop_retro();
-   p6logd("Retro DeInit\n");
    libretro_supports_input_bitmasks = 0;
 }
 
@@ -1379,20 +1362,18 @@ void retro_run(void)
 {
    bool updated = false;
 
-   if(firstcall)
+   if (firstcall)
    {
       pre_main();
       firstcall = 0;
-      p6logd("INIT done\n");
+      /* Initialization done */
       update_variables();
       soundbuf_size = SNDSZ;
       return;
    }
 
    if (environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE_UPDATE, &updated) && updated)
-   {
       update_variables();
-   }
 
    if (CHANGEAV || CHANGEAV_TIMING)
    {
@@ -1408,8 +1389,6 @@ void retro_run(void)
          CHANGEAV = 0;
       }
       soundbuf_size = SNDSZ;
-      p6logd("w:%d h:%d a:%.3f\n", retrow, retroh, (float)(4.0/3.0));
-      p6logd("fps:%.2f soundrate:%d\n", FRAMERATE, (int)SOUNDRATE);
    }
 
    input_poll_cb();
