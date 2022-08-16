@@ -26,9 +26,4 @@ int16_t	File_Close(FILEH handle);
 #define	File_Write	file_lwrite
 #define	File_Close	file_close
 
-FILEH	File_OpenCurDir(uint8_t *filename);
-FILEH	File_CreateCurDir(uint8_t *filename);
-#define	File_OpenCurDir		file_open_c
-#define	File_CreateCurDir	file_create_c
-
 #endif

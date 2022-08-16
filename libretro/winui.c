@@ -41,7 +41,6 @@
 #include "joystick.h"
 #include "mouse.h"
 #include "winx68k.h"
-#include "version.h"
 #include "juliet.h"
 #include "fdd.h"
 #include "irqh.h"

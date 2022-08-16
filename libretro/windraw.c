@@ -48,7 +48,6 @@ extern uint8_t Debug_Text, Debug_Grp, Debug_Sp;
 WORD *ScrBuf = 0;
 
 int Draw_Opaque;
-extern uint8_t Draw_RedrawAllFlag;
 uint8_t Draw_ClrMenu = 0;
 
 uint8_t Draw_BitMask[800];
@@ -189,14 +188,6 @@ void
 WinDraw_Cleanup(void)
 {
 }
-
-void
-WinDraw_Redraw(void)
-{
-
-	TVRAM_SetAllDirty();
-}
-
 
 extern int retrow,retroh,CHANGEAV;
 

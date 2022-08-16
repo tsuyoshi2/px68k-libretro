@@ -41,7 +41,7 @@ void SRAM_Init(void)
 	for (i=0; i<0x4000; i++)
 		SRAM[i] = 0xFF;
 
-	fp = File_OpenCurDir(SRAMFILE);
+	fp = file_open_c(SRAMFILE);
 	if (fp)
 	{
 		File_Read(fp, SRAM, 0x4000);
@@ -72,9 +72,9 @@ void SRAM_Cleanup(void)
 		SRAM[i+1] = tmp;
 	}
 
-	fp = File_OpenCurDir(SRAMFILE);
+	fp = file_open_c(SRAMFILE);
 	if (!fp)
-		fp = File_CreateCurDir(SRAMFILE, FTYPE_SRAM);
+		fp = file_create_c(SRAMFILE, FTYPE_SRAM);
 	if (fp)
 	{
 		File_Write(fp, SRAM, 0x4000);

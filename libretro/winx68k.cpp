@@ -145,7 +145,7 @@ WinX68k_LoadROMs(void)
 	uint8_t tmp;
 
 	for (fp = 0, i = 0; fp == 0 && i < NELEMENTS(BIOSFILE); ++i) {
-		fp = File_OpenCurDir((char *)BIOSFILE[i]);
+		fp = file_open_c((char *)BIOSFILE[i]);
 		p6logd("fp:%d (%s)\n",fp,(char *)BIOSFILE[i]);
 	}
 
@@ -165,10 +165,10 @@ WinX68k_LoadROMs(void)
 		IPL[i + 1] = tmp;
 	}
 
-	fp = File_OpenCurDir((char *)FONTFILE);
+	fp = file_open_c((char *)FONTFILE);
 	if (fp == 0) {
 		// cgrom.tmp present?
-		fp = File_OpenCurDir((char *)FONTFILETMP);
+		fp = file_open_c((char *)FONTFILETMP);
 		if (fp == 0) {
 			// font creation XXX
 			printf("Font ROM image can't be found.\n");

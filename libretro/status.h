@@ -1,5 +1,5 @@
-#ifndef winx68k_statusbar_h
-#define winx68k_statusbar_h
+#ifndef _WINX68K_STATUSBAR_H
+#define _WINX68K_STATUSBAR_H
 
 #ifdef __cplusplus
 extern "C" {
@@ -16,4 +16,4 @@ extern "C" {
 };
 #endif
 
-#endif //winx68k_statusbar_h
+#endif /* _WINX68K_STATUSBAR_H */

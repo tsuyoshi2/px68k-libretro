@@ -45,9 +45,7 @@ static LPSTR	curfilep = curpath;
 FILEH
 file_open(LPSTR filename)
 {
-	FILEH	ret;
-
-	ret = CreateFile(filename, GENERIC_READ | GENERIC_WRITE,
+	FILEH ret = CreateFile(filename, GENERIC_READ | GENERIC_WRITE,
 	    0, 0, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
 	if (ret == (FILEH)INVALID_HANDLE_VALUE) {
 		ret = CreateFile(filename, GENERIC_READ,
@@ -61,11 +59,7 @@ file_open(LPSTR filename)
 FILEH
 file_create(LPSTR filename, int ftype)
 {
-	FILEH	ret;
-
-	(void)ftype;
-
-	ret = CreateFile(filename, GENERIC_READ | GENERIC_WRITE,
+	FILEH ret = CreateFile(filename, GENERIC_READ | GENERIC_WRITE,
 	    0, 0, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
 	if (ret == (FILEH)INVALID_HANDLE_VALUE)
 		return (FILEH)FALSE;
@@ -75,7 +69,6 @@ file_create(LPSTR filename, int ftype)
 DWORD
 file_seek(FILEH handle, long pointer, int16_t mode)
 {
-
 	return SetFilePointer(handle, pointer, 0, mode);
 }
 
