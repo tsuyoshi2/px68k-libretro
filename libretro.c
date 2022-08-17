@@ -494,7 +494,7 @@ static int load(const char *argv)
          {
             if (log_cb)
                log_cb(RETRO_LOG_ERROR, "%s\n", "[libretro]: failed to read cmd file ...");
-            return false;
+            return 0;
          }
 
          parse_cmdline(CMDFILE);
@@ -505,7 +505,7 @@ static int load(const char *argv)
          {
             if (log_cb)
                log_cb(RETRO_LOG_ERROR, "%s\n", "[libretro]: failed to read m3u file ...");
-            return false;
+            return 0;
          }
 
          if(disk.total_images > 1)
@@ -555,13 +555,6 @@ static int pre_main(void)
             Add_Option("-h");
             cfgload = 1;
          }
-      }
-
-      if (cfgload == 0)
-      {
-         //Add_Option("-verbose");
-         //Add_Option(retro_system_tos);
-         //Add_Option("-8");
       }
 
       Add_Option(RPATH);
@@ -789,14 +782,14 @@ static void update_variables(void)
    {
       key[strlen("px68k_joytype")] = '1' + i;
       var.value = NULL;
-      if (environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE, &var) && var.value) {
-         if (!(strcmp(var.value, "Default (2 Buttons)"))) {
+      if (environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE, &var) && var.value)
+      {
+         if (!(strcmp(var.value, "Default (2 Buttons)")))
             Config.JOY_TYPE[i] = 0;
-         } else if (!(strcmp(var.value, "CPSF-MD (8 Buttons)"))) {
+         else if (!(strcmp(var.value, "CPSF-MD (8 Buttons)")))
             Config.JOY_TYPE[i] = 1;
-         } else if (!(strcmp(var.value, "CPSF-SFC (8 Buttons)"))) {
+         else if (!(strcmp(var.value, "CPSF-SFC (8 Buttons)")))
             Config.JOY_TYPE[i] = 2;
-         }
       }
    }
 
@@ -862,13 +855,10 @@ static void update_variables(void)
 
    if (environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE, &var) && var.value)
    {
-      //fprintf(stderr, "value: %s\n", var.value);
       if (!strcmp(var.value, "disabled"))
          opt_analog = false;
       if (!strcmp(var.value, "enabled"))
          opt_analog = true;
-
-      //fprintf(stderr, "[libretro-test]: Analog: %s.\n",opt_analog?"ON":"OFF");
    }
 
    var.key = "px68k_adpcm_vol";
@@ -1053,17 +1043,6 @@ static void update_variables(void)
          Config.FrameRate = 1;
    }
 
-   var.key = "px68k_push_video_before_audio";
-   var.value = NULL;
-
-   if (environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE, &var) && var.value)
-   {
-      if (!strcmp(var.value, "disabled"))
-         Config.PushVideoBeforeAudio = 0;
-      else if (!strcmp(var.value, "enabled"))
-         Config.PushVideoBeforeAudio = 1;
-   }
-
    var.key = "px68k_adjust_frame_rates";
    var.value = NULL;
 
@@ -1114,20 +1093,11 @@ void retro_get_system_info(struct retro_system_info *info)
 void retro_get_system_av_info(struct retro_system_av_info *info)
 {
    /* FIXME handle PAL/NTSC */
-   struct retro_game_geometry geom = { retrow, retroh,800, 600 ,4.0 / 3.0 };
+   struct retro_game_geometry geom   = { retrow, retroh,800, 600 ,4.0 / 3.0 };
    struct retro_system_timing timing = { FRAMERATE, SOUNDRATE };
 
    info->geometry = geom;
    info->timing   = timing;
-}
-
-void update_geometry(void)
-{
-   struct retro_system_av_info system_av_info;
-   system_av_info.geometry.base_width = retrow;
-   system_av_info.geometry.base_height = retroh;
-   system_av_info.geometry.aspect_ratio = (float)4.0/3.0;// retro_aspect;
-   environ_cb(RETRO_ENVIRONMENT_SET_GEOMETRY, &system_av_info);
 }
 
 static void frame_time_cb(retro_usec_t usec)
@@ -1142,8 +1112,8 @@ static void setup_frame_time_cb(void)
 {
    struct retro_frame_time_callback cb;
 
-   cb.callback = frame_time_cb;
-   cb.reference = ceil(1000000 / FRAMERATE);
+   cb.callback   = frame_time_cb;
+   cb.reference  = ceil(1000000 / FRAMERATE);
    if (!environ_cb(RETRO_ENVIRONMENT_SET_FRAME_TIME_CALLBACK, &cb))
       total_usec = (unsigned int) -1;
    else if (total_usec == (unsigned int) -1)
@@ -1154,7 +1124,7 @@ void update_timing(void)
 {
    struct retro_system_av_info system_av_info;
    retro_get_system_av_info(&system_av_info);
-   FRAMERATE = framerates[Config.AdjustFrameRates][VID_MODE];
+   FRAMERATE                 = framerates[Config.AdjustFrameRates][VID_MODE];
    system_av_info.timing.fps = FRAMERATE;
    environ_cb(RETRO_ENVIRONMENT_SET_SYSTEM_AV_INFO, &system_av_info);
    setup_frame_time_cb();
@@ -1287,10 +1257,7 @@ void retro_init(void)
    enum retro_pixel_format fmt = RETRO_PIXEL_FORMAT_RGB565;
 
    if (!environ_cb(RETRO_ENVIRONMENT_SET_PIXEL_FORMAT, &fmt))
-   {
-      fprintf(stderr, "RGB565 is not supported.\n");
       exit(0);
-   }
 
    if (environ_cb(RETRO_ENVIRONMENT_GET_RUMBLE_INTERFACE, &rumble) && rumble.set_rumble_state)
       rumble_cb = rumble.set_rumble_state;
@@ -1385,7 +1352,11 @@ void retro_run(void)
       }
       if (CHANGEAV)
       {
-         update_geometry();
+         struct retro_system_av_info system_av_info;
+	 system_av_info.geometry.base_width = retrow;
+	 system_av_info.geometry.base_height = retroh;
+	 system_av_info.geometry.aspect_ratio = (float)4.0/3.0;// retro_aspect;
+	 environ_cb(RETRO_ENVIRONMENT_SET_GEOMETRY, &system_av_info);
          CHANGEAV = 0;
       }
       soundbuf_size = SNDSZ;
@@ -1407,11 +1378,6 @@ void retro_run(void)
    }
    raudio_callback(soundbuf, NULL, soundbuf_size << 2);
 
-   if (Config.PushVideoBeforeAudio)
-      video_cb(videoBuffer, retrow, retroh, /*retrow*/ 800 << 1/*2*/);
-
    audio_batch_cb((const int16_t*)soundbuf, soundbuf_size);
-
-   if (!Config.PushVideoBeforeAudio)
-      video_cb(videoBuffer, retrow, retroh, /*retrow*/ 800 << 1/*2*/);
+   video_cb(videoBuffer, retrow, retroh, /*retrow*/ 800 << 1/*2*/);
 }

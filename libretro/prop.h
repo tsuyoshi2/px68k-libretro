@@ -26,13 +26,6 @@ typedef struct
 	int XVIMode;
 	int WinDrvFD;
 	int WinStretch;
-	int CDROM_ASPI;
-	int CDROM_ASPI_Drive;
-	int CDROM_IOCTRL_Drive;
-	int CDROM_SCSIID;
-	int CDROM_Enable;
-	int SSTP_Enable;
-	int SSTP_Port;
 	int Sound_LPF;
 	int SoundROMEO;
 	int MIDIDelay;
@@ -44,7 +37,6 @@ typedef struct
 	int HwJoyBtn[8];
 	int NoWaitMode;
 	uint8_t FrameRate;
-	int PushVideoBeforeAudio;
 	int AdjustFrameRates;
 	int AudioDesyncHack;
 	int MenuFontSize; /* font size of menu, 0 = normal, 1 = large */

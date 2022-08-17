@@ -97,13 +97,6 @@ static void LoadDefaults(void)
 	Config.WinDrvFD = 1;
 	Config.WinStretch = 1;
 	Config.XVIMode = 0;
-	Config.CDROM_ASPI = 1;
-	Config.CDROM_SCSIID = 6;
-	Config.CDROM_ASPI_Drive = 0;
-	Config.CDROM_IOCTRL_Drive = 16;
-	Config.CDROM_Enable = 1;
-	Config.SSTP_Enable = 0;
-	Config.SSTP_Port = 11000;
 	Config.ToneMap = 0;
 	Config.ToneMapFile[0] = 0;
 	Config.MIDIDelay = Config.BufferSize*5;
@@ -116,7 +109,6 @@ static void LoadDefaults(void)
 		Config.HwJoyBtn[i] = i;
 
 	Config.NoWaitMode = 0;
-	Config.PushVideoBeforeAudio = 0;
 	Config.AdjustFrameRates = 1;
 	Config.AudioDesyncHack = 0;
 
