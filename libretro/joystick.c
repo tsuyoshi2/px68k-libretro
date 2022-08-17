@@ -62,7 +62,6 @@ uint8_t FASTCALL Joystick_Read(uint8_t num)
 	uint8_t joynum = num;
 	uint8_t ret0 = 0xff, ret1 = 0xff, ret;
 
-	if (Config.JoySwap) joynum ^= 1;
 	if (joy[num]) {
 		ret0 = JoyState0[num];
 		ret1 = JoyState1[num];

@@ -94,7 +94,7 @@ void WinDraw_ChangeSize(void)
 
 	Mouse_ChangePos();
 
-	switch (Config.WinStrech) {
+	switch (Config.WinStretch) {
 	case 0:
 		WindowX = TextDotX;
 		WindowY = TextDotY;

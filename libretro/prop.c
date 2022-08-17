@@ -95,21 +95,16 @@ static void LoadDefaults(void)
 	Config.MouseSpeed = 10;
 	Config.WindowFDDStat = 1;
 	Config.FullScrFDDStat = 1;
-	Config.DSAlert = 1;
 	Config.Sound_LPF = 1;
 	Config.SoundROMEO = 1;
 	Config.MIDI_SW = 1;
 	Config.MIDI_Reset = 1;
 	Config.MIDI_Type = 1;
-	Config.JoySwap = 0;
 	Config.JoyKey = 0;
 	Config.JoyKeyReverse = 0;
 	Config.JoyKeyJoy2 = 0;
-	Config.SRAMWarning = 1;
-	Config.LongFileName = 1;
 	Config.WinDrvFD = 1;
-	Config.WinStrech = 1;
-	Config.DSMixing = 0;
+	Config.WinStretch = 1;
 	Config.XVIMode = 0;
 	Config.CDROM_ASPI = 1;
 	Config.CDROM_SCSIID = 6;
@@ -125,9 +120,6 @@ static void LoadDefaults(void)
 	Config.VkeyScale = 4;
 	Config.VbtnSwap = 0;
 	Config.JoyOrMouse = 1;
-	Config.HwJoyAxis[0] = 0;
-	Config.HwJoyAxis[1] = 1;
-	Config.HwJoyHat = 0;
 
 	for (i = 0; i < 8; i++)
 		Config.HwJoyBtn[i] = i;
@@ -136,10 +128,6 @@ static void LoadDefaults(void)
 	Config.PushVideoBeforeAudio = 0;
 	Config.AdjustFrameRates = 1;
 	Config.AudioDesyncHack = 0;
-
-	for (i = 0; i < 2; i++)
-		for (j = 0; j < 8; j++)
-			Config.JOY_BTN[i][j] = j;
 
 	for (i = 0; i < 2; i++)
 		Config.FDDImage[i][0] = '\0';

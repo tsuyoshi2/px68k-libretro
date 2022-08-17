@@ -18,8 +18,6 @@ uint8_t	SRAMFILE[] = "sram.dat";
 // -----------------------------------------------------------------------
 void SRAM_VirusCheck(void)
 {
-	if (!Config.SRAMWarning) return;				// Warning発生モードでなければ帰る
-
 	if ( (cpu_readmem24_dword(0xed3f60)==0x60000002)
 	   &&(cpu_readmem24_dword(0xed0010)==0x00ed3f60) )		// 特定うぃるすにしか効かないよ~
 	{
