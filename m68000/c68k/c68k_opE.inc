@@ -149,9 +149,7 @@ case 0xE040:
 {
 	u32 res;
 	pointer src;
-	u32 sft;
-
-	sft = (((Opcode >> 9) - 1) & 7) + 1;
+	u32 sft = (((Opcode >> 9) - 1) & 7) + 1;
 	CCnt -= sft * 2;
 	src = (s32)(s16)CPU->D[(Opcode >> 0) & 7];
 	CPU->flag_V = 0;
@@ -231,9 +229,7 @@ case 0xE080:
 {
 	u32 res;
 	pointer src;
-	u32 sft;
-
-	sft = (((Opcode >> 9) - 1) & 7) + 1;
+	u32 sft = (((Opcode >> 9) - 1) & 7) + 1;
 	CCnt -= sft * 2;
 	src = (s32)(s32)CPU->D[(Opcode >> 0) & 7];
 	CPU->flag_V = 0;
@@ -313,9 +309,7 @@ case 0xE008:
 {
 	u32 res;
 	pointer src;
-	u32 sft;
-
-	sft = (((Opcode >> 9) - 1) & 7) + 1;
+	u32 sft = (((Opcode >> 9) - 1) & 7) + 1;
 	CCnt -= sft * 2;
 	src = (u8)CPU->D[(Opcode >> 0) & 7];
 	CPU->flag_N = CPU->flag_V = 0;
@@ -394,9 +388,7 @@ case 0xE048:
 {
 	u32 res;
 	pointer src;
-	u32 sft;
-
-	sft = (((Opcode >> 9) - 1) & 7) + 1;
+	u32 sft = (((Opcode >> 9) - 1) & 7) + 1;
 	CCnt -= sft * 2;
 	src = (u16)CPU->D[(Opcode >> 0) & 7];
 	CPU->flag_N = CPU->flag_V = 0;
@@ -475,9 +467,7 @@ case 0xE088:
 {
 	u32 res;
 	pointer src;
-	u32 sft;
-
-	sft = (((Opcode >> 9) - 1) & 7) + 1;
+	u32 sft = (((Opcode >> 9) - 1) & 7) + 1;
 	CCnt -= sft * 2;
 	src = (u32)CPU->D[(Opcode >> 0) & 7];
 	CPU->flag_N = CPU->flag_V = 0;
@@ -556,9 +546,7 @@ case 0xE010:
 {
 	u32 res;
 	pointer src;
-	u32 sft;
-
-	sft = (((Opcode >> 9) - 1) & 7) + 1;
+	u32 sft = (((Opcode >> 9) - 1) & 7) + 1;
 	CCnt -= sft * 2;
 	src = (u8)CPU->D[(Opcode >> 0) & 7];
 	src |= (CPU->flag_X & C68K_SR_X) << 0;
@@ -639,9 +627,7 @@ case 0xE050:
 {
 	u32 res;
 	pointer src;
-	u32 sft;
-
-	sft = (((Opcode >> 9) - 1) & 7) + 1;
+	u32 sft = (((Opcode >> 9) - 1) & 7) + 1;
 	CCnt -= sft * 2;
 	src = (u16)CPU->D[(Opcode >> 0) & 7];
 	src |= (CPU->flag_X & C68K_SR_X) << 8;
@@ -722,9 +708,7 @@ case 0xE090:
 {
 	u32 res;
 	pointer src;
-	u32 sft;
-
-	sft = (((Opcode >> 9) - 1) & 7) + 1;
+	u32 sft = (((Opcode >> 9) - 1) & 7) + 1;
 	CCnt -= sft * 2;
 	src = (u32)CPU->D[(Opcode >> 0) & 7];
 	CPU->flag_C = (u32)src << ((C68K_SR_C_SFT + 1) - sft);
@@ -806,9 +790,7 @@ case 0xE018:
 {
 	u32 res;
 	pointer src;
-	u32 sft;
-
-	sft = (((Opcode >> 9) - 1) & 7) + 1;
+	u32 sft = (((Opcode >> 9) - 1) & 7) + 1;
 	CCnt -= sft * 2;
 	src = (u8)CPU->D[(Opcode >> 0) & 7];
 	CPU->flag_V = 0;

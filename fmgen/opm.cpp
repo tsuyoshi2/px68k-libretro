@@ -352,7 +352,6 @@ void OPM::BuildLFOTable()
 
 			amtable[type][c] = a;
 			pmtable[type][c] = -p-1;
-//			printf("%d ", p);
 		}
 	}
 }

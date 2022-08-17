@@ -91,14 +91,6 @@ struct internal_file {
     ((isfixed(h)) ?							\
         ptrtohandle(h)->type : (((struct internal_handle *)(h))->type))
 
-
-#ifdef	DEBUG
-#define DPRF(arg)		printf arg
-#else	/* !DEBUG */
-#define	DPRF(arg)
-#endif	/* DEBUG */
-
-
 DWORD WINAPI
 FAKE_GetTickCount(void)
 {
@@ -394,7 +386,6 @@ GetPrivateProfileString(LPCSTR sect, LPCSTR key, LPCSTR defvalue,
 		}
 	}
 notfound:
-	DPRF(("[%s]:%s not found\n", sect, key));
 	fclose(fp);
 nofile:
 	strncpy(buf, defvalue, len);

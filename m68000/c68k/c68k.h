@@ -37,7 +37,6 @@ extern "C" {
 // setting
 ///////////
 
-//#define C68K_GEN
 #define C68K_BYTE_SWAP_OPT
 
 #ifdef WORDS_BIGENDIAN
@@ -53,10 +52,7 @@ extern "C" {
 #endif
 
 //#define C68K_NO_JUMP_TABLE
-//#define C68K_DEBUG
-#define C68K_TAS_CAN_SET_MEMORY
 //#define C68K_CONST_JUMP_TABLE
-//#define C68K_AUTOVECTOR_CALLBACK
 
 // 68K core types definitions
 //////////////////////////////
@@ -153,7 +149,7 @@ typedef struct {
     C68K_INT_CALLBACK *Interrupt_CallBack;  // 16 bytes aligned
     C68K_RESET_CALLBACK *Reset_CallBack;
 
-	pointer Fetch[C68K_FETCH_BANK];             // 32 bytes aligned
+    pointer Fetch[C68K_FETCH_BANK];             // 32 bytes aligned
 } c68k_struc;
 
 
@@ -207,5 +203,4 @@ void    C68k_Set_MSP(c68k_struc *cpu, u32 val);
 }
 #endif
 
-#endif  // _C68K_H_
-
+#endif  /* _C68K_H_ */

@@ -103,8 +103,6 @@ static const s32 c68k_exception_cycle_table[256] =
 // global variable
 ///////////////////
 
-#ifndef C68K_GEN
-
 #ifndef C68K_NO_JUMP_TABLE
 #ifndef C68K_CONST_JUMP_TABLE
 static void *JumpTable[0x10000];
@@ -112,8 +110,6 @@ static void *JumpTable[0x10000];
 #endif
 
 static u32 C68k_Initialised = 0;
-
-#endif  // C68K_GEN
 
 // include macro file
 //////////////////////
@@ -125,20 +121,12 @@ static u32 C68k_Initialised = 0;
 
 s32 FASTCALL C68k_Exec(c68k_struc *cpu, s32 cycle)
 {
-#ifndef C68K_GEN
     c68k_struc *CPU;
     pointer PC;
     s32 CCnt;
     u32 Opcode;
-#endif
 
-#ifndef C68K_GEN
-
-#ifndef C68K_NO_JUMP_TABLE
-#ifdef C68K_CONST_JUMP_TABLE
-    #include "c68k_ini.inc"
-#endif
-#else
+#ifdef C68K_NO_JUMP_TABLE
     C68k_Initialised = 1;
 #endif
 
@@ -159,70 +147,14 @@ s32 FASTCALL C68k_Exec(c68k_struc *cpu, s32 cycle)
     
     CPU->CycleToDo = CCnt = cycle;
 
-#ifndef C68K_DEBUG
     CHECK_INT
-#else
-    {
-        s32 line, vect;
-
-        line = CPU->IRQLine;
-
-        if ((line == 7) || (line > (s32)CPU->flag_I))
-        {
-            PRE_IO
-
-            /* get vector */
-            CPU->IRQLine = 0;
-            vect = CPU->Interrupt_CallBack(line);
-            if (vect == C68K_INT_ACK_AUTOVECTOR)
-                vect = C68K_INTERRUPT_AUTOVECTOR_EX + (line & 7);
-
-            /* adjust CCnt */
-            CCnt -= c68k_exception_cycle_table[vect];
-
-            /* swap A7 and USP */
-            if (!CPU->flag_S)
-            {
-                u32 tmpSP;
-
-                tmpSP = CPU->USP;
-                CPU->USP = CPU->A[7];
-                CPU->A[7] = tmpSP;
-            }
-
-            /* push PC and SR */
-            PUSH_32_F((u32)(PC - CPU->BasePC))
-            PUSH_16_F(GET_SR)
-
-            /* adjust SR */
-            CPU->flag_S = C68K_SR_S;
-            CPU->flag_I = line;
-
-            /* fetch new PC */
-            READ_LONG_F(vect * 4, PC)
-            SET_PC(PC)
-
-            POST_IO
-        }
-    }
-#endif
 
     if (CPU->Status & (C68K_HALTED | C68K_WAITING)) return CPU->CycleToDo;
 
     CPU->CycleSup = 0;
     CPU->Status |= C68K_RUNNING;
 
-#ifndef C68K_DEBUG
     NEXT
-#else
-#ifdef C68K_NO_JUMP_TABLE
-    NEXT
-#else
-    Opcode = FETCH_WORD;
-    PC += 2;
-    goto *JumpTable[Opcode];
-#endif
-#endif
 
 #ifdef C68K_NO_JUMP_TABLE
 SwitchTable:
@@ -266,19 +198,10 @@ C68k_Exec_Really_End:
 #ifndef C68K_CONST_JUMP_TABLE
 #ifndef C68K_NO_JUMP_TABLE
 C68k_Init:
-    {
-        u32 i, j;
-
-        #include "c68k_ini.inc"
-        
-        C68k_Initialised = 1;
-    }
+    C68k_Initialised = 1;
     
     return 0;
 #endif
-#endif
-#else
-    return 0;
 #endif
 }
 

@@ -652,12 +652,8 @@ int WinUI_Menu(int first)
 					    && mfl.ptr < MFL_MAX - 13) {
 						mfl.ptr++;
 					}
-				} else if (mfl.y + 1 < mfl.num) {
+				} else if (mfl.y + 1 < mfl.num)
 					mfl.y++;
-#ifdef DEBUG
-					printf("mfl.y %d\n", mfl.y);
-#endif
-				}
 				mfile_redraw = 1;
 			}
 			break;
