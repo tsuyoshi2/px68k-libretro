@@ -17,7 +17,6 @@ typedef struct {
 	uint8_t	stat;			// STATUS (FDC ret)
 	uint8_t	reserved2[5];		// Reserved
 	WORD	size;			// Sector Size
-//	byte	data[0];		// Sector Data
 } D88_SECTOR;
 
 typedef struct D88_SECTINFO {

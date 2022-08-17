@@ -207,7 +207,6 @@ int WinX68k_Reset(void)
 	MIDI_Init();
 	//WinDrv_Init();
 
-//	C68K.ICount = 0;
 	m68000_ICountBk = 0;
 	ICount = 0;
 
@@ -301,15 +300,17 @@ void WinX68k_Exec(void)
 	clk_total = (clk_total*Config.clockmhz)/10;
 	clkdiv = Config.clockmhz;
 
-//	if (Config.XVIMode == 1) {
-//		clk_total = (clk_total*16)/10;
-//		clkdiv = 16;
-//	} else if (Config.XVIMode == 2) {
-//		clk_total = (clk_total*24)/10;
-//		clkdiv = 24;
-//	} else {
-//		clkdiv = 10;
-//	}
+#if 0
+	if (Config.XVIMode == 1) {
+		clk_total = (clk_total*16)/10;
+		clkdiv = 16;
+	} else if (Config.XVIMode == 2) {
+		clk_total = (clk_total*24)/10;
+		clkdiv = 24;
+	} else {
+		clkdiv = 10;
+	}
+#endif
 
 	if(clkdiv != old_clkdiv || Config.ram_size != old_ram_size){
 		old_clkdiv = clkdiv;
@@ -322,7 +323,6 @@ void WinX68k_Exec(void)
 
 	do {
 		int m, n = (ICount>CLOCK_SLICE)?CLOCK_SLICE:ICount;
-//		C68K.ICount = m68000_ICountBk = 0;			// It must be given before an interrupt occurs (CARAT)
 
 		if ( hsync ) {
 			hsync = 0;
@@ -347,8 +347,6 @@ void WinX68k_Exec(void)
 		}
 
 		{
-//			C68K.ICount = n;
-//			C68k_Exec(&C68K, C68K.ICount);
 #if defined (HAVE_CYCLONE)
 			m68000_execute(n);
 #elif defined (HAVE_C68K)
@@ -357,14 +355,12 @@ void WinX68k_Exec(void)
 			m68k_execute(n);
 #endif /* HAVE_C68K */ /* HAVE_MUSASHI */
 			m = (n-m68000_ICountBk);
-//			m = (n-C68K.ICount-m68000_ICountBk);			// clockspeed progress
 			ClkUsed += m*10;
 			usedclk = ClkUsed/clkdiv;
 			clk_line += usedclk;
 			ClkUsed -= usedclk*clkdiv;
 			ICount -= m;
 			clk_count += m;
-//			C68K.ICount = m68000_ICountBk = 0;
 		}
 
 		MFP_Timer(usedclk);
@@ -687,34 +683,18 @@ extern "C" void handle_retrok(void)
 	KEYP(RETROK_PRINT,0x52); //symbol input (kigou)
 	KEYP(RETROK_SCROLLOCK,0x53); //registration (touroku)
 	KEYP(RETROK_F11,0x54); //help
-//	KEYP(RETROK_MENU,0x55); //xf1
-//	KEYP(RETROK_KP_PERIOD,0x56); //xf2
-//	KEYP(RETROK_KP_PERIOD,0x57); //xf3
 
 	// only process kb_to_joypad map when its not zero, else button is used as joypad select mode
 	if (Config.joy1_select_mapping)
 		KEYP(RETROK_XFX, Config.joy1_select_mapping);
 
-//	KEYP(RETROK_KP_PERIOD,0x58); //xf4
-//	KEYP(RETROK_KP_PERIOD,0x59); //xf5
-//	KEYP(RETROK_KP_PERIOD,0x5a); //kana
-//	KEYP(RETROK_KP_PERIOD,0x5b); //romaji
-//	KEYP(RETROK_KP_PERIOD,0x5c); //input by codes
 	KEYP(RETROK_CAPSLOCK,0x5d);
 	KEYP(RETROK_INSERT,0x5e);
-//	KEYP(RETROK_KP_PERIOD,0x5f);
-//	KEYP(RETROK_KP_PERIOD,0x60);
 	KEYP(RETROK_BREAK,0x61); //break
 	KEYP(RETROK_PAUSE,0x61); //break (allow shift+break combo)
-//	KEYP(RETROK_KP_PERIOD,0x62); //copy
 
 	for(i=0;i<10;i++)
 		KEYP(RETROK_F1+i,0x63+i);
-
-//	KEYP(RETROK_KP_PERIOD,0x6d);
-//	KEYP(RETROK_KP_PERIOD,0x6e);
-//	KEYP(RETROK_KP_PERIOD,0x6f);
-
 
 	KEYP(RETROK_LSHIFT,0x70);
 	KEYP(RETROK_RSHIFT,0x70);

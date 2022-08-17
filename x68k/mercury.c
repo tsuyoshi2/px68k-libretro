@@ -14,21 +14,21 @@
 #define MCRY_IRQ 4
 #define Mcry_BufSize		48000*2
 
-long	Mcry_WrPtr = 0;
-long	Mcry_RdPtr = 0;
-long	Mcry_SampleRate = 44100;
-long	Mcry_ClockRate = 44100;
-long	Mcry_Count = 0;
-uint8_t	Mcry_Status = 0;
-uint8_t	Mcry_LRTiming = 0;
-int16_t	Mcry_OutDataL = 0;
-int16_t	Mcry_OutDataR = 0;
-int16_t	Mcry_BufL[Mcry_BufSize];
-int16_t	Mcry_BufR[Mcry_BufSize];
-long	Mcry_PreCounter = 0;
+static long	Mcry_WrPtr = 0;
+static long	Mcry_RdPtr = 0;
+static long	Mcry_SampleRate = 44100;
+static long	Mcry_ClockRate = 44100;
+static long	Mcry_Count = 0;
+static uint8_t	Mcry_Status = 0;
+uint8_t	Mcry_LRTiming         = 0;
+static int16_t	Mcry_OutDataL = 0;
+static int16_t	Mcry_OutDataR = 0;
+static int16_t	Mcry_BufL[Mcry_BufSize];
+static int16_t	Mcry_BufR[Mcry_BufSize];
+static long	Mcry_PreCounter = 0;
 
-int16_t	Mcry_OldR, Mcry_OldL;
-int	Mcry_DMABytes = 0;
+static int16_t	Mcry_OldR, Mcry_OldL;
+static int	Mcry_DMABytes = 0;
 static double Mcry_VolumeShift = 65536;
 static int Mcry_SampleCnt = 0;
 static uint8_t Mcry_Vector = 255;
