@@ -10,14 +10,6 @@
 extern retro_input_state_t input_state_cb;
 extern DWORD libretro_supports_input_bitmasks;
 
-#ifndef MAX_BUTTON
-#define MAX_BUTTON 32
-#endif
-
-char joyname[2][MAX_PATH];
-char joybtnname[2][MAX_BUTTON][MAX_PATH];
-uint8_t joybtnnum[2] = {0, 0};
-
 uint8_t joy[2];
 uint8_t JoyKeyState;
 uint8_t JoyKeyState0;
@@ -29,13 +21,7 @@ uint8_t JoyState1[2];
 uint8_t JoyDownState0;
 uint8_t MouseDownState0;
 
-// This stores whether the buttons were up. This avoids key repeats.
-uint8_t JoyUpState0;
-uint8_t MouseUpState0;
-
 uint8_t JoyPortData[2];
-
-int *r_joy;
 
 void Joystick_Init(void)
 {
@@ -176,11 +162,9 @@ void FASTCALL Joystick_Update(int is_menu, int key, int port)
 	}
 
 	JoyDownState0 = ~(ret0 ^ pre_ret0) | ret0;
-	JoyUpState0 = (ret0 ^ pre_ret0) & ret0;
 	pre_ret0 = ret0;
 
 	MouseDownState0 = ~(mret0 ^ pre_mret0) | mret0;
-	MouseUpState0 = (mret0 ^ pre_mret0) & mret0;
 	pre_mret0 = mret0;
 
 	// disable Joystick when software keyboard is active
@@ -239,12 +223,4 @@ uint8_t get_joy_downstate(void)
 void reset_joy_downstate(void)
 {
 	JoyDownState0 = 0xff;
-}
-uint8_t get_joy_upstate(void)
-{
-	return JoyUpState0;
-}
-void reset_joy_upstate(void)
-{
-	JoyUpState0 = 0x00;
 }

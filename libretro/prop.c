@@ -53,18 +53,9 @@ uint8_t KeyTableBk[512];
 Win68Conf Config;
 Win68Conf ConfBk;
 
-#ifndef MAX_BUTTON
-#define MAX_BUTTON 32
-#endif
-
 extern char filepath[MAX_PATH];
 extern char winx68k_ini[MAX_PATH];
 extern int winx, winy;
-extern char joyname[2][MAX_PATH];
-extern char joybtnname[2][MAX_BUTTON][MAX_PATH];
-extern uint8_t joybtnnum[2];
-
-#define CFGLEN MAX_PATH
 
 extern char retro_system_conf[512];
 extern char slash;
@@ -141,7 +132,7 @@ static void LoadDefaults(void)
 void LoadConfig(void)
 {
 	int	i, j;
-	char	buf[CFGLEN];
+	char	buf[MAX_PATH];
 	FILEH fp;
 
 	/* Because we are not loading defauts for most items from a config file,
@@ -174,7 +165,7 @@ void LoadConfig(void)
 void SaveConfig(void)
 {
 	int	i, j;
-	char	buf[CFGLEN], buf2[CFGLEN];
+	char	buf[MAX_PATH], buf2[MAX_PATH];
 	FILEH fp;
 
 	WritePrivateProfileString(ini_title, "StartDir", filepath, winx68k_ini);
