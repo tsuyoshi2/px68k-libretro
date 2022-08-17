@@ -20,20 +20,9 @@ uint8_t	TextDrawPattern[2048*4];
 
 uint8_t	Text_TrFlag[1024];
 
-INLINE void TVRAM_WriteByteMask(DWORD adr, uint8_t data);
+void TVRAM_SetAllDirty(void) { memset(TextDirtyLine, 1, 1024); }
+void TVRAM_Cleanup(void)     { }
 
-// -----------------------------------------------------------------------
-//   全部書き換え〜
-// -----------------------------------------------------------------------
-void TVRAM_SetAllDirty(void)
-{
-	memset(TextDirtyLine, 1, 1024);
-}
-
-
-// -----------------------------------------------------------------------
-//   初期化
-// -----------------------------------------------------------------------
 void TVRAM_Init(void)
 {
 	int i, j, bit;
@@ -56,18 +45,6 @@ void TVRAM_Init(void)
 	}
 }
 
-
-// -----------------------------------------------------------------------
-//   撤収
-// -----------------------------------------------------------------------
-void TVRAM_Cleanup(void)
-{
-}
-
-
-// -----------------------------------------------------------------------
-//   読むなり
-// -----------------------------------------------------------------------
 uint8_t FASTCALL TVRAM_Read(DWORD adr)
 {
 	adr &= 0x7ffff;
@@ -76,9 +53,6 @@ uint8_t FASTCALL TVRAM_Read(DWORD adr)
 }
 
 
-// -----------------------------------------------------------------------
-//   1ばいと書くなり
-// -----------------------------------------------------------------------
 INLINE void TVRAM_WriteByte(DWORD adr, uint8_t data)
 {
 	if (TVRAM[adr]!=data)
@@ -88,10 +62,6 @@ INLINE void TVRAM_WriteByte(DWORD adr, uint8_t data)
 	}
 }
 
-
-// -----------------------------------------------------------------------
-//   ますく付きで書くなり
-// -----------------------------------------------------------------------
 INLINE void TVRAM_WriteByteMask(DWORD adr, uint8_t data)
 {
 	data = (TVRAM[adr] & CRTC_Regs[0x2e + ((adr^1) & 1)]) | (data & (~CRTC_Regs[0x2e + ((adr ^ 1) & 1)]));
@@ -102,10 +72,6 @@ INLINE void TVRAM_WriteByteMask(DWORD adr, uint8_t data)
 	}
 }
 
-
-// -----------------------------------------------------------------------
-//   書くなり
-// -----------------------------------------------------------------------
 void FASTCALL TVRAM_Write(DWORD adr, uint8_t data)
 {
 	adr &= 0x7ffff;
@@ -167,10 +133,6 @@ void FASTCALL TVRAM_Write(DWORD adr, uint8_t data)
 	}
 }
 
-
-// -----------------------------------------------------------------------
-//   らすたこぴー時のあっぷでーと
-// -----------------------------------------------------------------------
 void FASTCALL TVRAM_RCUpdate(void)
 {
 	DWORD adr = ((DWORD)CRTC_Regs[0x2d]<<9);
@@ -207,18 +169,14 @@ void FASTCALL TVRAM_RCUpdate(void)
 	}
 }
 
-// -----------------------------------------------------------------------
-//   1ライン描画
-// -----------------------------------------------------------------------
 void FASTCALL Text_DrawLine(int opaq)
 {
 	DWORD addr;
-	DWORD x, y;
+	DWORD x;
 	DWORD off = 16;
 	DWORD i;
 	uint8_t t;
-
-	y = TextScrollY + VLINE;
+	DWORD y = TextScrollY + VLINE;
 	if ((CRTC_Regs[0x29] & 0x1c) == 0x1c)
 		y += VLINE;
 	y = (y & 0x3ff) << 10;

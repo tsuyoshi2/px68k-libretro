@@ -153,12 +153,6 @@ void FASTCALL SCC_Write(DWORD adr, uint8_t data)
 			}
 		}
 	}
-	else if ((adr&7) == 3)
-	{
-	}
-	else if ((adr&7) == 7)
-	{
-	}
 }
 
 

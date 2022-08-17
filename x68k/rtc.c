@@ -12,7 +12,6 @@ uint8_t	RTC_Bank = 0;
 static int RTC_Timer1 = 0;
 static int RTC_Timer16 = 0;
 
-
 // -----------------------------------------------------------------------
 //   初期化
 // -----------------------------------------------------------------------
@@ -24,20 +23,18 @@ void RTC_Init(void)
 	RTC_Regs[0][15] = 0x0c;
 }
 
-
 // -----------------------------------------------------------------------
 //   とけいのりーど
 // -----------------------------------------------------------------------
 uint8_t FASTCALL RTC_Read(DWORD adr)
 {
-	uint8_t ret = 0;
-	struct tm *tm;
-	time_t t;
-	t = time(NULL);
-	tm = localtime(&t);
+	uint8_t ret   = 0;
+	time_t t      = time(NULL);
+	struct tm *tm = localtime(&t);
 
-	adr &= 0x1f;
+	adr          &= 0x1f;
 	if (!(adr&1)) return 0;
+
 	if (RTC_Bank == 0)
 	{
 		switch(adr)
@@ -78,14 +75,12 @@ uint8_t FASTCALL RTC_Read(DWORD adr)
 // -----------------------------------------------------------------------
 void FASTCALL RTC_Write(DWORD adr, uint8_t data)
 {
-	if ( adr==0xe8a001 ) {
-//		RTC_Timer1  = 0;
-//		RTC_Timer16 = 0;
-	} else if ( adr==0xe8a01b ) {
-		RTC_Regs[0][13] = RTC_Regs[1][13] = data&0x0c;		// Alarm/Timer Enable制御
-	} else if ( adr==0xe8a01f ) {
-		RTC_Regs[0][15] = RTC_Regs[1][15] = data&0x0c;		// Alarm端子出力制御
-	}
+	if ( adr==0xe8a001 )
+          return;
+	if ( adr==0xe8a01b )       // Alarm/Timer Enable制御
+		RTC_Regs[0][13] = RTC_Regs[1][13] = data & 0x0c;
+	else if ( adr==0xe8a01f ) // Alarm端子出力制御
+		RTC_Regs[0][15] = RTC_Regs[1][15] = data & 0x0c; 
 }
 
 

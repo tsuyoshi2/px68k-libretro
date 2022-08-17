@@ -1,11 +1,9 @@
 //	$fmgen-Id: file.h,v 1.6 1999/11/26 10:14:09 cisc Exp $
 
-#if !defined(win32_file_h)
-#define win32_file_h
+#ifndef _WIN32_FILE_H
+#define _WIN32_FILE_H
 
 #include <stdint.h>
-
-// ---------------------------------------------------------------------------
 
 class FileIO
 {
@@ -51,4 +49,4 @@ private:
 	const FileIO& operator=(const FileIO&);
 };
 
-#endif // 
+#endif /* _WIN32_FILE_H */

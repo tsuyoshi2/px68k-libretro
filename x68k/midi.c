@@ -44,7 +44,7 @@ enum {						// 各機種リセット用に一応。
 	MIDI_LA,				// 意味もなく追加してみたり
 	MIDI_GM,
 	MIDI_GS,
-	MIDI_XG,
+	MIDI_XG
 };
 
 HMIDIOUT	hOut = 0;
@@ -138,18 +138,10 @@ static uint8_t EXCV_XGRESET[] = { 0xf0, 0x43, 0x10, 0x4C, 0x00, 0x00, 0x7E, 0x00
 // -----------------------------------------------------------------------
 DWORD FASTCALL MIDI_Int(uint8_t irq)
 {
-	DWORD ret;
 	IRQH_IRQCallBack(irq);
 	if ( irq==4 )
-	{
-		ret = (DWORD)(MIDI_Vector|MIDI_IntVect);
-	}
-	else
-	{
-		ret = (DWORD)(-1);
-	}
-
-	return ret;
+		return (DWORD)(MIDI_Vector|MIDI_IntVect);
+	return (DWORD)(-1);
 }
 
 
@@ -347,9 +339,8 @@ void MIDI_Cleanup(void) {
 // -----------------------------------------------------------------------
 void MIDI_Message(uint8_t mes) {
 
-	if (!hOut) {
+	if (!hOut)
 		return;
-	}
 
 	switch(mes) {								// ここの対応はお好みで
 		case MIDI_TIMING:
@@ -1007,5 +998,3 @@ int MIDI_EnableMimpiDef(int enable) {
 	}
 	return(FALSE);
 }
-
-// -----------------------------------------------------------------------

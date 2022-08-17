@@ -33,8 +33,7 @@ int SASI_IsReady(void)
 {
 	if ( (SASI_Phase==2)||(SASI_Phase==3)||(SASI_Phase==9) )
 		return 1;
-	else
-		return 0;
+	return 0;
 }
 
 
@@ -77,25 +76,22 @@ int16_t SASI_Seek(void)
 	FILEH fp;
 
 	memset(SASI_Buf, 0, 256);
-	fp = File_Open(Config.HDImage[SASI_Device*2+SASI_Unit]);
-	if (!fp)
+	if (!(fp = File_Open(Config.HDImage[SASI_Device*2+SASI_Unit])))
 	{
 		memset(SASI_Buf, 0, 256);
 		return -1;
 	}
 	if (File_Seek(fp, SASI_Sector<<8, FSEEK_SET)!=(SASI_Sector<<8)) 
-	{
-		File_Close(fp);
-		return 0;
-	}
+		goto error;
 	if (File_Read(fp, SASI_Buf, 256)!=256)
-	{
-		File_Close(fp);
-		return 0;
-	}
+		goto error;
 	File_Close(fp);
 
 	return 1;
+
+error:
+	File_Close(fp);
+	return 0;
 }
 
 
@@ -103,23 +99,20 @@ int16_t SASI_Seek(void)
 //   しーく（ライト時）
 // -----------------------------------------------------------------------
 int16_t SASI_Flush(void)
-{	FILEH fp;
-
-	fp = File_Open(Config.HDImage[SASI_Device*2+SASI_Unit]);
+{
+	FILEH fp = File_Open(Config.HDImage[SASI_Device*2+SASI_Unit]);
 	if (!fp) return -1;
 	if (File_Seek(fp, SASI_Sector<<8, FSEEK_SET)!=(SASI_Sector<<8))
-	{
-		File_Close(fp);
-		return 0;
-	}
+		goto error;
 	if (File_Write(fp, SASI_Buf, 256)!=256)
-	{
-		File_Close(fp);
-		return 0;
-	}
+		goto error;
 	File_Close(fp);
 
 	return 1;
+
+error:
+	File_Close(fp);
+	return 0;
 }
 
 
@@ -262,10 +255,7 @@ void SASI_CheckCmd(void)
 		SASI_Stat = 0;
 		result = SASI_Seek();
 		if ( (result==0)||(result==-1) )
-		{
-//			SASI_Phase++;
 			SASI_Error = 0x0f;
-		}
 		break;
 	case 0x0a:					// Write Data
 		SASI_Sector = (((DWORD)SASI_Cmd[1]&0x1f)<<16)|(((DWORD)SASI_Cmd[2])<<8)|((DWORD)SASI_Cmd[3]);
@@ -277,10 +267,7 @@ void SASI_CheckCmd(void)
 		memset(SASI_Buf, 0, 256);
 		result = SASI_Seek();
 		if ( (result==0)||(result==-1) )
-		{
-//			SASI_Phase++;
 			SASI_Error = 0x0f;
-		}
 		break;
 	case 0x0b:					// Seek
 		if (Config.HDImage[SASI_Device*2+SASI_Unit][0])
@@ -293,7 +280,6 @@ void SASI_CheckCmd(void)
 			SASI_Error = 0x7f;
 		}
 		SASI_Phase += 2;
-//		SASI_Phase = 9;
 		break;
 	case 0xc2:
 		SASI_Phase = 10;
@@ -369,10 +355,7 @@ void FASTCALL SASI_Write(DWORD adr, uint8_t data)
 		{
 			SASI_Cmd[SASI_CmdPtr++] = data;
 			if (SASI_CmdPtr==6)			// コマンド発行終了
-			{
-//				SASI_Phase++;
 				SASI_CheckCmd();
-			}
 		}
 		else if ((SASI_Phase==3)&&(!SASI_RW))		// データライト中~
 		{

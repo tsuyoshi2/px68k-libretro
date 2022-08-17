@@ -57,11 +57,6 @@
 //		音源の内部状態に変化があった時(timer オーバーフロー)
 //		true を返す
 //
-//	uint32_t GetNextEvent()
-//		音源のタイマーのどちらかがオーバーフローするまでに必要な
-//		時間[μ秒]を返す
-//		タイマーが停止している場合は 0 を返す．
-//	
 //	void SetVolume(int db)
 //		各音源の音量を＋−方向に調節する．標準値は 0.
 //		単位は約 1/2 dB，有効範囲の上限は 20 (10dB)
@@ -151,11 +146,6 @@ namespace FM
 		static void	BuildLFOTable();
 		static int amtable[4][OPM_LFOENTS];
 		static int pmtable[4][OPM_LFOENTS];
-
-	public:
-		int		dbgGetOpOut(int c, int s) { return ch[c].op[s].dbgopout_; }
-		Channel4* dbgGetCh(int c) { return &ch[c]; }
-
 	};
 }
 

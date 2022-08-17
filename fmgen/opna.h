@@ -70,11 +70,6 @@
 //		音源の内部状態に変化があった時(timer オーバーフロー)
 //		true を返す
 //
-//	uint32_t GetNextEvent()
-//		音源のタイマーのどちらかがオーバーフローするまでに必要な
-//		時間[μ秒]を返す
-//		タイマーが停止している場合は ULONG_MAX を返す… と思う
-//	
 //	void SetVolumeFM(int db)/SetVolumePSG(int db) ...
 //		各音源の音量を＋−方向に調節する．標準値は 0.
 //		単位は約 1/2 dB，有効範囲の上限は 20 (10dB)
@@ -240,11 +235,6 @@ namespace FM
 		uint32_t	ReadStatusEx() { return 0xff; }
 		
 		void	SetChannelMask(uint32_t mask);
-		
-		int		dbgGetOpOut(int c, int s) { return ch[c].op[s].dbgopout_; }
-		int		dbgGetPGOut(int c, int s) { return ch[c].op[s].dbgpgout_; }
-		Channel4* dbgGetCh(int c) { return &ch[c]; }
-	
 	private:
 		virtual void Intr(bool) {}
 		
@@ -280,12 +270,6 @@ namespace FM
 		void	SetVolumeRhythm(int index, int db);
 
 		uint8_t*	GetADPCMBuffer() { return adpcmbuf; }
-
-		int		dbgGetOpOut(int c, int s) { return ch[c].op[s].dbgopout_; }
-		int		dbgGetPGOut(int c, int s) { return ch[c].op[s].dbgpgout_; }
-		Channel4* dbgGetCh(int c) { return &ch[c]; }
-
-		
 	private:
 		struct Rhythm
 		{

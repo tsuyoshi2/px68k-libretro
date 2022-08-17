@@ -11,14 +11,14 @@
 #include	"m68000.h"
 #include	"palette.h"
 
-	uint8_t	Pal_Regs[1024];
-	WORD	TextPal[256];
-	WORD	GrphPal[256];
-	WORD	Pal16[65536];
-	WORD	Ibit;				// 半透明処理とかで使うかも〜
+uint8_t	Pal_Regs[1024];
+WORD	TextPal[256];
+WORD	GrphPal[256];
+WORD	Pal16[65536];
+WORD	Ibit;				// 半透明処理とかで使うかも〜
 
-	WORD	Pal_HalfMask, Pal_Ix2;
-	WORD	Pal_R, Pal_G, Pal_B;		// 画面輝度変更時用
+WORD	Pal_HalfMask, Pal_Ix2;
+WORD	Pal_R, Pal_G, Pal_B;		// 画面輝度変更時用
 
 // ----- DDrawの16ビットモードの色マスクからX68k→Win用の変換テーブルを作る -----
 // X68kは「GGGGGRRRRRBBBBBI」の構造。Winは「RRRRRGGGGGGBBBBB」の形が多いみたい。が、

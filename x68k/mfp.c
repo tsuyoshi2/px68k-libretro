@@ -9,7 +9,6 @@
 #include "winx68k.h"
 #include "keyboard.h"
 
-uint8_t testflag=0;
 uint8_t LastKey = 0;
 
 uint8_t MFP[24];

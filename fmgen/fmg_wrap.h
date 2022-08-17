@@ -1,5 +1,5 @@
-#ifndef _win68_opm_fmgen
-#define _win68_opm_fmgen
+#ifndef _WIN68_OPM_FMGEN_H
+#define _WIN68_OPM_FMGEN_H
 
 #include <stdint.h>
 
@@ -25,4 +25,4 @@ void M288_SetVolume(uint8_t vol);
 void M288_SetRate(int clock, int rate);
 void M288_RomeoOut(unsigned int delay);
 
-#endif //_win68_opm_fmgen
+#endif /* _WIN68_OPM_FMGEN_H */

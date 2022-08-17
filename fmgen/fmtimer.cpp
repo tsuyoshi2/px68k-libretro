@@ -88,16 +88,6 @@ bool Timer::Count(int32_t us)
 }
 
 // ---------------------------------------------------------------------------
-//	次にタイマーが発生するまでの時間を求める
-//
-int32_t Timer::GetNextEvent()
-{
-	uint32_t ta = ((timera_count + 0xffff) >> 16) - 1;
-	uint32_t tb = ((timerb_count + 0xfff) >> 12) - 1;
-	return (ta < tb ? ta : tb) + 1;
-}
-
-// ---------------------------------------------------------------------------
 //	タイマー基準値設定
 //
 void Timer::SetTimerBase(uint32_t clock)

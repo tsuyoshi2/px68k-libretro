@@ -12,12 +12,12 @@
 #include	"m68000.h"
 #include	<string.h>
 
-	uint8_t	GVRAM[0x80000];
-	WORD	Grp_LineBuf[1024];
-	WORD	Grp_LineBufSP[1024];		// 特殊プライオリティ／半透明用バッファ
-	WORD	Grp_LineBufSP2[1024];		// 半透明ベースプレーン用バッファ（非半透明ビット格納）
-	WORD	Grp_LineBufSP_Tr[1024];
-	WORD	Pal16Adr[256];			// 16bit color パレットアドレス計算用
+uint8_t	GVRAM[0x80000];
+WORD	Grp_LineBuf[1024];
+WORD	Grp_LineBufSP[1024];		// 特殊プライオリティ／半透明用バッファ
+WORD	Grp_LineBufSP2[1024];		// 半透明ベースプレーン用バッファ（非半透明ビット格納）
+WORD	Grp_LineBufSP_Tr[1024];
+WORD	Pal16Adr[256];			// 16bit color パレットアドレス計算用
 
 // xxx: for little endian only
 #define GET_WORD_W8(src) (*(uint8_t *)(src) | *((uint8_t *)(src) + 1) << 8)
@@ -45,18 +45,16 @@ void GVRAM_Init(void)
 
 void FASTCALL GVRAM_FastClear(void)
 {
-	DWORD v, h;
-	v = ((CRTC_Regs[0x29]&4)?512:256);
-	h = ((CRTC_Regs[0x29]&3)?512:256);
+	DWORD v = ((CRTC_Regs[0x29]&4)?512:256);
+	DWORD h = ((CRTC_Regs[0x29]&3)?512:256);
 	// やっぱちゃんと範囲指定しないと変になるものもある（ダイナマイトデュークとか）
 {
 	WORD *p;
 	DWORD x, y;
-	DWORD offx, offy;
+	DWORD offy = (GrphScrollY[0] & 0x1ff) << 10;
 
-	offy = (GrphScrollY[0] & 0x1ff) << 10;
 	for (y = 0; y < v; ++y) {
-		offx = GrphScrollX[0] & 0x1ff;
+		DWORD offx = GrphScrollX[0] & 0x1ff;
 		p = (WORD *)(GVRAM + offy + offx * 2);
 
 		for (x = 0; x < h; ++x) {
@@ -196,11 +194,6 @@ void FASTCALL GVRAM_Write(DWORD adr, uint8_t data)
 					GVRAM[adr] = data;
 				}
 			}
-//			else
-//			{
-//				BusErrFlag = 1;
-//				return;
-//			}
 			break;
 		case 3:					// 65536 colors
 			if ( adr<0x80000 )
@@ -208,11 +201,6 @@ void FASTCALL GVRAM_Write(DWORD adr, uint8_t data)
 				GVRAM[adr] = data;
 				line = (((adr&0x7ffff)>>10)-GrphScrollY[0])&511;
 			}
-//			else
-//			{
-//				BusErrFlag = 1;
-//				return;
-//			}
 			break;
 		}
 		TextDirtyLine[line] = 1;
@@ -226,11 +214,10 @@ void FASTCALL GVRAM_Write(DWORD adr, uint8_t data)
 LABEL void Grp_DrawLine16(void)
 {
 	WORD *srcp, *destp;
-	DWORD x, y;
+	DWORD x;
 	DWORD i;
 	WORD v, v0;
-
-	y = GrphScrollY[0] + VLINE;
+	DWORD y = GrphScrollY[0] + VLINE;
 	if ((CRTC_Regs[0x29] & 0x1c) == 0x1c)
 		y += VLINE;
 	y = (y & 0x1ff) << 10;
@@ -687,12 +674,11 @@ void FASTCALL Grp_DrawLine4SP(DWORD page/*, int opaq*/)
 void FASTCALL Grp_DrawLine4hSP(void)
 {
 	WORD *srcp;
-	DWORD x, y;
+	DWORD x;
 	DWORD i;
 	int bits;
 	WORD v;
-
-	y = GrphScrollY[0] + VLINE;
+	DWORD y = GrphScrollY[0] + VLINE;
 	if ((CRTC_Regs[0x29] & 0x1c) == 0x1c)
 		y += VLINE;
 	y &= 0x3ff;

@@ -39,23 +39,16 @@ extern	m68k_regs regs;
 
 DWORD FASTCALL Mcry_IntCB(uint8_t irq)
 {
-	DWORD ret = 0xffffffff;
 	IRQH_IRQCallBack(irq);
-	if ( irq==MCRY_IRQ ) {
-		ret = (DWORD)Mcry_Vector;
-	}
-	return ret;
+	if ( irq==MCRY_IRQ )
+		return (DWORD)Mcry_Vector;
+	return 0xffffffff;
 }
 
 void FASTCALL Mcry_Int(void)
 {
 	IRQH_Int(MCRY_IRQ, &Mcry_IntCB);
 }
-
-
-static long Mcry_Clocks[8] = {
-	22050, 16000, 22050, 24000
-};
 
 
 int Mcry_IsReady(void)
@@ -251,12 +244,13 @@ uint8_t FASTCALL Mcry_Read(DWORD adr)
 // -----------------------------------------------------------------------
 void Mcry_SetClock(void)
 {
+	static long Mcry_Clocks[8] = {
+		22050, 16000, 22050, 24000
+	};
 	Mcry_ClockRate = Mcry_Clocks[(Mcry_Status>>4)&3];
 	if (Mcry_Status&0x80) Mcry_ClockRate *= 2;
 	Mcry_Count = 0;
 	Mcry_PreCounter = 0;
-//	Mcry_RdPtr = 0;
-//	Mcry_WrPtr = 0;
 }
 
 
@@ -266,7 +260,6 @@ void Mcry_SetClock(void)
 void Mcry_SetVolume(uint8_t vol)
 {
 	if (vol>16) vol=16;
-//	if (vol<0) vol=0;
 
 	if (vol)
 		Mcry_VolumeShift = pow(1.189207115, (16-vol));
@@ -297,7 +290,6 @@ void Mcry_Init(DWORD samplerate, const char* path)
 
 	M288_Init(8000000, samplerate, path);
 }
-
 
 void Mcry_Cleanup(void)
 {

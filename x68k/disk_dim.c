@@ -16,12 +16,13 @@ typedef struct {
 } DIM_HEADER;
 
 // DIM Disk Type
-enum {
+enum
+{
 	DIM_2HD = 0,
 	DIM_2HS,
 	DIM_2HC,
 	DIM_2HDE,
-	DIM_2HQ = 9,
+	DIM_2HQ = 9
 };
 
 static const int SctLength[10] = {
@@ -94,7 +95,6 @@ dim_set_error:
 	FDD_SetReadOnly(drv);
 	return FALSE;
 }
-
 
 int DIM_Eject(int drv)
 {
@@ -281,7 +281,6 @@ int DIM_ReadID(int drv, FDCID* id)
 	return TRUE;
 }
 
-
 int DIM_WriteID(int drv, int trk, unsigned char* buf, int num)
 {
 	return FALSE;
@@ -306,7 +305,6 @@ int DIM_Read(int drv, FDCID* id, unsigned char* buf)
 int DIM_ReadDiag(int drv, FDCID* id, FDCID* retid, unsigned char* buf)
 {
 	int pos;
-	(void)id;
 	if ( (drv<0)||(drv>3) ) return FALSE;
 	if ( !DIMImg[drv] ) return FALSE;
 	if ( !CheckTrack(drv, DIMTrk[drv]) ) return FALSE;
@@ -322,7 +320,6 @@ int DIM_ReadDiag(int drv, FDCID* id, FDCID* retid, unsigned char* buf)
 int DIM_Write(int drv, FDCID* id, unsigned char* buf, int del)
 {
 	int pos;
-	(void)del;
 	if ( (drv<0)||(drv>3) ) return FALSE;
 	if ( !DIMImg[drv] ) return FALSE;
 	if ( (((id->c<<1)+(id->h&1))!=DIMTrk[drv]) ) return FALSE;

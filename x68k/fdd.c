@@ -76,8 +76,7 @@ DWORD FASTCALL FDD_Int(uint8_t irq)
 	IRQH_IRQCallBack(irq);
 	if ( irq==1 )
 		return ((DWORD)IOC_IntVect+1);
-	else
-		return -1;
+	return -1;
 }
 
 
@@ -103,10 +102,6 @@ void FDD_SetFD(int drive, char* filename, int readonly)
 	}
 }
 
-
-// -----------------------------------------------------------------------
-//   いじぇくと
-// -----------------------------------------------------------------------
 void FDD_EjectFD(int drive)
 {
 	int type;
@@ -152,10 +147,6 @@ void FDD_SetBlink(int drive, int blink)
 	StatBar_ParamFDD(drive, (fdd.Types[drive]!=FD_Non)?((fdd.Access==drive)?2:1):0, ((fdd.Types[drive]!=FD_Non)&&(!fdd.EMask[drive]))?1:0, (fdd.Blink[drive])?1:0);
 }
 
-
-// -----------------------------------------------------------------------
-//   初期化
-// -----------------------------------------------------------------------
 void FDD_Init(void)
 {
 	memset(&fdd,0 , sizeof(FDDINFO));
@@ -166,9 +157,6 @@ void FDD_Init(void)
 }
 
 
-// -----------------------------------------------------------------------
-//   終了
-// -----------------------------------------------------------------------
 void FDD_Cleanup(void)
 {
 	D88_Cleanup();
@@ -177,9 +165,6 @@ void FDD_Cleanup(void)
 }
 
 
-// -----------------------------------------------------------------------
-//   りせっと
-// -----------------------------------------------------------------------
 void FDD_Reset(void)
 {
 	int i;
@@ -191,9 +176,6 @@ void FDD_Reset(void)
 }
 
 
-// -----------------------------------------------------------------------
-//   FD入れ替えが起こっていたら割り込み発生
-// -----------------------------------------------------------------------
 void FDD_SetFDInt(void)
 {
 	int i;
@@ -216,8 +198,7 @@ int FDD_Seek(int drv, int trk, FDCID* id)
 	type = fdd.Types[drv];
 	if ( Seek[type] )
 		return Seek[type](drv, trk, id);
-	else
-		return FALSE;
+	return FALSE;
 }
 
 int FDD_ReadID(int drv, FDCID* id)
@@ -227,8 +208,7 @@ int FDD_ReadID(int drv, FDCID* id)
 	type = fdd.Types[drv];
 	if ( ReadID[type] )
 		return ReadID[type](drv, id);
-	else
-		return FALSE;
+	return FALSE;
 }
 
 int FDD_WriteID(int drv, int trk, unsigned char* buf, int num)
@@ -238,8 +218,7 @@ int FDD_WriteID(int drv, int trk, unsigned char* buf, int num)
 	type = fdd.Types[drv];
 	if ( WriteID[type] )
 		return WriteID[type](drv, trk, buf, num);
-	else
-		return FALSE;
+	return FALSE;
 }
 
 
@@ -253,8 +232,7 @@ int FDD_Read(int drv, FDCID* id, unsigned char* buf)
 		FDD_IsReading = 1;
 		return Read[type](drv, id, buf);
 	}
-	else
-		return FALSE;
+	return FALSE;
 }
 
 
@@ -265,8 +243,7 @@ int FDD_ReadDiag(int drv, FDCID* id, FDCID* retid, unsigned char* buf)
 	type = fdd.Types[drv];
 	if ( ReadDiag[type] )
 		return ReadDiag[type](drv, id, retid, buf);
-	else
-		return FALSE;
+	return FALSE;
 }
 
 
@@ -277,8 +254,7 @@ int FDD_Write(int drv, FDCID* id, unsigned char* buf, int del)
 	type = fdd.Types[drv];
 	if ( Write[type] )
 		return Write[type](drv, id, buf, del);
-	else
-		return FALSE;
+	return FALSE;
 }
 
 
@@ -289,8 +265,7 @@ int FDD_GetCurrentID(int drv, FDCID* id)
 	type = fdd.Types[drv];
 	if ( GetCurrentID[type] )
 		return GetCurrentID[type](drv, id);
-	else
-		return FALSE;
+	return FALSE;
 }
 
 
@@ -299,8 +274,7 @@ int FDD_IsReady(int drv)
 	if ( (drv<0)||(drv>3) ) return FALSE;
 	if ( (fdd.Types[drv]!=FD_Non)&&(!fdd.SetDelay[drv]) )
 		return TRUE;
-	else
-		return FALSE;
+	return FALSE;
 }
 
 

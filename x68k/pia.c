@@ -17,9 +17,6 @@ typedef struct {
 
 static PIA pia;
 
-// -----------------------------------------------------------------------
-//   ½é´ü²½
-// -----------------------------------------------------------------------
 void PIA_Init(void)
 {
 	pia.PortA = 0xff;
@@ -54,11 +51,11 @@ void FASTCALL PIA_Write(DWORD adr, uint8_t data)
 			if ( (portc&0x10)!=(pia.PortC&0x10) ) Joystick_Write(0, (uint8_t)((data&1)?0xff:0x00));
 			if ( (portc&0x20)!=(pia.PortC&0x20) ) Joystick_Write(1, (uint8_t)((data&1)?0xff:0x00));
 		}
-	} else if ( adr==0xe9a001 ) {
-		Joystick_Write(0, data);
-	} else if (adr == 0xe9a003) {
-		Joystick_Write(1, data);
 	}
+	else if ( adr==0xe9a001 )
+		Joystick_Write(0, data);
+	else if (adr == 0xe9a003)
+		Joystick_Write(1, data);
 }
 
 
@@ -67,12 +64,11 @@ void FASTCALL PIA_Write(DWORD adr, uint8_t data)
 // -----------------------------------------------------------------------
 uint8_t FASTCALL PIA_Read(DWORD adr)
 {
-	uint8_t ret=0xff;
 	if ( adr==0xe9a001 )
-		ret = Joystick_Read(0);
+		return Joystick_Read(0);
 	if ( adr==0xe9a003 )
-		ret = Joystick_Read(1);
+		return Joystick_Read(1);
 	if ( adr==0xe9a005 )
-		ret = pia.PortC;
-	return ret;
+		return pia.PortC;
+	return 0xff;
 }

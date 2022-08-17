@@ -17,7 +17,6 @@ namespace FM
 	public:
 		void	Reset();
 		bool	Count(int32_t us);
-		int32_t	GetNextEvent();
 	
 	protected:
 		virtual void SetStatus(uint32_t bit) = 0;

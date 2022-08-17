@@ -33,7 +33,6 @@ static int DMA_DummyIsReady(void)
 	return 0;
 }
 
-
 void DMA_SetReadyCB(int ch, int (*func)(void))
 {
 	if ( (ch>=0)&&(ch<=3) ) IsReady[ch] = func;
@@ -219,8 +218,6 @@ void FASTCALL DMA_Write(DWORD adr, uint8_t data)
 int FASTCALL DMA_Exec(int ch)
 {
 	DWORD *src, *dst;
-
-//	if ( DMA_IntCH&(1<<ch) ) return 1;
 
 	if ( DMA[ch].OCR&0x80 ) {		// Device->Memory
 		src = &DMA[ch].DAR;

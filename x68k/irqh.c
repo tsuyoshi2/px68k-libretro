@@ -16,18 +16,11 @@ typedef signed int  FASTCALL C68K_INT_CALLBACK(signed int level);
 	uint8_t	IRQH_IRQ[8];
 	void	*IRQH_CallBack[8];
 
-// -----------------------------------------------------------------------
-//   初期化
-// -----------------------------------------------------------------------
 void IRQH_Init(void)
 {
 	memset(IRQH_IRQ, 0, 8);
 }
 
-
-// -----------------------------------------------------------------------
-//   デフォルトのベクタを返す（これが起こったら変だお）
-// -----------------------------------------------------------------------
 DWORD FASTCALL IRQH_DefaultVector(uint8_t irq)
 {
 	IRQH_IRQCallBack(irq);
@@ -35,14 +28,10 @@ DWORD FASTCALL IRQH_DefaultVector(uint8_t irq)
 }
 
 
-// -----------------------------------------------------------------------
-//   他の割り込みのチェック
-//   各デバイスのベクタを返すルーチンから呼ばれます
-// -----------------------------------------------------------------------
 void IRQH_IRQCallBack(uint8_t irq)
 {
 	IRQH_IRQ[irq&7] = 0;
-int i;
+	int i;
 
 #if defined (HAVE_CYCLONE)
 	m68k.irq =0;
@@ -54,8 +43,8 @@ int i;
 
 	for (i=7; i>0; i--)
 	{
-	    if (IRQH_IRQ[i])
-	    {
+		if (IRQH_IRQ[i])
+		{
 #if defined (HAVE_CYCLONE)
 			m68k.irq = i;
 #elif defined (HAVE_C68K)
@@ -63,59 +52,56 @@ int i;
 #elif defined (HAVE_MUSASHI)
 			m68k_set_irq(i);
 #endif /* HAVE_C68K */ /* HAVE_MUSASHI */
-		return;
-	    }
+			return;
+		}
 	}
 }
 
-// -----------------------------------------------------------------------
-//   割り込み発生
-// -----------------------------------------------------------------------
 void IRQH_Int(uint8_t irq, void* handler)
 {
 	int i;
 	IRQH_IRQ[irq&7] = 1;
 	if (handler==NULL)
-	    IRQH_CallBack[irq&7] = &IRQH_DefaultVector;
+		IRQH_CallBack[irq&7] = &IRQH_DefaultVector;
 	else
-	    IRQH_CallBack[irq&7] = handler;
+		IRQH_CallBack[irq&7] = handler;
 	for (i=7; i>0; i--)
 	{
-	    if (IRQH_IRQ[i])
-	    {
+		if (IRQH_IRQ[i])
+		{
 #if defined (HAVE_CYCLONE)
 
-	        m68k.irq = i;
+			m68k.irq = i;
 #elif defined (HAVE_C68K)
-	        C68k_Set_IRQ(&C68K, i);
+			C68k_Set_IRQ(&C68K, i);
 #elif defined (HAVE_MUSASHI)
-		m68k_set_irq(i);
+			m68k_set_irq(i);
 #endif /* HAVE_C68K */ /* HAVE_MUSASHI */
-	        return;
-	    }
+			return;
+		}
 	}
 }
 
-signed int  my_irqh_callback(signed int  level)
+signed int my_irqh_callback(signed int  level)
 {
-    int i;
-    C68K_INT_CALLBACK *func = IRQH_CallBack[level&7];
-    int vect = (func)(level&7);
+	int i;
+	C68K_INT_CALLBACK *func = IRQH_CallBack[level&7];
+	int vect = (func)(level&7);
 
-    for (i=7; i>0; i--)
-    {
+	for (i=7; i>0; i--)
+	{
 		if (IRQH_IRQ[i])
 		{
 #if defined (HAVE_CYCLONE)
 			m68k.irq = i;
 #elif defined (HAVE_C68K)
-	    	C68k_Set_IRQ(&C68K, i);
+			C68k_Set_IRQ(&C68K, i);
 #elif defined (HAVE_MUSASHI)
-		m68k_set_irq(i);
+			m68k_set_irq(i);
 #endif /* HAVE_C68K */ /* HAVE_MUSASHI */
 			break;
 		}
-    }
+	}
 
-    return (signed int )vect;
+	return (signed int )vect;
 }
