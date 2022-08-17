@@ -13,10 +13,10 @@
 #include	"tvram.h"
 
 uint8_t	TVRAM[0x80000];
-uint8_t	TextDrawWork[1024*1024];
+static uint8_t TextDrawWork[1024*1024];
 uint8_t	TextDirtyLine[1024];
 
-uint8_t	TextDrawPattern[2048*4];
+static uint8_t TextDrawPattern[2048*4];
 
 uint8_t	Text_TrFlag[1024];
 

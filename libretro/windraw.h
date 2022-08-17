@@ -4,12 +4,7 @@
 #include <stdint.h>
 
 extern int winx, winy;
-extern int winh, winw;
-extern uint8_t Draw_ClrMenu;
 extern WORD WinDraw_Pal16B, WinDraw_Pal16R, WinDraw_Pal16G;
-
-extern	uint8_t	Draw_BitMask[800];
-extern	uint8_t	Draw_TextBitMask[800];
 
 extern	int	WindowX;
 extern	int	WindowY;

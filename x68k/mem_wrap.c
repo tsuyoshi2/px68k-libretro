@@ -130,13 +130,13 @@ void (*MemWriteTable[])(DWORD, uint8_t) = {
 
 uint8_t *IPL;
 uint8_t *MEM;
-uint8_t *OP_ROM;
+static uint8_t *OP_ROM;
 uint8_t *FONT;
 
-DWORD BusErrFlag = 0;
+uint32_t BusErrFlag = 0;
 DWORD BusErrHandling = 0;
-DWORD BusErrAdr;
-DWORD MemByteAccess = 0;
+uint32_t BusErrAdr;
+uint32_t MemByteAccess = 0;
 
 /*
  * write function

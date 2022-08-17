@@ -101,8 +101,7 @@ DWORD FASTCALL FDC_Int(uint8_t irq)
 	IRQH_IRQCallBack(irq);
 	if (irq==1)
 		return ((DWORD)IOC_IntVect);
-	else
-		return -1;
+	return -1;
 }
 
 

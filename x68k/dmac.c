@@ -140,10 +140,8 @@ void FASTCALL DMA_Write(DWORD adr, uint8_t data)
 			DMAERR(ch,0x11)
 			break;
 		}
-		if ( data&0x20 ) {					// Halt
-//			DMA[ch].CSR &= 0xf7;			// 本来は落ちるはず。Nemesis'90で調子悪いので…
+		if ( data&0x20 ) // Halt
 			break;
-		}
 		if ( data&0x80 ) {							// 動作開始
 			if ( old&0x20 ) {				// Halt解除
 				DMA[ch].CSR |= 0x08;

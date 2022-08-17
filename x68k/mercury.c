@@ -33,7 +33,7 @@ static double Mcry_VolumeShift = 65536;
 static int Mcry_SampleCnt = 0;
 static uint8_t Mcry_Vector = 255;
 
-extern DWORD BusErrFlag;
+extern uint32_t BusErrFlag;
 extern	m68k_regs regs;
 
 

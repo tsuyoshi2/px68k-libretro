@@ -69,16 +69,9 @@
 
 #include "fmg_wrap.h"
 
-	int		UI_MouseFlag = 0;
-	int		UI_MouseX = -1, UI_MouseY = -1;
+uint8_t		Debug_Text=1, Debug_Grp=1, Debug_Sp=1;
 
-	uint8_t		MenuClearFlag = 0;
-
-	uint8_t		Debug_Text=1, Debug_Grp=1, Debug_Sp=1;
-
-	char		filepath[MAX_PATH] = ".";
-	int		fddblink = 0;
-	int		fddblinkcount = 0;
+char		filepath[MAX_PATH] = ".";
 
 char cur_dir_str[MAX_PATH];
 int cur_dir_slen;
@@ -190,9 +183,8 @@ WinUI_Init(void)
 {
 	int i;
 
-	for (i = 0; i < 11; i++) {
+	for (i = 0; i < 11; i++)
 		menu_hwjoy_print(i);
-	}
 
 #if defined(ANDROID)
 #define CUR_DIR_STR winx68k_dir

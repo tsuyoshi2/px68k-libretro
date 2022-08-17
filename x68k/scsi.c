@@ -51,5 +51,3 @@ uint8_t FASTCALL SCSI_Read(DWORD adr)
 {
 	return SCSIIPL[(adr^1)&0x1fff];
 }
-
-

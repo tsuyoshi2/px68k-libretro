@@ -5,15 +5,15 @@
 #include "crtc.h"
 #include "mfp.h"
 
-DWORD	timercnt = 0;
-DWORD	tick = 0;
+static uint32_t timercnt = 0;
+static uint32_t tick = 0;
 
 /* Get elapsed time from libretro frontend by way of its frame time callback,
  * if available. Only provides per frame granularity, enough for this case
  * since it's only called once per frame, so can't replace
  * timeGetTime/FAKE_GetTickCount entirely
  */
-unsigned int timeGetUsec()
+unsigned int timeGetUsec(void)
 {
 	extern unsigned int total_usec;		/* from libretro.c */
 	if (total_usec == (unsigned int) -1)

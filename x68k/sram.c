@@ -11,7 +11,8 @@
 #include	"sram.h"
 
 uint8_t	SRAM[0x4000];
-uint8_t	SRAMFILE[] = "sram.dat";
+
+#define SRAMFILE "sram.dat"
 
 // -----------------------------------------------------------------------
 //   役に立たないうぃるすチェック

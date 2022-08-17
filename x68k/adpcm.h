@@ -3,9 +3,6 @@
 
 #include <stdint.h>
 
-extern uint8_t ADPCM_Clock;
-extern DWORD ADPCM_ClockRate;
-
 void FASTCALL ADPCM_PreUpdate(DWORD clock);
 void FASTCALL ADPCM_Update(int16_t *buffer, DWORD length, int rate, uint8_t *pbsp, uint8_t *pbep);
 

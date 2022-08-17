@@ -14,13 +14,13 @@ typedef struct
 	uint8_t SCR;
 	uint8_t CCR;
 	uint8_t dmy1[2];	// 08
-	WORD MTC;
-	DWORD MAR;		// 0C
+	uint16_t MTC;
+	uint32_t MAR;		// 0C
 	uint8_t dmy2[4];	// 10
-	DWORD DAR;		// 14
+	uint32_t DAR;		// 14
 	uint8_t dmy3[2];	// 18
-	WORD BTC;
-	DWORD BAR;		// 1C
+	uint16_t BTC;
+	uint32_t BAR;		// 1C
 	uint8_t dmy4[5];	// 20
 	uint8_t NIV;
 	uint8_t dmy5;

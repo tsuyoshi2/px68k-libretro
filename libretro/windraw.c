@@ -48,14 +48,10 @@ extern uint8_t Debug_Text, Debug_Grp, Debug_Sp;
 WORD *ScrBuf = 0;
 
 int Draw_Opaque;
-uint8_t Draw_ClrMenu = 0;
-
-uint8_t Draw_BitMask[800];
-uint8_t Draw_TextBitMask[800];
 
 int winx = 0, winy = 0;
-DWORD winh = 0, winw = 0;
-DWORD root_width, root_height;
+static uint32_t winh = 0, winw = 0;
+static uint32_t root_width, root_height;
 
 WORD WinDraw_Pal16B, WinDraw_Pal16R, WinDraw_Pal16G;
 
@@ -66,9 +62,8 @@ void WinDraw_InitWindowSize(WORD width, WORD height)
 {
 	static BOOL inited = FALSE;
 
-	if (!inited) {
+	if (!inited)
 		inited = TRUE;
-	}
 
 	winw = width;
 	winh = height;

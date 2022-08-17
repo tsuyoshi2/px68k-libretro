@@ -17,12 +17,12 @@
 uint8_t	BG[0x8000];
 uint8_t	Sprite_Regs[0x800];
 uint8_t	BG_Regs[0x12];
-WORD	BG_CHREND = 0;
-WORD	BG_BG0TOP = 0;
-WORD	BG_BG0END = 0;
-WORD	BG_BG1TOP = 0;
-WORD	BG_BG1END = 0;
-uint8_t	BG_CHRSIZE = 16;
+static uint16_t BG_CHREND = 0;
+static uint16_t	BG_BG0TOP = 0;
+static uint16_t	BG_BG0END = 0;
+static uint16_t	BG_BG1TOP = 0;
+static uint16_t	BG_BG1END = 0;
+static uint8_t	BG_CHRSIZE = 16;
 DWORD	BG_AdrMask = 511;
 DWORD	BG0ScrollX = 0, BG0ScrollY = 0;
 DWORD	BG1ScrollX = 0, BG1ScrollY = 0;
@@ -457,8 +457,7 @@ BG_DrawLineMcr16_ng(WORD BGTOP, DWORD BGScrollX, DWORD BGScrollY)
        bg_drawline_loopx16(BGTOP, BGScrollX, BGScrollY, 0, 1);
 }
 
-LABEL void FASTCALL
-BG_DrawLine(int opaq, int gd)
+void FASTCALL BG_DrawLine(int opaq, int gd)
 {
 	int i;
 	void (*func8)(WORD, DWORD, DWORD), (*func16)(WORD, DWORD, DWORD);

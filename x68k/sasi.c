@@ -11,23 +11,21 @@
 #include "sasi.h"
 #include "irqh.h"
 
-uint8_t SASI_Buf[256];
-uint8_t SASI_Phase = 0;
-DWORD SASI_Sector = 0;
-DWORD SASI_Blocks = 0;
-uint8_t SASI_Cmd[6];
-uint8_t SASI_CmdPtr = 0;
-WORD SASI_Device = 0;
-uint8_t SASI_Unit = 0;
-int16_t SASI_BufPtr = 0;
-uint8_t SASI_RW = 0;
-uint8_t SASI_Stat = 0;
-uint8_t SASI_Mes = 0;
-uint8_t SASI_Error = 0;
-uint8_t SASI_SenseStatBuf[4];
-uint8_t SASI_SenseStatPtr = 0;
-
-
+static uint8_t SASI_Buf[256];
+static uint8_t SASI_Phase = 0;
+static uint32_t SASI_Sector = 0;
+static uint32_t SASI_Blocks = 0;
+static uint8_t SASI_Cmd[6];
+static uint8_t SASI_CmdPtr = 0;
+static uint16_t SASI_Device = 0;
+static uint8_t SASI_Unit = 0;
+static int16_t SASI_BufPtr = 0;
+static uint8_t SASI_RW = 0;
+static uint8_t SASI_Stat = 0;
+static uint8_t SASI_Mes = 0;
+static uint8_t SASI_Error = 0;
+static uint8_t SASI_SenseStatBuf[4];
+static uint8_t SASI_SenseStatPtr = 0;
 
 int SASI_IsReady(void)
 {

@@ -7,10 +7,10 @@
 
 #include <time.h>
 
-uint8_t	RTC_Regs[2][16];
-uint8_t	RTC_Bank = 0;
-static int RTC_Timer1 = 0;
-static int RTC_Timer16 = 0;
+static uint8_t	RTC_Regs[2][16];
+static uint8_t	RTC_Bank = 0;
+static int RTC_Timer1    = 0;
+static int RTC_Timer16   = 0;
 
 // -----------------------------------------------------------------------
 //   ½é´ü²½

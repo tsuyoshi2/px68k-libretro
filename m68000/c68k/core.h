@@ -32,14 +32,6 @@
 #endif
 #endif
 
-#ifndef STDCALL
-#ifdef _MSC_VER
-#define STDCALL __stdcall
-#else
-#define STDCALL
-#endif
-#endif
-
 #ifndef FASTCALL
 #ifdef __MINGW32__
 #define FASTCALL __attribute__((fastcall))

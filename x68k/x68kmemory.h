@@ -14,16 +14,15 @@
 
 extern	uint8_t*	IPL;
 extern	uint8_t*	MEM;
-extern	uint8_t*	OP_ROM;
 extern	uint8_t*	FONT;
 extern  uint8_t    SCSIIPL[0x2000];
 extern  uint8_t    SRAM[0x4000];
 extern  uint8_t    GVRAM[0x80000];
 extern  uint8_t   TVRAM[0x80000];
 
-extern	DWORD	BusErrFlag;
-extern	DWORD	BusErrAdr;
-extern	DWORD	MemByteAccess;
+extern	uint32_t	BusErrFlag;
+extern	uint32_t	BusErrAdr;
+extern	uint32_t	MemByteAccess;
 
 void Memory_ErrTrace(void);
 void Memory_IntErr(int i);

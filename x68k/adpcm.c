@@ -36,13 +36,13 @@ static int16_t ADPCM_BufL[ADPCM_BufSize];
 
 static long ADPCM_WrPtr = 0;
 static long ADPCM_RdPtr = 0;
-static DWORD ADPCM_SampleRate = 44100*12;
-       DWORD ADPCM_ClockRate = 7800*12;
-static DWORD ADPCM_Count = 0;
+static uint32_t ADPCM_SampleRate = 44100*12;
+static uint32_t ADPCM_ClockRate = 7800*12;
+static uint32_t ADPCM_Count = 0;
 static int ADPCM_Step = 0;
 static int ADPCM_Out = 0;
 static uint8_t ADPCM_Playing = 0;
-       uint8_t ADPCM_Clock = 0;
+static uint8_t ADPCM_Clock = 0;
 static int ADPCM_PreCounter = 0;
 static int ADPCM_DifBuf = 0;
 

@@ -9,23 +9,23 @@
 
 extern	uint8_t	CRTC_Regs[48];
 extern	uint8_t	CRTC_Mode;
-extern	WORD	CRTC_VSTART, CRTC_VEND;
-extern	WORD	CRTC_HSTART, CRTC_HEND;
-extern	DWORD	TextDotX, TextDotY;
-extern	DWORD	TextScrollX, TextScrollY;
+extern	uint16_t CRTC_VSTART, CRTC_VEND;
+extern	uint16_t CRTC_HSTART, CRTC_HEND;
+extern	uint32_t TextDotX, TextDotY;
+extern	uint32_t TextScrollX, TextScrollY;
 extern	uint8_t	VCReg0[2];
 extern	uint8_t	VCReg1[2];
 extern	uint8_t	VCReg2[2];
-extern	WORD	CRTC_IntLine;
+extern	uint16_t CRTC_IntLine;
 extern	uint8_t	CRTC_FastClr;
 extern	uint8_t	CRTC_DispScan;
-extern	DWORD	CRTC_FastClrLine;
-extern	WORD	CRTC_FastClrMask;
+extern	uint32_t CRTC_FastClrLine;
+extern	uint16_t CRTC_FastClrMask;
 extern	uint8_t	CRTC_VStep;
 extern  int		HSYNC_CLK;
 
-extern	DWORD	GrphScrollX[];
-extern	DWORD	GrphScrollY[];
+extern	uint32_t	GrphScrollX[4];
+extern	uint32_t	GrphScrollY[4];
 
 void CRTC_Init(void);
 

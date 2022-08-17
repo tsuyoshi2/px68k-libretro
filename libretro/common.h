@@ -16,14 +16,9 @@
 #include "TargetConditionals.h"
 #endif
 
-#define	SUCCESS		0
-#define	FAILURE		1
-
 #undef FASTCALL
 #define FASTCALL
 
-#define STDCALL
-#define	LABEL
 #define	__stdcall
 
 #ifdef PSP
@@ -32,14 +27,6 @@
 #endif
 #define MAX_PATH 256
 #endif
-
-typedef union {
-	struct {
-		BYTE l;
-		BYTE h;
-	} b;
-	WORD w;
-} PAIR;
 
 #ifdef __cplusplus
 extern "C" {

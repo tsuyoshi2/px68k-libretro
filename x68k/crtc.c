@@ -13,18 +13,18 @@
 
 uint8_t	CRTC_Regs[24*2];
 uint8_t	CRTC_Mode = 0;
-DWORD	TextDotX = 768, TextDotY = 512;
-WORD	CRTC_VSTART, CRTC_VEND;
-WORD	CRTC_HSTART, CRTC_HEND;
-DWORD	TextScrollX = 0, TextScrollY = 0;
-DWORD	GrphScrollX[4] = {0, 0, 0, 0};		// 配列にしちゃった…
-DWORD	GrphScrollY[4] = {0, 0, 0, 0};
+uint32_t TextDotX = 768, TextDotY = 512;
+uint16_t CRTC_VSTART, CRTC_VEND;
+uint16_t CRTC_HSTART, CRTC_HEND;
+uint32_t TextScrollX = 0, TextScrollY = 0;
+uint32_t	GrphScrollX[4] = {0, 0, 0, 0};		// 配列にしちゃった…
+uint32_t	GrphScrollY[4] = {0, 0, 0, 0};
 
 uint8_t	CRTC_FastClr = 0;
 uint8_t	CRTC_SispScan = 0;
-DWORD	CRTC_FastClrLine = 0;
-WORD	CRTC_FastClrMask = 0;
-WORD	CRTC_IntLine = 0;
+uint32_t CRTC_FastClrLine = 0;
+uint16_t CRTC_FastClrMask = 0;
+uint16_t CRTC_IntLine = 0;
 uint8_t	CRTC_VStep = 2;
 
 uint8_t	VCReg0[2] = {0, 0};
