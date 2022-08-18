@@ -219,7 +219,7 @@ WinDraw_Draw(void)
 }
 
 
-INLINE void WinDraw_DrawGrpLine(int opaq)
+static INLINE void WinDraw_DrawGrpLine(int opaq)
 {
 #define _DGL_SUB(SUFFIX) WD_SUB(SUFFIX, Grp_LineBuf[i])
 
@@ -234,7 +234,7 @@ INLINE void WinDraw_DrawGrpLine(int opaq)
 	}
 }
 
-INLINE void WinDraw_DrawGrpLineNonSP(int opaq)
+static INLINE void WinDraw_DrawGrpLineNonSP(int opaq)
 {
 #define _DGL_NSP_SUB(SUFFIX) WD_SUB(SUFFIX, Grp_LineBufSP2[i])
 
@@ -249,7 +249,7 @@ INLINE void WinDraw_DrawGrpLineNonSP(int opaq)
 	}
 }
 
-INLINE void WinDraw_DrawTextLine(int opaq, int td)
+static INLINE void WinDraw_DrawTextLine(int opaq, int td)
 {
 #define _DTL_SUB2(SUFFIX) WD_SUB(SUFFIX, BG_LineBuf[i])
 #define _DTL_SUB(SUFFIX)		\
@@ -328,7 +328,7 @@ static INLINE void WinDraw_DrawTextLineTR(int opaq)
 	}
 }
 
-INLINE void WinDraw_DrawBGLine(int opaq, int td)
+static INLINE void WinDraw_DrawBGLine(int opaq, int td)
 {
 #define _DBL_SUB2(SUFFIX) WD_SUB(SUFFIX, BG_LineBuf[i])
 #define _DBL_SUB(SUFFIX)			 \
@@ -353,7 +353,7 @@ INLINE void WinDraw_DrawBGLine(int opaq, int td)
 	}
 }
 
-INLINE void WinDraw_DrawBGLineTR(int opaq)
+static INLINE void WinDraw_DrawBGLineTR(int opaq)
 {
 
 #define _DBL_TR_SUB3()			\
@@ -403,7 +403,7 @@ INLINE void WinDraw_DrawBGLineTR(int opaq)
 
 }
 
-INLINE void WinDraw_DrawPriLine(void)
+static INLINE void WinDraw_DrawPriLine(void)
 {
 #define _DPL_SUB(SUFFIX) WD_SUB(SUFFIX, Grp_LineBufSP[i])
 
