@@ -53,7 +53,7 @@ uint8_t FASTCALL TVRAM_Read(DWORD adr)
 }
 
 
-INLINE void TVRAM_WriteByte(DWORD adr, uint8_t data)
+static INLINE void TVRAM_WriteByte(DWORD adr, uint8_t data)
 {
 	if (TVRAM[adr]!=data)
 	{
@@ -62,7 +62,7 @@ INLINE void TVRAM_WriteByte(DWORD adr, uint8_t data)
 	}
 }
 
-INLINE void TVRAM_WriteByteMask(DWORD adr, uint8_t data)
+static INLINE void TVRAM_WriteByteMask(DWORD adr, uint8_t data)
 {
 	data = (TVRAM[adr] & CRTC_Regs[0x2e + ((adr^1) & 1)]) | (data & (~CRTC_Regs[0x2e + ((adr ^ 1) & 1)]));
 	if (TVRAM[adr] != data)
@@ -97,13 +97,9 @@ void FASTCALL TVRAM_Write(DWORD adr, uint8_t data)
 	else					/* シングルアクセス */
 	{
 		if (CRTC_Regs[0x2a]&2)		/* Text Mask */
-		{
 			TVRAM_WriteByteMask(adr, data);
-		}
 		else
-		{
 			TVRAM_WriteByte(adr, data);
-		}
 	}
 	{
 		DWORD *ptr = (DWORD *)TextDrawPattern;
