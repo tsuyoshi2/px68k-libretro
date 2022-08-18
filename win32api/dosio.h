@@ -59,10 +59,6 @@ FILEH file_create_c(LPSTR filename, int ftype);
 LPSTR getFileName(LPSTR filename);
 void plusyen(LPSTR str, int len);
 
-#ifdef _WIN32
-typedef unsigned int u_int;
-#endif
-
 #ifdef __cplusplus
 };
 #endif

@@ -31,8 +31,13 @@
 
 #include <fcntl.h>
 #include <stdio.h>
+#include <stdint.h>
 #include <stdlib.h>
+#ifdef _WIN32
+#include <direct.h>
+#else
 #include <unistd.h>
+#endif
 
 #include "windows.h"
 
@@ -56,16 +61,14 @@ enum {
 	HTYPE_HWND,
 	HTYPE_MENU,
 	HTYPE_CONSOLE,
-	HTYPE_KEY,
+	HTYPE_KEY
 };
-#ifdef _WIN32
-typedef unsigned int u_int;
-#endif
+
 struct internal_handle {
 	void	*p;
-	u_int	flags;
+	uint32_t flags;
 	size_t	psize;
-	u_int	refcount;
+	uint32_t refcount;
 	int	type;
 };
 
