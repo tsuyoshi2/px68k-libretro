@@ -1,7 +1,7 @@
-// ---------------------------------------------------------------------------------------
-//  DMAC.C - DMAコントローラ（HD63450）
-//  ToDo : もっと奇麗に ^^;
-// ---------------------------------------------------------------------------------------
+/*
+ *  DMAC.C - DMAコントローラ（HD63450）
+ *  ToDo : もっと奇麗に ^^;
+ */
 
 #include "common.h"
 #include "winx68k.h"
@@ -38,9 +38,9 @@ void DMA_SetReadyCB(int ch, int (*func)(void))
 	if ( (ch>=0)&&(ch<=3) ) IsReady[ch] = func;
 }
 
-// -----------------------------------------------------------------------
-//   割り込みベクタを返す
-// -----------------------------------------------------------------------
+/*
+ *   割り込みベクタを返す
+ */
 DWORD FASTCALL DMA_Int(uint8_t irq)
 {
 	DWORD ret = 0xffffffff;
@@ -67,15 +67,15 @@ DWORD FASTCALL DMA_Int(uint8_t irq)
 }
 
 
-// -----------------------------------------------------------------------
-//   I/O Read
-// -----------------------------------------------------------------------
+/*
+ *   I/O Read
+ */
 uint8_t FASTCALL DMA_Read(DWORD adr)
 {
 	unsigned char* p;
 	int off = adr&0x3f, ch = ((adr-0xe84000)>>6);
 
-	if ( adr>=0xe84100 ) return 0;		// ばすえらー？
+	if ( adr>=0xe84100 ) return 0;		/* ばすえらー？ */
 
 	p = (unsigned char*)&DMA[ch];
 
@@ -105,16 +105,16 @@ uint8_t FASTCALL DMA_Read(DWORD adr)
 }
 
 
-// -----------------------------------------------------------------------
-//   I/O Write
-// -----------------------------------------------------------------------
+/*
+ *   I/O Write
+ */
 void FASTCALL DMA_Write(DWORD adr, uint8_t data)
 {
 	unsigned char* p;
 	int off = adr&0x3f, ch = ((adr-0xe84000)>>6);
 	uint8_t old;
 
-	if ( adr>=0xe84100 ) return;		// ばすえらー？
+	if ( adr>=0xe84100 ) return;		/* ばすえらー？ */
 
 	p = (unsigned char*)&DMA[ch];
 
@@ -135,49 +135,49 @@ void FASTCALL DMA_Write(DWORD adr, uint8_t data)
 		break;
 	case 0x07:
 		old = DMA[ch].CCR;
-		DMA[ch].CCR = (data&0xef) | (DMA[ch].CCR&0x80);	// CCRのSTRは書き込みでは落とせない
-		if ( (data&0x10)&&(DMA[ch].CCR&0x80) ) {		// Software Abort
+		DMA[ch].CCR = (data&0xef) | (DMA[ch].CCR&0x80);	/* CCRのSTRは書き込みでは落とせない */
+		if ( (data&0x10)&&(DMA[ch].CCR&0x80) ) {		/* Software Abort */
 			DMAERR(ch,0x11)
 			break;
 		}
-		if ( data&0x20 ) // Halt
+		if ( data&0x20 ) /* Halt */
 			break;
-		if ( data&0x80 ) {							// 動作開始
-			if ( old&0x20 ) {				// Halt解除
+		if ( data&0x80 ) {							/* 動作開始 */
+			if ( old&0x20 ) {				/* Halt解除 */
 				DMA[ch].CSR |= 0x08;
 				DMA_Exec(ch);
 			} else {
-				if ( DMA[ch].CSR&0xf8 ) {					// タイミングエラー
+				if ( DMA[ch].CSR&0xf8 ) {					/* タイミングエラー */
 					DMAERR(ch,0x02)
 					break;
 				}
 				DMA[ch].CSR |= 0x08;
-				if ( (DMA[ch].OCR&8)/*&&(!DMA[ch].MTC)*/ ) {	// アレイ／リンクアレイチェイン
+				if ( (DMA[ch].OCR&8)/*&&(!DMA[ch].MTC)*/ ) {	/* アレイ／リンクアレイチェイン */
 					DMA[ch].MAR = dma_readmem24_dword(DMA[ch].BAR)&0xffffff;
 					DMA[ch].MTC = dma_readmem24_word(DMA[ch].BAR+4);
 					if (DMA[ch].OCR&4) {
 						DMA[ch].BAR = dma_readmem24_dword(DMA[ch].BAR+6);
 					} else {
 						DMA[ch].BAR += 6;
-						if ( !DMA[ch].BTC ) {			// これもカウントエラー
+						if ( !DMA[ch].BTC ) {			/* これもカウントエラー */
 						DMAERR(ch,0x0f)
 							break;
 						}
 					}
 				}
-				if ( !DMA[ch].MTC ) {					// カウントエラー
+				if ( !DMA[ch].MTC ) {					/* カウントエラー */
 					DMAERR(ch,0x0d)
 					break;
 				}
 				DMA[ch].CER  = 0x00;
-				DMA_Exec(ch);								// 開始直後にカウンタを見て動作チェックする場合があるので、少しだけ実行しておく
+				DMA_Exec(ch);								/* 開始直後にカウンタを見て動作チェックする場合があるので、少しだけ実行しておく */
 			}
 		}
-		if ( (data&0x40)&&(!DMA[ch].MTC) ) {			// Continuous Op.
+		if ( (data&0x40)&&(!DMA[ch].MTC) ) {			/* Continuous Op. */
 			if ( DMA[ch].CCR&0x80 ) {
 				if ( DMA[ch].CCR&0x40 ) {
 					DMAERR(ch,0x02)
-				} else if ( DMA[ch].OCR&8 ) {				// アレイ／リンクアレイチェイン
+				} else if ( DMA[ch].OCR&8 ) {				/* アレイ／リンクアレイチェイン */
 					DMAERR(ch,0x01)
 				} else {
 					DMA[ch].MAR = DMA[ch].BAR;
@@ -186,7 +186,7 @@ void FASTCALL DMA_Write(DWORD adr, uint8_t data)
 					DMA[ch].BAR = 0;
 					DMA[ch].BTC = 0;
 					if ( !DMA[ch].MAR ) {
-						DMA[ch].CSR |= 0x40;			// ブロック転送終了ビット／割り込み
+						DMA[ch].CSR |= 0x40;			/* ブロック転送終了ビット／割り込み */
 						DMAINT(ch)
 						break;
 					} else if ( !DMA[ch].MTC ) {
@@ -196,7 +196,7 @@ void FASTCALL DMA_Write(DWORD adr, uint8_t data)
 					DMA[ch].CCR &= 0xbf;
 					DMA_Exec(ch);
 				}
-			} else {									// 非Active時のCNTビットは動作タイミングエラー
+			} else {									/* 非Active時のCNTビットは動作タイミングエラー */
 				DMAERR(ch,0x02)
 			}
 		}
@@ -210,17 +210,17 @@ void FASTCALL DMA_Write(DWORD adr, uint8_t data)
 }
 
 
-// -----------------------------------------------------------------------
-//   DMA実行
-// -----------------------------------------------------------------------
+/*
+ *   DMA実行
+ */
 int FASTCALL DMA_Exec(int ch)
 {
 	DWORD *src, *dst;
 
-	if ( DMA[ch].OCR&0x80 ) {		// Device->Memory
+	if ( DMA[ch].OCR&0x80 ) {		/* Device->Memory */
 		src = &DMA[ch].DAR;
 		dst = &DMA[ch].MAR;
-	} else {				// Memory->Device
+	} else {				/* Memory->Device */
 		src = &DMA[ch].MAR;
 		dst = &DMA[ch].DAR;
 	}
@@ -275,26 +275,26 @@ int FASTCALL DMA_Exec(int ch)
 
 		if ( BusErrFlag ) {
 			switch ( BusErrFlag ) {
-			case 1:					// BusErr/Read
-				if ( DMA[ch].OCR&0x80 )		// Device->Memory
+			case 1:					/* BusErr/Read */
+				if ( DMA[ch].OCR&0x80 )		/* Device->Memory */
 					DMAERR(ch,0x0a)
 				else
 					DMAERR(ch,0x09)
 				break;
-			case 2:					// BusErr/Write
-				if ( DMA[ch].OCR&0x80 )		// Device->Memory
+			case 2:					/* BusErr/Write */
+				if ( DMA[ch].OCR&0x80 )		/* Device->Memory */
 					DMAERR(ch,0x09)
 				else
 					DMAERR(ch,0x0a)
 				break;
-			case 3:					// AdrErr/Read
-				if ( DMA[ch].OCR&0x80 )		// Device->Memory
+			case 3:					/* AdrErr/Read */
+				if ( DMA[ch].OCR&0x80 )		/* Device->Memory */
 					DMAERR(ch,0x06)
 				else
 					DMAERR(ch,0x05)
 				break;
-			case 4:					// BusErr/Write
-				if ( DMA[ch].OCR&0x80 )		// Device->Memory
+			case 4:					/* BusErr/Write */
+				if ( DMA[ch].OCR&0x80 )		/* Device->Memory */
 					DMAERR(ch,0x05)
 				else
 					DMAERR(ch,0x06)
@@ -305,9 +305,9 @@ int FASTCALL DMA_Exec(int ch)
 		}
 
 		DMA[ch].MTC--;
-		if ( !DMA[ch].MTC ) {					// 指定分のバイト数転送終了
-			if ( DMA[ch].OCR&8 ) {				// チェインモードで動いている場合
-				if ( DMA[ch].OCR&4 ) {			// リンクアレイチェイン
+		if ( !DMA[ch].MTC ) {					/* 指定分のバイト数転送終了 */
+			if ( DMA[ch].OCR&8 ) {				/* チェインモードで動いている場合 */
+				if ( DMA[ch].OCR&4 ) {			/* リンクアレイチェイン */
 					if ( DMA[ch].BAR ) {
 						DMA[ch].MAR = dma_readmem24_dword(DMA[ch].BAR);
 						DMA[ch].MTC = dma_readmem24_word(DMA[ch].BAR+4);
@@ -324,9 +324,9 @@ int FASTCALL DMA_Exec(int ch)
 							break;
 						}
 					}
-				} else {						// アレイチェイン
+				} else {						/* アレイチェイン */
 					DMA[ch].BTC--;
-					if ( DMA[ch].BTC ) {		// 次のブロックがある
+					if ( DMA[ch].BTC ) {		/* 次のブロックがある */
 						DMA[ch].MAR = dma_readmem24_dword(DMA[ch].BAR);
 						DMA[ch].MTC = dma_readmem24_word(DMA[ch].BAR+4);
 						DMA[ch].BAR += 6;
@@ -343,9 +343,9 @@ int FASTCALL DMA_Exec(int ch)
 						}
 					}
 				}
-			} else {								// 通常モード（1ブロックのみ）終了
-				if ( DMA[ch].CCR&0x40 ) {			// Countinuous動作中
-					DMA[ch].CSR |= 0x40;			// ブロック転送終了ビット／割り込み
+			} else {								/* 通常モード（1ブロックのみ）終了 */
+				if ( DMA[ch].CCR&0x40 ) {			/* Countinuous動作中 */
+					DMA[ch].CSR |= 0x40;			/* ブロック転送終了ビット／割り込み */
 					DMAINT(ch)
 					if ( DMA[ch].BAR ) {
 						DMA[ch].MAR  = DMA[ch].BAR;
@@ -373,9 +373,9 @@ int FASTCALL DMA_Exec(int ch)
 }
 
 
-// -----------------------------------------------------------------------
-//   初期化
-// -----------------------------------------------------------------------
+/*
+ *   初期化
+ */
 void DMA_Init(void)
 {
 	int i;

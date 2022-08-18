@@ -6,26 +6,26 @@
 
 typedef struct
 {
-	uint8_t CSR;		// 00
+	uint8_t CSR;		/* 00 */
 	uint8_t CER;
 	uint8_t dmy0[2];
-	uint8_t DCR;		// 04
+	uint8_t DCR;		/* 04 */
 	uint8_t OCR;
 	uint8_t SCR;
 	uint8_t CCR;
-	uint8_t dmy1[2];	// 08
+	uint8_t dmy1[2];	/* 08 */
 	uint16_t MTC;
-	uint32_t MAR;		// 0C
-	uint8_t dmy2[4];	// 10
-	uint32_t DAR;		// 14
-	uint8_t dmy3[2];	// 18
+	uint32_t MAR;		/* 0C */
+	uint8_t dmy2[4];	/* 10 */
+	uint32_t DAR;		/* 14 */
+	uint8_t dmy3[2];	/* 18 */
 	uint16_t BTC;
-	uint32_t BAR;		// 1C
-	uint8_t dmy4[5];	// 20
+	uint32_t BAR;		/* 1C */
+	uint8_t dmy4[5];	/* 20 */
 	uint8_t NIV;
 	uint8_t dmy5;
 	uint8_t EIV;
-	uint8_t dmy6;		// 28
+	uint8_t dmy6;		/* 28 */
 	uint8_t MFC;
 	uint8_t dmy7[3];
 	uint8_t CPR;

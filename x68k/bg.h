@@ -6,9 +6,6 @@
 
 extern	uint8_t	BG_DrawWork0[1024*1024];
 extern	uint8_t	BG_DrawWork1[1024*1024];
-extern	DWORD	BG0ScrollX, BG0ScrollY;
-extern	DWORD	BG1ScrollX, BG1ScrollY;
-extern	DWORD	BG_AdrMask;
 extern	uint8_t	BG_Regs[0x12];
 extern	long	BG_HAdjust;
 extern	long	BG_VLINE;

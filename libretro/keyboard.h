@@ -1,5 +1,5 @@
-#ifndef _winx68k_keyboard
-#define _winx68k_keyboard
+#ifndef _WINX68K_KEYBOARD_H
+#define _WINX68K_KEYBOARD_H
 
 #include <stdint.h>
 #include "common.h"
@@ -49,4 +49,4 @@ void Keyboard_ToggleSkbd(void);
 #define	KBD_OPT1	0x72
 #define	KBD_OPT2	0x73
 
-#endif //_winx68k_keyboard
+#endif /* _WINX68K_KEYBOARD_H */

@@ -2046,11 +2046,10 @@ case 0x7EFD:
 case 0x7EFE:
 case 0x7EFF:
 
-// MOVEQ
+/* MOVEQ */
 case 0x7000:
 {
-	u32 res;
-	res = (s32)(s8)Opcode;
+	u32 res = (s32)(s8)Opcode;
 	CPU->flag_C = CPU->flag_V = 0;
 	CPU->flag_N = CPU->flag_notZ = res;
 	*((u32*)(&CPU->D[(Opcode >> 9) & 7])) = res;

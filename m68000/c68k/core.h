@@ -80,9 +80,9 @@ typedef  int64_t s64;
 typedef uintptr_t pointer;
 
 
-#endif // !GEKKO
+#endif /* !GEKKO */
 
-// Terrible, but I'm not sure how to do the equivalent in inline
+/* Terrible, but I'm not sure how to do the equivalent in inline */
 #ifdef HAVE_C99_VARIADIC_MACROS
 #define AddString(s, ...) \
    { \
@@ -97,17 +97,9 @@ typedef uintptr_t pointer;
    }
 #endif
 
-//////////////////////////////////////////////////////////////////////////////
-
-#ifdef HAVE_LIBMINI18N
-#include "mini18n.h"
-#else
 #ifndef _
 #define _(a) (a)
 #endif
-#endif
-
-//////////////////////////////////////////////////////////////////////////////
 
 /* Minimum/maximum values */
 
@@ -115,8 +107,6 @@ typedef uintptr_t pointer;
 #undef MAX
 #define MIN(a,b)  ((a) < (b) ? (a) : (b))
 #define MAX(a,b)  ((a) > (b) ? (a) : (b))
-
-//////////////////////////////////////////////////////////////////////////////
 
 #ifdef __GNUC__
 

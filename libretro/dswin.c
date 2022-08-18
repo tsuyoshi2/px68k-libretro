@@ -105,9 +105,6 @@ static void sound_send(int length)
 
    ADPCM_Update((int16_t *)pbwp, length, rate, pbsp, pbep);
    OPM_Update((int16_t *)pbwp, length, rate, pbsp, pbep);
-#ifndef	NO_MERCURY
-   //Mcry_Update((int16_t *)pcmbufp, length);
-#endif
 
    pbwp += length * sizeof(WORD) * 2;
    if (pbwp >= pbep)
@@ -184,21 +181,22 @@ raudio_callback(void *userdata, unsigned char *stream, int len)
 cb_start:
    if (pbrp <= pbwp)
    {
-      // pcmbuffer
-      // +---------+-------------+----------+
-      // |         |/////////////|          |
-      // +---------+-------------+----------+
-      // A         A<--datalen-->A          A
-      // |         |             |          |
-      // pbsp     pbrp          pbwp       pbep
+      /* pcmbuffer
+       * +---------+-------------+----------+
+       * |         |/////////////|          |
+       * +---------+-------------+----------+
+       * A         A<--datalen-->A          A
+       * |         |             |          |
+       * pbsp     pbrp          pbwp       pbep
+       */
 
       datalen = pbwp - pbrp;
 
-      // needs more data
+      /* needs more data */
       if (datalen < len)
          DSound_Send((len - datalen) / 4);
 
-      // change to TYPEC or TYPED
+      /* change to TYPEC or TYPED */
       if (pbrp > pbwp)
          goto cb_start;
 
@@ -207,14 +205,15 @@ cb_start:
    }
    else
    {
-      // pcmbuffer
-      // +---------+-------------+----------+
-      // |/////////|             |//////////|
-      // +------+--+-------------+----------+
-      // <-lenb->  A             <---lena--->
-      // A         |             A          A
-      // |         |             |          |
-      // pbsp     pbwp          pbrp       pbep
+      /* pcmbuffer
+       * +---------+-------------+----------+
+       * |/////////|             |//////////|
+       * +------+--+-------------+----------+
+       * <-lenb->  A             <---lena--->
+       * A         |             A          A
+       * |         |             |          |
+       * pbsp     pbwp          pbrp       pbep
+       */
 
       lena = pbep - pbrp;
       if (lena >= len)

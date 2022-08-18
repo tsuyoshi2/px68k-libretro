@@ -46,24 +46,24 @@ void Mouse_Init(void)
 }
 
 
-// ----------------------------------
-//	Mouse Event Occured
-// ----------------------------------
+/*
+ *	Mouse Event Occurred
+ */
 void Mouse_Event(int param, float dx, float dy)
 {
 	if (MouseSW) {
 		switch (param) {
-		case 0:	// mouse move
+		case 0:	/* mouse move */
 			MouseDX += dx;
 			MouseDY += dy;
 			break;
-		case 1:	// left button
+		case 1:	/* left button */
 			if (dx != 0)
 				MouseStat |= 1;
 			else
 				MouseStat &= 0xfe;
 			break;
-		case 2:	// right button
+		case 2:	/* right button */
 			if (dx != 0)
 				MouseStat |= 2;
 			else
@@ -76,9 +76,9 @@ void Mouse_Event(int param, float dx, float dy)
 }
 
 
-// ----------------------------------
-//	Mouse Data send to SCC
-// ----------------------------------
+/*
+ *	Mouse Data send to SCC
+ */
 void Mouse_SetData(void)
 {
 	POINT pt;
@@ -121,9 +121,9 @@ void Mouse_SetData(void)
 }
 
 
-// ----------------------------------
-//	Start Capture
-// ----------------------------------
+/*
+ *	Start Capture
+ */
 void Mouse_StartCapture(int flag)
 {
 	if (flag && !MouseSW) {

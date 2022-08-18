@@ -1,6 +1,6 @@
-// ---------------------------------------------------------------------------------------
-//  MERCURY.C - ま〜きゅり〜ゆにっと
-// ---------------------------------------------------------------------------------------
+/*
+ *  MERCURY.C - ま〜きゅり〜ゆにっと
+ */
 
 #include "common.h"
 #include "dswin.h"
@@ -57,9 +57,9 @@ int Mcry_IsReady(void)
 }
 
 
-// -----------------------------------------------------------------------
-//   MPU経過クロック時間分だけデータをバッファに溜める
-// -----------------------------------------------------------------------
+/*
+ *   MPU経過クロック時間分だけデータをバッファに溜める
+ */
 void FASTCALL Mcry_PreUpdate(DWORD clock)
 {
 	Mcry_PreCounter += (Mcry_ClockRate*clock);
@@ -72,9 +72,9 @@ void FASTCALL Mcry_PreUpdate(DWORD clock)
 }
 
 
-// -----------------------------------------------------------------------
-//   DSoundからの要求分だけバッファを埋める
-// -----------------------------------------------------------------------
+/*
+ *   DSoundからの要求分だけバッファを埋める
+ */
 void FASTCALL Mcry_Update(int16_t *buffer, DWORD length)
 {
 	int data;
@@ -113,10 +113,9 @@ void FASTCALL Mcry_Update(int16_t *buffer, DWORD length)
 	}
 }
 
-
-// -----------------------------------------------------------------------
-//   1回分（1Word x 2ch）のデータをバッファに書き出し
-// -----------------------------------------------------------------------
+/*
+ *   1回分（1Word x 2ch）のデータをバッファに書き出し
+ */
 INLINE void Mcry_WriteOne(void)
 {
 	while (Mcry_Count<Mcry_SampleRate)
@@ -132,51 +131,47 @@ INLINE void Mcry_WriteOne(void)
 }
 
 
-// -----------------------------------------------------------------------
-//   I/O Write
-// -----------------------------------------------------------------------
+/*
+ *   I/O Write
+ */
 void FASTCALL Mcry_Write(DWORD adr, uint8_t data)
 {
-	if ((adr == 0xecc080)||(adr == 0xecc081)||(adr == 0xecc000)||(adr == 0xecc001))	// Data Port
+	if ((adr == 0xecc080)||(adr == 0xecc081)||(adr == 0xecc000)||(adr == 0xecc001))	/* Data Port */
 	{
 		if ( Mcry_SampleCnt<=0 ) return;
-		if ( Mcry_Status&2 ) {		// Stereo
-			if (Mcry_LRTiming)		// 右
+		if ( Mcry_Status&2 ) {		/* Stereo */
+			if (Mcry_LRTiming)		/* 右 */
 			{
-				if (!(Mcry_Status&8)) data=0;	// R Mute
-				if (adr&1)			// Low Byte
+				if (!(Mcry_Status&8)) data=0;	/* R Mute */
+				if (adr&1)			/* Low Byte */
 				{
 					Mcry_OutDataR = (Mcry_OutDataR&0xff00)|data;
 					Mcry_LRTiming ^= 1;
 					Mcry_WriteOne();
 				}
-				else				// High Byte
-				{
+				else /* High Byte */
 					Mcry_OutDataR = (Mcry_OutDataR&0x00ff)|((WORD)data<<8);
-				}
 			}
-			else				// 左
+			else				/* 左 */
 			{
-				if (!(Mcry_Status&4)) data=0;	// L Mute
-				if (adr&1)			// Low Byte
+				if (!(Mcry_Status&4)) data=0;	/* L Mute */
+				if (adr&1)			/* Low Byte */
 				{
 					Mcry_OutDataL = (Mcry_OutDataL&0xff00)|data;
 					Mcry_LRTiming ^= 1;
 				}
-				else				// High Byte
-				{
+				else				/* High Byte */
 					Mcry_OutDataL = (Mcry_OutDataL&0x00ff)|((WORD)data<<8);
-				}
 			}
-		} else {			// Mono
-			if (adr&1)			// Low Byte
+		} else { /* Mono */
+			if (adr&1) /* Low Byte */
 			{
 				Mcry_OutDataR = ((Mcry_Status&8)?((Mcry_OutDataR&0xff00)|data):0);
 				Mcry_OutDataL = ((Mcry_Status&4)?((Mcry_OutDataL&0xff00)|data):0);
 				Mcry_LRTiming ^= 1;
 				Mcry_WriteOne();
 			}
-			else				// High Byte
+			else /* High Byte */
 			{
 				Mcry_OutDataR = ((Mcry_Status&8)?((Mcry_OutDataR&0x00ff)|((WORD)data<<8)):0);
 				Mcry_OutDataL = ((Mcry_Status&4)?((Mcry_OutDataL&0x00ff)|((WORD)data<<8)):0);
@@ -191,57 +186,44 @@ void FASTCALL Mcry_Write(DWORD adr, uint8_t data)
 			Mcry_SetClock();
 		}
 	}
-	else if ( adr== 0xecc0b1 )						// Int Vector
+	else if ( adr== 0xecc0b1 ) /* Int Vector */
 	{
 		Mcry_Vector = data;
 	}
-	else if ( (adr>=0xecc0c0)&&(adr<=0xecc0c7)&&(adr&1) )	// 満開版まーきゅりー OPN
+	else if ( (adr>=0xecc0c0)&&(adr<=0xecc0c7)&&(adr&1) ) /* 満開版まーきゅりー OPN */
 	{
 		M288_Write((uint8_t)((adr>>1)&3), data);
 	}
 }
 
 
-// -----------------------------------------------------------------------
-//   I/O Read
-// -----------------------------------------------------------------------
+/*
+ *   I/O Read
+ */
 uint8_t FASTCALL Mcry_Read(DWORD adr)
 {
 	uint8_t ret = 0;
-	if ((adr == 0xecc080)||(adr == 0xecc081)||(adr == 0xecc000)||(adr == 0xecc001))
-	{
-	}
-	else if ((adr == 0xecc0a1)||(adr == 0xecc021))	// Status Port
-	{
+	if ((adr == 0xecc080)||(adr == 0xecc081)||(adr == 0xecc000)||(adr == 0xecc001)) { }
+	else if ((adr == 0xecc0a1)||(adr == 0xecc021))	/* Status Port */
 		ret = ((Mcry_Status&0xf0)|0x0f);
-	}
-	else if ((adr == 0xecc091)||(adr == 0xecc011))	//
-	{
-	}
-	else if ((adr == 0xecc090)||(adr == 0xecc010))	//
+	else if ((adr == 0xecc091)||(adr == 0xecc011)) { }
+	else if ((adr == 0xecc090)||(adr == 0xecc010))
 	{
 		ret = (Mcry_LRTiming<<3);
 		Mcry_LRTiming ^= 1;
 	}
-	else if ( adr== 0xecc0b1 )						// Int Vector
-	{
+	else if ( adr== 0xecc0b1 ) /* Int Vector */
 		ret = Mcry_Vector;
-	}
-	else if ( (adr>=0xecc0c0)&&(adr<=0xecc0c7)&&(adr&1) )	// 満開版まーきゅりー OPN
-	{
+	else if ( (adr>=0xecc0c0)&&(adr<=0xecc0c7)&&(adr&1) ) /* 満開版まーきゅりー OPN */
 		ret = M288_Read((uint8_t)((adr>>1)&3));
-	}
-	else if ( adr>=0xecc100 )
-	{				// Bus Error?
+	else if ( adr>=0xecc100 ) /* Bus Error? */
 		BusErrFlag = 1;
-	}
 	return ret;
 }
 
-
-// -----------------------------------------------------------------------
-//   再生クロック設定
-// -----------------------------------------------------------------------
+/*
+ *   再生クロック設定
+ */
 void Mcry_SetClock(void)
 {
 	static long Mcry_Clocks[8] = {
@@ -253,10 +235,9 @@ void Mcry_SetClock(void)
 	Mcry_PreCounter = 0;
 }
 
-
-// -----------------------------------------------------------------------
-//   ぼりゅーむ設定
-// -----------------------------------------------------------------------
+/*
+ *   ぼりゅーむ設定
+ */
 void Mcry_SetVolume(uint8_t vol)
 {
 	if (vol>16) vol=16;
@@ -264,14 +245,13 @@ void Mcry_SetVolume(uint8_t vol)
 	if (vol)
 		Mcry_VolumeShift = pow(1.189207115, (16-vol));
 	else
-		Mcry_VolumeShift = 65536;		// Mute
+		Mcry_VolumeShift = 65536; /* Mute */
 	M288_SetVolume(vol);
 }
 
-
-// -----------------------------------------------------------------------
-//   初期化〜
-// -----------------------------------------------------------------------
+/*
+ *   初期化〜
+ */
 void Mcry_Init(DWORD samplerate, const char* path)
 {
 	memset(Mcry_BufL, 0, Mcry_BufSize*2);

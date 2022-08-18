@@ -73,7 +73,7 @@ static void LoadDefaults(void)
 	int i;
 	int j;
 
-	Config.MenuFontSize = 0; // start with default normal menu size
+	Config.MenuFontSize = 0; /* start with default normal menu size */
 	winx = 0;
 	winy = 0;
 	Config.FrameRate = 1;

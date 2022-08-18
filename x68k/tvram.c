@@ -1,7 +1,7 @@
-// ---------------------------------------------------------------------------------------
-//  TVRAM.C - Text VRAM
-//  ToDo : 透明色処理とか色々
-// ---------------------------------------------------------------------------------------
+/*
+ *  TVRAM.C - Text VRAM
+ *  ToDo : 透明色処理とか色々
+ */
 
 #include	"common.h"
 #include	"winx68k.h"
@@ -30,7 +30,7 @@ void TVRAM_Init(void)
 	memset(TextDrawWork, 0, 1024*1024);
 	TVRAM_SetAllDirty();
 
-	memset(TextDrawPattern, 0, 2048*4);		// パターンテーブル初期化
+	memset(TextDrawPattern, 0, 2048*4); /* パターンテーブル初期化 */
 	for (i=0; i<256; i++)
 	{
 		for (j=0, bit=0x80; j<8; j++, bit>>=1)
@@ -76,10 +76,10 @@ void FASTCALL TVRAM_Write(DWORD adr, uint8_t data)
 {
 	adr &= 0x7ffff;
 	adr ^= 1;
-	if (CRTC_Regs[0x2a]&1)			// 同時アクセス
+	if (CRTC_Regs[0x2a]&1)			/* 同時アクセス */
 	{
 		adr &= 0x1ffff;
-		if (CRTC_Regs[0x2a]&2)		// Text Mask
+		if (CRTC_Regs[0x2a]&2)		/* Text Mask */
 		{
 			if (CRTC_Regs[0x2b]&0x10) TVRAM_WriteByteMask(adr        , data);
 			if (CRTC_Regs[0x2b]&0x20) TVRAM_WriteByteMask(adr+0x20000, data);
@@ -94,9 +94,9 @@ void FASTCALL TVRAM_Write(DWORD adr, uint8_t data)
 			if (CRTC_Regs[0x2b]&0x80) TVRAM_WriteByte(adr+0x60000, data);
 		}
 	}
-	else					// シングルアクセス
+	else					/* シングルアクセス */
 	{
-		if (CRTC_Regs[0x2a]&2)		// Text Mask
+		if (CRTC_Regs[0x2a]&2)		/* Text Mask */
 		{
 			TVRAM_WriteByteMask(adr, data);
 		}

@@ -1,6 +1,6 @@
-// ---------------------------------------------------------------------------------------
-//  GVRAM.C - Graphic VRAM
-// ---------------------------------------------------------------------------------------
+/*
+ *  GVRAM.C - Graphic VRAM
+ */
 
 #include	"common.h"
 #include	"windraw.h"
@@ -14,24 +14,24 @@
 
 uint8_t	GVRAM[0x80000];
 WORD	Grp_LineBuf[1024];
-WORD	Grp_LineBufSP[1024];		// 特殊プライオリティ／半透明用バッファ
-WORD	Grp_LineBufSP2[1024];		// 半透明ベースプレーン用バッファ（非半透明ビット格納）
+WORD	Grp_LineBufSP[1024];		/* 特殊プライオリティ／半透明用バッファ */
+WORD	Grp_LineBufSP2[1024];		/* 半透明ベースプレーン用バッファ（非半透明ビット格納） */
 WORD	Grp_LineBufSP_Tr[1024];
-WORD	Pal16Adr[256];			// 16bit color パレットアドレス計算用
+WORD	Pal16Adr[256];			/* 16bit color パレットアドレス計算用 */
 
-// xxx: for little endian only
+/* xxx: for little endian only */
 #define GET_WORD_W8(src) (*(uint8_t *)(src) | *((uint8_t *)(src) + 1) << 8)
 
 
-// -----------------------------------------------------------------------
-//   初期化〜
-// -----------------------------------------------------------------------
+/*
+ *   初期化〜
+ */
 void GVRAM_Init(void)
 {
 	int i;
 
 	memset(GVRAM, 0, 0x80000);
-	for (i=0; i<128; i++)			// 16bit color パレットアドレス計算用
+	for (i=0; i<128; i++) /* 16bit color パレットアドレス計算用 */
 	{
 		Pal16Adr[i*2] = i*4;
 		Pal16Adr[i*2+1] = i*4+1;
@@ -39,15 +39,15 @@ void GVRAM_Init(void)
 }
 
 
-// -----------------------------------------------------------------------------------
-//  高速クリア用ルーチン
-// -----------------------------------------------------------------------------------
+/*
+ *  高速クリア用ルーチン
+ */
 
 void FASTCALL GVRAM_FastClear(void)
 {
 	DWORD v = ((CRTC_Regs[0x29]&4)?512:256);
 	DWORD h = ((CRTC_Regs[0x29]&3)?512:256);
-	// やっぱちゃんと範囲指定しないと変になるものもある（ダイナマイトデュークとか）
+	/* やっぱちゃんと範囲指定しないと変になるものもある（ダイナマイトデュークとか） */
 {
 	WORD *p;
 	DWORD x, y;
@@ -68,9 +68,9 @@ void FASTCALL GVRAM_FastClear(void)
 }
 
 
-// -----------------------------------------------------------------------
-//   VRAM Read
-// -----------------------------------------------------------------------
+/*
+ *   VRAM Read
+ */
 uint8_t FASTCALL GVRAM_Read(DWORD adr)
 {
 	uint8_t ret=0;
@@ -79,15 +79,15 @@ uint8_t FASTCALL GVRAM_Read(DWORD adr)
 	adr ^= 1;
 	adr -= 0xc00000;
 
-	if (CRTC_Regs[0x28]&8) {			// 読み込み側も65536モードのVRAM配置（苦胃頭捕物帳）
+	if (CRTC_Regs[0x28]&8) { /* 読み込み側も65536モードのVRAM配置（苦胃頭捕物帳） */
 		if (adr<0x80000) ret = GVRAM[adr];
 	} else {
 		switch(CRTC_Regs[0x28]&3)
 		{
-		case 0:					// 16 colors
+		case 0: /* 16 colors */
 			if (!(adr&1))
 			{
-				if (CRTC_Regs[0x28]&4)		// 1024dot
+				if (CRTC_Regs[0x28]&4)		/* 1024dot */
 				{
 					ram = (WORD*)(&GVRAM[((adr&0xff800)>>1)+(adr&0x3fe)]);
 					page = (uint8_t)((adr>>17)&0x08);
@@ -101,8 +101,8 @@ uint8_t FASTCALL GVRAM_Read(DWORD adr)
 				}
 			}
 			break;
-		case 1:					// 256
-		case 2:					// Unknown
+		case 1:					/* 256 */
+		case 2:					/* Unknown */
 			if ( adr<0x100000 )
 			{
 				if (!(adr&1))
@@ -112,7 +112,7 @@ uint8_t FASTCALL GVRAM_Read(DWORD adr)
 				}
 			}
 			break;
-		case 3:					// 65536
+		case 3:					/* 65536 */
 			if (adr<0x80000)
 				ret = GVRAM[adr];
 			break;
@@ -122,9 +122,9 @@ uint8_t FASTCALL GVRAM_Read(DWORD adr)
 }
 
 
-// -----------------------------------------------------------------------
-//   VRAM Write
-// -----------------------------------------------------------------------
+/*
+ *   VRAM Write
+ */
 void FASTCALL GVRAM_Write(DWORD adr, uint8_t data)
 {
 	uint8_t page;
@@ -136,7 +136,7 @@ void FASTCALL GVRAM_Write(DWORD adr, uint8_t data)
 	adr -= 0xc00000;
 
 
-	if (CRTC_Regs[0x28]&8)				// 65536モードのVRAM配置？（Nemesis）
+	if (CRTC_Regs[0x28]&8) /* 65536モードのVRAM配置？（Nemesis） */
 	{
 		if ( adr<0x80000 )
 		{
@@ -148,9 +148,9 @@ void FASTCALL GVRAM_Write(DWORD adr, uint8_t data)
 	{
 		switch(CRTC_Regs[0x28]&3)
 		{
-		case 0:					// 16 colors
+		case 0: /* 16 colors */
 			if (adr&1) break;
-			if (CRTC_Regs[0x28]&4)		// 1024dot
+			if (CRTC_Regs[0x28]&4)		/* 1024dot */
 			{
 				ram = (WORD*)(&GVRAM[((adr&0xff800)>>1)+(adr&0x3fe)]);
 				page = (uint8_t)((adr>>17)&0x08);
@@ -174,24 +174,24 @@ void FASTCALL GVRAM_Write(DWORD adr, uint8_t data)
 				line = (((adr&0x7ffff)/1024)-scr)&511;
 			}
 			break;
-		case 1:					// 256 colors
-		case 2:					// Unknown
+		case 1:					/* 256 colors */
+		case 2:					/* Unknown */
 			if ( adr<0x100000 )
 			{
 				if ( !(adr&1) )
 				{
 					scr = GrphScrollY[(adr>>18)&2];
 					line = (((adr&0x7ffff)>>10)-scr)&511;
-					TextDirtyLine[line] = 1;			// 32色4面みたいな使用方法時
-					scr = GrphScrollY[((adr>>18)&2)+1];		//
-					line = (((adr&0x7ffff)>>10)-scr)&511;		//
+					TextDirtyLine[line] = 1;			/* 32色4面みたいな使用方法時 */
+					scr = GrphScrollY[((adr>>18)&2)+1];
+					line = (((adr&0x7ffff)>>10)-scr)&511;
 					if (adr&0x80000) adr+=1;
 					adr &= 0x7ffff;
 					GVRAM[adr] = data;
 				}
 			}
 			break;
-		case 3:					// 65536 colors
+		case 3:					/* 65536 colors */
 			if ( adr<0x80000 )
 			{
 				GVRAM[adr] = data;
@@ -204,9 +204,9 @@ void FASTCALL GVRAM_Write(DWORD adr, uint8_t data)
 }
 
 
-// -----------------------------------------------------------------------
-//   こっから後はライン単位での画面展開部
-// -----------------------------------------------------------------------
+/*
+ *   こっから後はライン単位での画面展開部
+ */
 void Grp_DrawLine16(void)
 {
 	WORD *srcp, *destp;
@@ -345,10 +345,10 @@ void FASTCALL Grp_DrawLine8(int page, int opaq)
 	}
 }
 
-// Manhattan Requiem Opening 7.0→7.5MHz
+/* Manhattan Requiem Opening 7.0→7.5MHz */
 void FASTCALL Grp_DrawLine4(DWORD page, int opaq)
 {
-	WORD *srcp, *destp;	// XXX: ALIGN
+	WORD *srcp, *destp;	/* XXX: ALIGN */
 	DWORD x, y;
 	DWORD off;
 	DWORD i;
@@ -451,7 +451,7 @@ void FASTCALL Grp_DrawLine4(DWORD page, int opaq)
 	}
 }
 
-					// この画面モードは勘弁して下さい…
+/* この画面モードは勘弁して下さい… */
 void FASTCALL Grp_DrawLine4h(void)
 {
 	WORD *srcp, *destp;
@@ -492,9 +492,9 @@ void FASTCALL Grp_DrawLine4h(void)
 }
 
 
-// -------------------------------------------------
-// --- 半透明／特殊Priのベースとなるページの描画 ---
-// -------------------------------------------------
+/*
+ * --- 半透明／特殊Priのベースとなるページの描画 ---
+ */
 void FASTCALL Grp_DrawLine16SP(void)
 {
 	DWORD x, y;
@@ -591,7 +591,7 @@ void FASTCALL Grp_DrawLine4SP(DWORD page/*, int opaq*/)
 {
 	DWORD scrx, scry;
 	page &= 3;
-	switch(page)		// 美しくなさすぎる（笑）
+	switch(page)		/* 美しくなさすぎる（笑） */
 	{
 	case 0:	scrx = GrphScrollX[0]; scry = GrphScrollY[0]; break;
 	case 1: scrx = GrphScrollX[1]; scry = GrphScrollY[1]; break;
@@ -705,19 +705,18 @@ void FASTCALL Grp_DrawLine4hSP(void)
 	}
 }
 
-
-
-// -------------------------------------------------
-// --- 半透明の対象となるページの描画 --------------
-// 2ページ以上あるグラフィックモードのみなので、
-// 256色2面 or 16色4面のモードのみ。
-// 256色時は、Opaqueでない方のモードはいらないかも…
-// （必ずOpaqueモードの筈）
-// -------------------------------------------------
-// ここはまだ32色x4面モードの実装をしてないれす…
-// （れじすた足りないよぅ…）
-// -------------------------------------------------
-							// やけにすっきり
+/*
+ * --- 半透明の対象となるページの描画 --------------
+ * 2ページ以上あるグラフィックモードのみなので、
+ * 256色2面 or 16色4面のモードのみ。
+ * 256色時は、Opaqueでない方のモードはいらないかも…
+ * （必ずOpaqueモードの筈）
+ * -------------------------------------------------
+ * ここはまだ32色x4面モードの実装をしてないれす…
+ * （れじすた足りないよぅ…）
+ * -------------------------------------------------
+ */
+							/* やけにすっきり */
 void FASTCALL Grp_DrawLine8TR(int page, int opaq)
 {
 	if (opaq) {

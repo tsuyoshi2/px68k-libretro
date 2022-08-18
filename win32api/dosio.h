@@ -52,7 +52,6 @@ DWORD file_lwrite(FILEH handle, void *data, DWORD length);
 WORD file_read(FILEH handle, void *data, WORD length);
 WORD file_write(FILEH handle, void *data, WORD length);
 int16_t file_close(FILEH handle);
-							// カレントファイル操作
 void file_setcd(LPSTR exename);
 FILEH file_open_c(LPSTR filename);
 FILEH file_create_c(LPSTR filename, int ftype);
