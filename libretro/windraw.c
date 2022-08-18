@@ -276,7 +276,7 @@ INLINE void WinDraw_DrawTextLine(int opaq, int td)
 	}
 }
 
-INLINE void WinDraw_DrawTextLineTR(int opaq)
+static INLINE void WinDraw_DrawTextLineTR(int opaq)
 {
 #define _DTL_TR_SUB(SUFFIX)			   \
 {						   \
