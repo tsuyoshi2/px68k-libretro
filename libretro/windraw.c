@@ -783,17 +783,7 @@ void WinDraw_DrawLine(void)
 	if (opaq)
 	{
 		DWORD adr = VLINE*FULLSCREEN_WIDTH;
-#ifdef PSP
-		if (TextDotX > 512) {
-			memset(&ScrBufL[adr], 0, TextDotX * 2);
-			adr = VLINE * 256;
-			memset(&ScrBufR[adr], 0, (TextDotX - 512) * 2);
-		} else {
-			memset(&ScrBufL[adr], 0, TextDotX * 2);
-		}
-#else
 		memset(&ScrBuf[adr], 0, TextDotX * 2);
-#endif
 	}
 }
 
