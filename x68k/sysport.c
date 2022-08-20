@@ -1,6 +1,6 @@
-// ---------------------------------------------------------------------------------------
-//  SYSPORT.C - X68k System Port
-// ---------------------------------------------------------------------------------------
+/*
+ *  SYSPORT.C - X68k System Port
+ */
 
 #include "common.h"
 #include "prop.h"
@@ -9,19 +9,18 @@
 
 uint8_t	SysPort[7];
 
-// -----------------------------------------------------------------------
-//   初期化
-// -----------------------------------------------------------------------
+/*
+ *   初期化
+ */
 void SysPort_Init(void)
 {
 	int i;
 	for (i=0; i<7; i++) SysPort[i]=0;
 }
 
-
-// -----------------------------------------------------------------------
-//   らいと
-// -----------------------------------------------------------------------
+/*
+ *   らいと
+ */
 void FASTCALL SysPort_Write(DWORD adr, uint8_t data)
 {
 	switch(adr)
@@ -51,10 +50,9 @@ void FASTCALL SysPort_Write(DWORD adr, uint8_t data)
 	}
 }
 
-
-// -----------------------------------------------------------------------
-//   りーど
-// -----------------------------------------------------------------------
+/*
+ *   りーど
+ */
 uint8_t FASTCALL SysPort_Read(DWORD adr)
 {
 	switch(adr)
@@ -67,15 +65,15 @@ uint8_t FASTCALL SysPort_Read(DWORD adr)
 		return SysPort[3];
 	case 0xe8e007:
 		return SysPort[4];
-	case 0xe8e00b:		// 10MHz:0xff、16MHz:0xfe、030(25MHz):0xdcをそれぞれ返すらしい
+	case 0xe8e00b: /* 10MHz:0xff、16MHz:0xfe、030(25MHz):0xdcをそれぞれ返すらしい */
 		switch(Config.XVIMode)
 		{
-		case 1:			// XVI or RedZone
+		case 1:			/* XVI or RedZone */
 		case 2:
 			return 0xfe;
-		case 3:			// 030
+		case 3:			/* 030 */
 			return 0xdc;
-		default:		// 10MHz
+		default:		/* 10MHz */
 			break;
 		}
 		return 0xff;

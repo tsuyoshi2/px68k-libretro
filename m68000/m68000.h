@@ -21,7 +21,7 @@
 #include "musashi/m68kcpu.h"
 #endif /* HAVE_C68K */ /* HAVE_MUSASHI */
 
-// MAME互換のレジスタ番号 (一部未対応)
+/* MAME互換のレジスタ番号 (一部未対応) */
 enum
 {
 	/* NOTE: M68K_SP fetches the current SP, be it USP, ISP, or MSP */

@@ -1,5 +1,5 @@
-#ifndef winx68k_wincore_h
-#define winx68k_wincore_h
+#ifndef _WINX68K_WINCORE_H
+#define _WINX68K_WINCORE_H
 
 #include <stdint.h>
 #include "common.h"
@@ -12,7 +12,7 @@
 extern int rfd_sock;
 #endif
 
-#define vline HOGEvline // workaround for redefinition of 'vline'
+#define vline HOGEvline /* workaround for redefinition of 'vline' */
 
 #define		SCREEN_WIDTH		768
 #define		SCREEN_HEIGHT		512
@@ -41,8 +41,8 @@ int pmain(int argc, char *argv[]);
 void end_loop_retro(void);
 void exec_app_retro(void);
 
-#ifndef	winx68k_gtkwarpper_h
-#define	winx68k_gtkwarpper_h
+#ifndef	_WINX68K_GTKWRAPPER_H
+#define	_WINX68K_GTKWRAPPER_H
 
 #ifdef _WIN32
 #include <direct.h>
@@ -53,6 +53,5 @@ void exec_app_retro(void);
 
 #define	NELEMENTS(array)	((int)(sizeof(array) / sizeof(array[0])))
 
-#endif //winx68k_gtkwarpper_h
-
-#endif //winx68k_wincore_h
+#endif /* _WINX68K_GTKWRAPPER_H */
+#endif /* _WINX68K_WINCORE_H */

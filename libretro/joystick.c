@@ -1,4 +1,4 @@
-// JOYSTICK.C - joystick support for WinX68k
+/* JOYSTICK.C - joystick support for WinX68k */
 
 #include "common.h"
 #include "prop.h"
@@ -17,7 +17,7 @@ uint8_t JoyKeyState1;
 uint8_t JoyState0[2];
 uint8_t JoyState1[2];
 
-// This stores whether the buttons were down. This avoids key repeats.
+/* This stores whether the buttons were down. This avoids key repeats. */
 uint8_t JoyDownState0;
 uint8_t MouseDownState0;
 
@@ -25,8 +25,8 @@ uint8_t JoyPortData[2];
 
 void Joystick_Init(void)
 {
-	joy[0] = 1; // activate JOY1
-	joy[1] = 1; // activate JOY2
+	joy[0] = 1; /* activate JOY1 */
+	joy[1] = 1; /* activate JOY2 */
 	JoyKeyState = 0;
 	JoyKeyState0 = 0;
 	JoyKeyState1 = 0;
@@ -72,9 +72,9 @@ void FASTCALL Joystick_Write(uint8_t num, uint8_t data)
 	if ( (num==0)||(num==1) ) JoyPortData[num] = data;
 }
 
-// Menu navigation related vars
-#define RATE   3      // repeat rate
-#define DELAY 30      // delay before 1st repeat
+/* Menu navigation related vars */
+#define RATE   3      /* repeat rate */
+#define DELAY 30      /* delay before 1st repeat */
 uint8_t keyb_in, joy_in;
 
 static DWORD get_px68k_input_bitmasks(int port)
@@ -135,16 +135,16 @@ void FASTCALL Joystick_Update(int is_menu, int key, int port)
 		break;
 
 	case PAD_CPSF_MD:
-		if (res & (1 << RETRO_DEVICE_ID_JOYPAD_A))	ret0 ^= JOY_TRG1;	// Low-Kick
-		if (res & (1 << RETRO_DEVICE_ID_JOYPAD_B))	ret0 ^= JOY_TRG2;	// Mid-Kick
-		if (res & (1 << RETRO_DEVICE_ID_JOYPAD_X))	ret1 ^= JOY_TRG4; 	// Low-Punch
-		if (res & (1 << RETRO_DEVICE_ID_JOYPAD_Y))	ret1 ^= JOY_TRG3;	// Mid-Punch
-		if (res & (1 << RETRO_DEVICE_ID_JOYPAD_L))	ret1 ^= JOY_TRG5;	// High-Punch
-		if (res & (1 << RETRO_DEVICE_ID_JOYPAD_R))	ret1 ^= JOY_TRG8;	// High-Kick
+		if (res & (1 << RETRO_DEVICE_ID_JOYPAD_A))	ret0 ^= JOY_TRG1;	/* Low-Kick */
+		if (res & (1 << RETRO_DEVICE_ID_JOYPAD_B))	ret0 ^= JOY_TRG2;	/* Mid-Kick */
+		if (res & (1 << RETRO_DEVICE_ID_JOYPAD_X))	ret1 ^= JOY_TRG4; 	/* Low-Punch */
+		if (res & (1 << RETRO_DEVICE_ID_JOYPAD_Y))	ret1 ^= JOY_TRG3;	/* Mid-Punch */
+		if (res & (1 << RETRO_DEVICE_ID_JOYPAD_L))	ret1 ^= JOY_TRG5;	/* High-Punch */
+		if (res & (1 << RETRO_DEVICE_ID_JOYPAD_R))	ret1 ^= JOY_TRG8;	/* High-Kick */
 
-		if (res & (1 << RETRO_DEVICE_ID_JOYPAD_START))	ret1 ^= JOY_TRG6; // Start
+		if (res & (1 << RETRO_DEVICE_ID_JOYPAD_START))	ret1 ^= JOY_TRG6; /* Start */
 		if (!Config.joy1_select_mapping)
-			if (res & (1 << RETRO_DEVICE_ID_JOYPAD_SELECT))	ret1 ^= JOY_TRG7;	// Mode
+			if (res & (1 << RETRO_DEVICE_ID_JOYPAD_SELECT))	ret1 ^= JOY_TRG7;	/* Mode */
 		break;
 
 	case PAD_CPSF_SFC:
@@ -167,7 +167,7 @@ void FASTCALL Joystick_Update(int is_menu, int key, int port)
 	MouseDownState0 = ~(mret0 ^ pre_mret0) | mret0;
 	pre_mret0 = mret0;
 
-	// disable Joystick when software keyboard is active
+	/* disable Joystick when software keyboard is active */
 	if (!is_menu && !Keyboard_IsSwKeyboard()) {
 		JoyState0[port] = ret0;
 		JoyState1[port] = ret1;
@@ -206,7 +206,7 @@ void FASTCALL Joystick_Update(int is_menu, int key, int port)
 				if (repeat_rate == 0) {
 					repeat_rate = RATE;
 					for (i = 0; i < 4; i++) {
-						uint8_t tmp = (1 << i); // which direction? UP/DOWN/LEFT/RIGHT
+						uint8_t tmp = (1 << i); /* which direction? UP/DOWN/LEFT/RIGHT */
 						if ((inbuf & tmp) == tmp)
 							speedup_joy[tmp] = 1;
 					}

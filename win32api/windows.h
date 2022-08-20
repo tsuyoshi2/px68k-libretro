@@ -76,7 +76,11 @@ typedef	HANDLE		HGLOBAL;
 #endif
 
 #ifndef	INLINE
-#define	INLINE	static inline
+#ifdef _WIN32
+#define	INLINE	_inline
+#else
+#define	INLINE	inline
+#endif
 #endif
 
 #define	RGB(r,g,b)	((DWORD)((uint8_t)(r))|((WORD)((uint8_t)(g)))|((DWORD)((uint8_t)(b))))

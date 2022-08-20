@@ -3,13 +3,13 @@
 
 #include <stdint.h>
 
-typedef struct {			// Header Part (size:2B0h)
-	uint8_t	fd_name[17];		// Disk Name
-	uint8_t	reserved1[9]; 		// Reserved
-	uint8_t	protect;		// Write Protect bit:4
-	uint8_t	fd_type;		// Disk Format
-	DWORD	fd_size;		// Disk Size
-	DWORD	trackp[164];		// Track_pointer
+typedef struct {			/* Header Part (size:2B0h) */
+	uint8_t	fd_name[17];		/* Disk Name */
+	uint8_t	reserved1[9]; 		/* Reserved */
+	uint8_t	protect;		/* Write Protect bit:4 */
+	uint8_t	fd_type;		/* Disk Format */
+	DWORD	fd_size;		/* Disk Size */
+	DWORD	trackp[164];		/* Track_pointer */
 } D88_HEADER;
 
 void D88_Init(void);

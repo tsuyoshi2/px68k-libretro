@@ -1,6 +1,6 @@
-// ---------------------------------------------------------------------------------------
-//  MFP.C - MFP (Multi-Function Periferal)
-// ---------------------------------------------------------------------------------------
+/*
+ *  MFP.C - MFP (Multi-Function Periferal)
+ */
 
 #include "mfp.h"
 #include "irqh.h"
@@ -17,9 +17,9 @@ static uint8_t Timer_Reload[4] = {0, 0, 0, 0};
 static int Timer_Tick[4] = {0, 0, 0, 0};
 static const int Timer_Prescaler[8] = {1, 10, 25, 40, 125, 160, 250, 500};
 
-// -----------------------------------------------------------------------
-//   優先割り込みのチェックをし、該当ベクタを返す
-// -----------------------------------------------------------------------
+/*
+ *   優先割り込みのチェックをし、該当ベクタを返す
+ */
 DWORD FASTCALL MFP_IntCallback(uint8_t irq)
 {
 	uint8_t flag;
@@ -67,10 +67,9 @@ DWORD FASTCALL MFP_IntCallback(uint8_t irq)
 	return vect;
 }
 
-
-// -----------------------------------------------------------------------
-//   割り込みが取り消しになってないか調べます
-// -----------------------------------------------------------------------
+/*
+ *   割り込みが取り消しになってないか調べます
+ */
 void MFP_RecheckInt(void)
 {
 	uint8_t flag;
@@ -91,11 +90,11 @@ void MFP_RecheckInt(void)
 }
 
 
-// -----------------------------------------------------------------------
-//   割り込み発生
-// -----------------------------------------------------------------------
-void MFP_Int(int irq)		// 'irq' は 0が最優先（HSYNC/GPIP7）、15が最下位（ALARM）
-{				// ベクタとは番号の振り方が逆になるので注意〜
+/*
+ *   割り込み発生
+ */
+void MFP_Int(int irq) /* 'irq' は 0が最優先（HSYNC/GPIP7）、15が最下位（ALARM） */
+{				/* ベクタとは番号の振り方が逆になるので注意〜 */
 	uint8_t flag = 0x80;
 	if (irq<8)
 	{
@@ -125,9 +124,9 @@ void MFP_Int(int irq)		// 'irq' は 0が最優先（HSYNC/GPIP7）、15が最下位（ALARM）
 }
 
 
-// -----------------------------------------------------------------------
-//   初期化
-// -----------------------------------------------------------------------
+/*
+ *   初期化
+ */
 void MFP_Init(void)
 {
 	int i;
@@ -140,17 +139,16 @@ void MFP_Init(void)
 	for (i=0; i<4; i++) Timer_Tick[i] = 0;
 }
 
-
-// -----------------------------------------------------------------------
-//   I/O Read
-// -----------------------------------------------------------------------
+/*
+ *   I/O Read
+ */
 uint8_t FASTCALL MFP_Read(DWORD adr)
 {
 	uint8_t reg;
 	uint8_t ret = 0;
 	int hpos;
 
-	if (adr>0xe8802f) return ret;		// ばすえらー？
+	if (adr>0xe8802f) return ret; /* ばすえらー？ */
 
 	if (adr&1)
 	{
@@ -190,9 +188,9 @@ uint8_t FASTCALL MFP_Read(DWORD adr)
 }
 
 
-// -----------------------------------------------------------------------
-//   I/O Write
-// -----------------------------------------------------------------------
+/*
+ *   I/O Write
+ */
 void FASTCALL MFP_Write(DWORD adr, uint8_t data)
 {
 	uint8_t reg;
@@ -206,7 +204,7 @@ void FASTCALL MFP_Write(DWORD adr, uint8_t data)
 		case MFP_IERA:
 		case MFP_IERB:
 			MFP[reg] = data;
-			MFP[reg+2] &= data;  // 禁止されたものはIPRA/Bを落とす
+			MFP[reg+2] &= data;  /* 禁止されたものはIPRA/Bを落とす */
 			MFP_RecheckInt();
 			break;
 		case MFP_IPRA:
@@ -222,7 +220,7 @@ void FASTCALL MFP_Write(DWORD adr, uint8_t data)
 			MFP_RecheckInt();
 			break;
 		case MFP_TSR:
-			MFP[reg] = data|0x80; // Txは常にEnableに
+			MFP[reg] = data|0x80; /* Txは常にEnableに */
 			break;
 		case MFP_TADR:
 			Timer_Reload[0] = MFP[reg] = data;
@@ -255,9 +253,9 @@ void FASTCALL MFP_Write(DWORD adr, uint8_t data)
 }
 
 
-// -----------------------------------------------------------------------
-//   たいまの時間を進める（も少し奇麗に書き直そう……）
-// -----------------------------------------------------------------------
+/*
+ *   たいまの時間を進める（も少し奇麗に書き直そう……）
+ */
 void FASTCALL MFP_Timer(long clock)
 {
 	if ( (!(MFP[MFP_TACR]&8))&&(MFP[MFP_TACR]&7) ) {
@@ -316,12 +314,12 @@ void FASTCALL MFP_Timer(long clock)
 
 void FASTCALL MFP_TimerA(void)
 {
-	if ( (MFP[MFP_TACR]&15)==8 ) {					// いべんとかうんともーど（VDispでカウント）
-		if ( MFP[MFP_AER]&0x10 ) {				// VDisp割り込みとタイミングが違ってるのが気になるといえば気になる（ぉぃ
-			if (vline==CRTC_VSTART) MFP[MFP_TADR]--;	// 本来は同じだと思うんだけどなぁ……それじゃ動かんし（汗
+	if ( (MFP[MFP_TACR]&15)==8 ) { /* いべんとかうんともーど（VDispでカウント） */
+		if ( MFP[MFP_AER]&0x10 ) { /* VDisp割り込みとタイミングが違ってるのが気になるといえば気になる（ぉぃ */
+			if (vline==CRTC_VSTART) MFP[MFP_TADR]--; /* 本来は同じだと思うんだけどなぁ……それじゃ動かんし（汗 */
 		} else {
 			if ( CRTC_VEND>=VLINE_TOTAL ) {
-				if ( (long)vline==(VLINE_TOTAL-1) ) MFP[MFP_TADR]--;	// 表示期間の終わりでカウントらしひ…（ろーどす）
+				if ( (long)vline==(VLINE_TOTAL-1) ) MFP[MFP_TADR]--;	/* 表示期間の終わりでカウントらしひ…（ろーどす） */
 			} else {
 				if ( vline==CRTC_VEND ) MFP[MFP_TADR]--;
 			}

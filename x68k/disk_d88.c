@@ -4,19 +4,18 @@
 #include "fdd.h"
 #include "disk_d88.h"
 
-
-// セクター部 (16 Bytes)
+/* セクター部 (16 Bytes) */
 typedef struct {
 	uint8_t	c;
 	uint8_t	h;
 	uint8_t	r;
 	uint8_t	n;
-	WORD	sectors;		// Sector Count
-	uint8_t	mfm_flg;		// sides
-	uint8_t	del_flg;		// DELETED DATA
-	uint8_t	stat;			// STATUS (FDC ret)
-	uint8_t	reserved2[5];		// Reserved
-	WORD	size;			// Sector Size
+	WORD	sectors;		/* Sector Count */
+	uint8_t	mfm_flg;		/* sides */
+	uint8_t	del_flg;		/* DELETED DATA */
+	uint8_t	stat;			/* STATUS (FDC ret) */
+	uint8_t	reserved2[5];		/* Reserved */
+	WORD	size;			/* Sector Size */
 } D88_SECTOR;
 
 typedef struct D88_SECTINFO {

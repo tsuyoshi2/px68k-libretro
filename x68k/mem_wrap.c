@@ -252,7 +252,7 @@ static void wm_cnt(DWORD addr, uint8_t val)
 {
 
 	addr &= 0x00ffffff;
-	if (addr < 0x00c00000) // Use RAM upto 12MB
+	if (addr < 0x00c00000) /* Use RAM upto 12MB */
 		MEM[addr ^ 1] = val;
 	else if (addr < 0x00e00000)
 		GVRAM_Write(addr, val);
@@ -396,7 +396,7 @@ cpu_readmem24_dword(DWORD addr)
 static uint8_t rm_main(DWORD addr)
 {
 	addr &= 0x00ffffff;
-	if (addr < 0x00c00000) // Use RAM upto 12MB
+	if (addr < 0x00c00000) /* Use RAM upto 12MB */
 		return MEM[addr ^ 1];
 	else if (addr < 0x00e00000)
 		return GVRAM_Read(addr);

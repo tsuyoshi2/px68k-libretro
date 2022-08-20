@@ -1,20 +1,7 @@
-// ---------------------------------------------------------------------------------------
-//  MIDI.C - MIDI Board (CZ-6BM1) emulator
-//                           Powered by ぷにゅさん〜
-// ---------------------------------------------------------------------------------------
-
-// 4/18 未明: エクスクルーシヴがうまく通らないのを修正
-// 4/18 朝　: レナムで鳴らなかったのを修正
-// 4/18 昼　: エクスクルーシヴ送信完了を完全に待つ事でドラキュラおっけー
-
-// ToDo: ・エクスクルーシヴ送信中(例えばドラキュラの音色設定中)に
-//         流石に1MHzまで落ち込むのは…
-//         MIDIの状態を返すポートを教えてもらうこと〜
-//       ・MT-32でのランニングステータスの仕様をチェック
-//       ・終了時の音源のリセット
-//       ・IPLリセット時は実機でもリセットされない筈だが、
-//         ここら辺は好みなので configで設定できてもいいかも
-
+/*
+ *  MIDI.C - MIDI Board (CZ-6BM1) emulator
+ *                           Powered by ぷにゅさん〜
+ */
 
 #include "common.h"
 #include "prop.h"
@@ -26,12 +13,12 @@
 #include "midi.h"
 #include "m68000.h"
 
-#define MIDIBUFFERS 1024			// 1024は流石に越えないでしょう^_^;
-#define MIDIBUFTIMER 3200			// 10MHz / (31.25K / 10bit) = 3200 が正解になります... 
+#define MIDIBUFFERS 1024			/* 1024は流石に越えないでしょう^_^; */
+#define MIDIBUFTIMER 3200			/* 10MHz / (31.25K / 10bit) = 3200 が正解になります...  */
 #define MIDIFIFOSIZE 256
-#define MIDIDELAYBUF 4096			// 31250/10 = 3125 byts (1s分) あればおっけ？
+#define MIDIDELAYBUF 4096			/* 31250/10 = 3125 byts (1s分) あればおっけ？ */
 
-enum {						// 各機種リセット用に一応。
+enum {						/* 各機種リセット用に一応。 */
 	MIDI_NOTUSED,
 	MIDI_DEFAULT,
 	MIDI_MT32,
@@ -41,7 +28,7 @@ enum {						// 各機種リセット用に一応。
 	MIDI_CM500,
 	MIDI_SC55,
 	MIDI_SC88,
-	MIDI_LA,				// 意味もなく追加してみたり
+	MIDI_LA,				/* 意味もなく追加してみたり */
 	MIDI_GM,
 	MIDI_GS,
 	MIDI_XG
@@ -57,8 +44,8 @@ uint8_t		MIDI_BUF[MIDIBUFFERS];
 uint8_t		MIDI_EXCVBUF[MIDIBUFFERS];
 uint8_t		MIDI_EXCVWAIT;
 
-uint8_t		MIDI_RegHigh = 0;				// X68K用
-uint8_t		MIDI_Playing = 0;				// マスタスイッチ
+uint8_t		MIDI_RegHigh = 0;				/* X68K用 */
+uint8_t		MIDI_Playing = 0;				/* マスタスイッチ */
 uint8_t		MIDI_Vector = 0;
 uint8_t		MIDI_IntEnable = 0;
 uint8_t		MIDI_IntVect = 0;
@@ -73,7 +60,7 @@ long		MIDI_MTimerVal = 0;
 uint8_t		MIDI_TxFull = 0;
 uint8_t		MIDI_MODULE = MIDI_NOTUSED;
 
-static uint8_t MIDI_ResetType[5] = {		// Config.MIDI_Type に合わせて…
+static uint8_t MIDI_ResetType[5] = {		/* Config.MIDI_Type に合わせて… */
 	MIDI_LA, MIDI_GM, MIDI_GS, MIDI_XG
 };
 
@@ -86,15 +73,15 @@ static DELAYBUFITEM DelayBuf[MIDIDELAYBUF];
 static int DBufPtrW = 0;
 static int DBufPtrR = 0;
 
-// ------------------------------------------------------------------
-// ねこみぢ6、MIMPIトーンマップ対応関係
-// ------------------------------------------------------------------
+/*
+ * ねこみぢ6、MIMPIトーンマップ対応関係
+ */
 
 enum {
 	MIMPI_LA = 0,
 	MIMPI_PCM,
 	MIMPI_GS,
-	MIMPI_RHYTHM,
+	MIMPI_RHYTHM
 };
 
 static	uint8_t		LOADED_TONEMAP = 0;
@@ -102,9 +89,6 @@ static	uint8_t		ENABLE_TONEMAP = 0;
 static	uint8_t		TONE_CH[16];
 static	uint8_t		TONEBANK[3][128];
 static	uint8_t		TONEMAP[3][128];
-
-// ------------------------------------------------------------------
-
 
 static uint8_t EXCV_MTRESET[] = { 0xfe, 0xfe, 0xfe};
 static uint8_t EXCV_GMRESET[] = { 0xf0, 0x7e, 0x7f, 0x09, 0x01, 0xf7};
@@ -133,9 +117,9 @@ static uint8_t EXCV_XGRESET[] = { 0xf0, 0x43, 0x10, 0x4C, 0x00, 0x00, 0x7E, 0x00
 
 #define MIDIOUTS(a,b,c) (((DWORD)c << 16) | ((DWORD)b << 8) | (DWORD)a)
 
-// -----------------------------------------------------------------------
-//   割り込み
-// -----------------------------------------------------------------------
+/*
+ *   割り込み
+ */
 DWORD FASTCALL MIDI_Int(uint8_t irq)
 {
 	IRQH_IRQCallBack(irq);
@@ -145,12 +129,12 @@ DWORD FASTCALL MIDI_Int(uint8_t irq)
 }
 
 
-// -----------------------------------------------------------------------
-//   たいまを進める
-// -----------------------------------------------------------------------
+/*
+ *   たいまを進める
+ */
 void FASTCALL MIDI_Timer(DWORD clk)
 {
-	if ( !Config.MIDI_SW ) return;	// MIDI OFF時は帰る
+	if ( !Config.MIDI_SW ) return;	/* MIDI OFF時は帰る */
 
 	MIDI_BufTimer -= clk;
 	if (MIDI_BufTimer<0)
@@ -159,7 +143,7 @@ void FASTCALL MIDI_Timer(DWORD clk)
 		if (MIDI_Buffered)
 		{
 			MIDI_Buffered--;
-			if ( (MIDI_Buffered<MIDIFIFOSIZE)&&(MIDI_IntEnable&0x40) )		// Tx FIFO Empty Interrupt（エトプリ）
+			if ( (MIDI_Buffered<MIDIFIFOSIZE)&&(MIDI_IntEnable&0x40) )		/* Tx FIFO Empty Interrupt（エトプリ） */
 			{
 				MIDI_IntFlag |= 0x40;
 				MIDI_IntVect = 0x0c;
@@ -171,7 +155,7 @@ void FASTCALL MIDI_Timer(DWORD clk)
 	if (MIDI_MTimerMax)
 	{
 		 MIDI_MTimerVal -= clk;
-		if (MIDI_MTimerVal<0)		// みぢたいまー割り込み（魔法大作戦）
+		if (MIDI_MTimerVal<0) /* みぢたいまー割り込み（魔法大作戦） */
 		{
 			while (MIDI_MTimerVal<0) MIDI_MTimerVal += MIDI_MTimerMax*80;
 			if ( (!(MIDI_R05&0x80))&&(MIDI_IntEnable&0x02) )
@@ -186,7 +170,7 @@ void FASTCALL MIDI_Timer(DWORD clk)
 	if (MIDI_GTimerMax)
 	{
 		MIDI_GTimerVal -= clk;
-		if (MIDI_GTimerVal<0)		// じぇねらるたいまー割り込み（RCD.X）
+		if (MIDI_GTimerVal<0) /* じぇねらるたいまー割り込み（RCD.X） */
 		{
 			while (MIDI_GTimerVal<0) MIDI_GTimerVal += MIDI_GTimerMax*80;
 			if ( MIDI_IntEnable&0x80 )
@@ -199,10 +183,9 @@ void FASTCALL MIDI_Timer(DWORD clk)
 	}
 }
 
-
-// -----------------------------------------------------------------------
-//   MIDIモジュールの設定
-// -----------------------------------------------------------------------
+/*
+ *   MIDIモジュールの設定
+ */
 static void MIDI_SetModule(void)
 {
 	if (Config.MIDI_SW)
@@ -211,13 +194,12 @@ static void MIDI_SetModule(void)
 		MIDI_MODULE = MIDI_NOTUSED;
 }
 
-
-// -----------------------------------------------------------------------
-//   えくすくるーしぶ ごー
-// -----------------------------------------------------------------------
+/*
+ *   えくすくるーしぶ ごー
+ */
 void MIDI_Sendexclusive(uint8_t *excv, int length)
 {
-	// エクスクルーシヴを送ります
+	/* エクスクルーシヴを送ります */
 	memcpy(MIDI_EXCVBUF, excv, length);
 	hHdr.lpData = MIDI_EXCVBUF;
 	hHdr.dwFlags = 0;
@@ -227,32 +209,32 @@ void MIDI_Sendexclusive(uint8_t *excv, int length)
 	MIDI_EXCVWAIT = 1;
 }
 
-
-// -----------------------------------------------------------------------
-//   えくすくるーしぶを送り終えるまで待つお
-// -----------------------------------------------------------------------
-void MIDI_Waitlastexclusiveout(void) {
-
-	// エクスクルーシヴ送信完了まで待ちましょう〜
-	if (MIDI_EXCVWAIT) {
+/*
+ *   えくすくるーしぶを送り終えるまで待つお
+ */
+void MIDI_Waitlastexclusiveout(void)
+{
+	/* エクスクルーシヴ送信完了まで待ちましょう〜 */
+	if (MIDI_EXCVWAIT)
+	{
 		while(midiOutUnprepareHeader(hOut, &hHdr, sizeof(MIDIHDR))
-						== MIDIERR_STILLPLAYING);
+				== MIDIERR_STILLPLAYING);
 		MIDI_EXCVWAIT = 0;
 	}
 }
 
-
-// -----------------------------------------------------------------------
-//   りせっと〜
-// -----------------------------------------------------------------------
-void MIDI_Reset(void) {
-
+/*
+ *   りせっと〜
+ */
+void MIDI_Reset(void)
+{
 	DWORD msg;
 
 	memset(DelayBuf, 0, sizeof(DelayBuf));
 	DBufPtrW = DBufPtrR = 0;
 
-	if (hOut) {
+	if (hOut)
+	{
 		switch(MIDI_MODULE) {
 			case MIDI_NOTUSED:
 				return;
@@ -260,8 +242,8 @@ void MIDI_Reset(void) {
 			case MIDI_CM32L:
 			case MIDI_CM64:
 			case MIDI_LA:
-				// ちょっと乱暴かなぁ…
-				// 一応 SC系でも通る筈ですけど…
+				/* ちょっと乱暴かなぁ…
+				 * 一応 SC系でも通る筈ですけど… */
 				MIDI_Waitlastexclusiveout();
 				MIDI_Sendexclusive(EXCV_MTRESET, sizeof(EXCV_MTRESET));
 				break;
@@ -281,24 +263,23 @@ void MIDI_Reset(void) {
 				break;
 		}
 		MIDI_Waitlastexclusiveout();
-		for (msg=0x7bb0; msg<0x7bc0; msg++) {
+		for (msg=0x7bb0; msg<0x7bc0; msg++)
 			midiOutShortMsg(hOut, msg);
-		}
 	}
 }
 
 
-// -----------------------------------------------------------------------
-//   しょきか〜
-// -----------------------------------------------------------------------
-void MIDI_Init(void) {
-
+/*
+ *   しょきか〜
+ */
+void MIDI_Init(void)
+{
 	memset(DelayBuf, 0, sizeof(DelayBuf));
 	DBufPtrW = DBufPtrR = 0;
 
 	MIDI_SetModule();
-	MIDI_RegHigh = 0;		// X68K
-	MIDI_Vector = 0;		// X68K
+	MIDI_RegHigh = 0;		/* X68K */
+	MIDI_Vector = 0;		/* X68K */
 	MIDI_IntEnable = 0;
 	MIDI_IntVect = 0;
 	MIDI_IntFlag = 0;
@@ -319,12 +300,13 @@ void MIDI_Init(void) {
 }
 
 
-// -----------------------------------------------------------------------
-//   撤収〜
-// -----------------------------------------------------------------------
-void MIDI_Cleanup(void) {
-
-	if (hOut) {
+/*
+ *   撤収〜
+ */
+void MIDI_Cleanup(void)
+{
+	if (hOut)
+	{
 		MIDI_Reset();
 		MIDI_Waitlastexclusiveout();
 		midiOutReset(hOut);
@@ -333,29 +315,29 @@ void MIDI_Cleanup(void) {
 	}
 }
 
-
-// -----------------------------------------------------------------------
-//   メッセージ判別
-// -----------------------------------------------------------------------
-void MIDI_Message(uint8_t mes) {
-
+/*
+ *   メッセージ判別
+ */
+void MIDI_Message(uint8_t mes)
+{
 	if (!hOut)
 		return;
 
-	switch(mes) {								// ここの対応はお好みで
+	/* ここの対応はお好みで */
+	switch(mes)
+	{
 		case MIDI_TIMING:
 		case MIDI_START:
 		case MIDI_CONTINUE:
 		case MIDI_STOP:
 		case MIDI_ACTIVESENSE:
-			return;
-		case MIDI_SYSTEMRESET:					// 一応イリーガル〜
+		case MIDI_SYSTEMRESET: /* 一応イリーガル〜 */
 			return;
 	}
 
-	if (MIDI_CTRL == MIDICTRL_READY) {			// 初回限定
+	if (MIDI_CTRL == MIDICTRL_READY) { /* 初回限定 */
 		if (mes & 0x80) {
-			// status
+			/* status */
 			MIDI_POS = 0;
 			switch(mes & 0xf0) {
 				case 0xc0:
@@ -367,7 +349,8 @@ void MIDI_Message(uint8_t mes) {
 				case 0xa0:
 				case 0xb0:
 				case 0xe0:
-					MIDI_LAST = mes;			// この方が失敗しないなり…
+					MIDI_LAST = mes;
+					/* この方が失敗しないなり… */
 					MIDI_CTRL = MIDICTRL_3uint8_tS;
 					break;
 				default:
@@ -396,16 +379,18 @@ void MIDI_Message(uint8_t mes) {
 					break;
 			}
 		}
-		else {						// Key-onのみな気がしたんだけど忘れた…
-			// running status
+		else {
+			/* Key-onのみな気がしたんだけど忘れた… */
+			/* running status */
 			MIDI_BUF[0] = MIDI_LAST;
-			MIDI_POS = 1;
-			MIDI_CTRL = MIDICTRL_3uint8_tS;
+			MIDI_POS    = 1;
+			MIDI_CTRL   = MIDICTRL_3uint8_tS;
 		}
 	}
 	else if ( (mes&0x80) && ((MIDI_CTRL!=MIDICTRL_EXCLUSIVE)||(mes!=MIDI_EOX)) )
-	{			// メッセージのデータ部にコントロールバイトが出た時…（GENOCIDE2）
-		// status
+	{
+		/* メッセージのデータ部にコントロールバイトが出た時…（GENOCIDE2） */
+		/* status */
 		MIDI_POS = 0;
 		switch(mes & 0xf0) {
 			case 0xc0:
@@ -417,7 +402,7 @@ void MIDI_Message(uint8_t mes) {
 			case 0xa0:
 			case 0xb0:
 			case 0xe0:
-				MIDI_LAST = mes;			// この方が失敗しないなり…
+				MIDI_LAST = mes; /* この方が失敗しないなり… */
 				MIDI_CTRL = MIDICTRL_3uint8_tS;
 				break;
 			default:
@@ -477,19 +462,16 @@ void MIDI_Message(uint8_t mes) {
 				MIDI_Sendexclusive(MIDI_BUF, MIDI_POS);
 				MIDI_CTRL = MIDICTRL_READY;
 			}
-			else if (MIDI_POS >= MIDIBUFFERS) {		// おーばーふろー
+			else if (MIDI_POS >= MIDIBUFFERS) /* おーばーふろー */
 				MIDI_CTRL = MIDICTRL_READY;
-			}
 			break;
 		case MIDICTRL_TIMECODE:
 			if (MIDI_POS >= 2) {
-				if ((mes == 0x7e) || (mes == 0x7f)) {
-					// exclusiveと同じでいい筈…
+				/* exclusiveと同じでいい筈… */
+				if ((mes == 0x7e) || (mes == 0x7f))
 					MIDI_CTRL = MIDICTRL_EXCLUSIVE;
-				}
-				else {
+				else
 					MIDI_CTRL = MIDICTRL_READY;
-				}
 			}
 			break;
 		case MIDICTRL_SYSTEM:
@@ -501,15 +483,16 @@ void MIDI_Message(uint8_t mes) {
 }
 
 
-// -----------------------------------------------------------------------
-//   I/O Read
-// -----------------------------------------------------------------------
+/*
+ *   I/O Read
+ */
 uint8_t FASTCALL MIDI_Read(DWORD adr)
 {
 	uint8_t ret = 0;
 
-	if ( (adr<0xeafa01)||(adr>=0xeafa10)||(!Config.MIDI_SW) )	// 変なアドレスか、
-	{								// MIDI OFF時にはバスエラーにする
+	if ( (adr<0xeafa01)||(adr>=0xeafa10)||(!Config.MIDI_SW) ) /* 変なアドレスか、 */
+	{
+		/* MIDI OFF時にはバスエラーにする */
 		BusErrFlag = 1;
 		return 0;
 	}
@@ -526,7 +509,7 @@ uint8_t FASTCALL MIDI_Read(DWORD adr)
 		break;
 	case 0x07:
 		break;
-	case 0x09:			// R04, 14, ... 94
+	case 0x09:			/* R04, 14, ... 94 */
 		switch(MIDI_RegHigh)
 		{
 		case 0:
@@ -541,13 +524,9 @@ uint8_t FASTCALL MIDI_Read(DWORD adr)
 			break;
 		case 5:
 			if (MIDI_Buffered>=MIDIFIFOSIZE)
-			{
-				ret = 0x01;	// Tx full/not ready
-			}
+				ret = 0x01;	/* Tx full/not ready */
 			else
-			{
-				ret = 0xc0;	// Tx empty/ready
-			}
+				ret = 0xc0;	/* Tx empty/ready */
 			break;
 		case 6:
 			break;
@@ -559,7 +538,7 @@ uint8_t FASTCALL MIDI_Read(DWORD adr)
 			break;
 		}
 		break;
-	case 0x0b:			// R05, 15, ... 95
+	case 0x0b:			/* R05, 15, ... 95 */
 		switch(MIDI_RegHigh)
 		{
 		case 0:
@@ -584,7 +563,7 @@ uint8_t FASTCALL MIDI_Read(DWORD adr)
 			break;
 		}
 		break;
-	case 0x0d:			// R06, 16, ... 96
+	case 0x0d:			/* R06, 16, ... 96 */
 		switch(MIDI_RegHigh)
 		{
 		case 0:
@@ -609,7 +588,7 @@ uint8_t FASTCALL MIDI_Read(DWORD adr)
 			break;
 		}
 		break;
-	case 0x0f:			// R07, 17, ... 97
+	case 0x0f:			/* R07, 17, ... 97 */
 		switch(MIDI_RegHigh)
 		{
 		case 0:
@@ -663,13 +642,13 @@ void MIDI_DelayOut(unsigned int delay)
 }
 
 
-// -----------------------------------------------------------------------
-//   I/O Write
-// -----------------------------------------------------------------------
+/*
+ *   I/O Write
+ */
 void FASTCALL MIDI_Write(DWORD adr, uint8_t data)
 {
-	if ( (adr<0xeafa01)||(adr>=0xeafa10)||(!Config.MIDI_SW) )	// 変なアドレスか、
-	{								// MIDI OFF時にはバスエラーにする
+	if ( (adr<0xeafa01)||(adr>=0xeafa10)||(!Config.MIDI_SW) )	/* 変なアドレスか、 */
+	{								/* MIDI OFF時にはバスエラーにする */
 		BusErrFlag = 1;
 		return;
 	}
@@ -686,7 +665,7 @@ void FASTCALL MIDI_Write(DWORD adr, uint8_t data)
 		break;
 	case 0x07:
 		break;
-	case 0x09:			// R04, 14, ... 94
+	case 0x09:			/* R04, 14, ... 94 */
 		switch(MIDI_RegHigh)
 		{
 		case 0:
@@ -713,7 +692,7 @@ void FASTCALL MIDI_Write(DWORD adr, uint8_t data)
 			break;
 		}
 		break;
-	case 0x0b:			// R05, 15, ... 95
+	case 0x0b:			/* R05, 15, ... 95 */
 		switch(MIDI_RegHigh)
 		{
 		case 0:
@@ -742,7 +721,7 @@ void FASTCALL MIDI_Write(DWORD adr, uint8_t data)
 			break;
 		}
 		break;
-	case 0x0d:			// R06, 16, ... 96
+	case 0x0d:			/* R06, 16, ... 96 */
 		switch(MIDI_RegHigh)
 		{
 		case 0:
@@ -756,7 +735,7 @@ void FASTCALL MIDI_Write(DWORD adr, uint8_t data)
 			break;
 		case 4:
 			break;
-		case 5:			// Out Data Byte
+		case 5:			/* Out Data Byte */
 			if (!MIDI_Buffered)
 				MIDI_BufTimer = MIDIBUFTIMER;
 			MIDI_Buffered ++;
@@ -773,7 +752,7 @@ void FASTCALL MIDI_Write(DWORD adr, uint8_t data)
 			break;
 		}
 		break;
-	case 0x0f:			// R07, 17, ... 97
+	case 0x0f:			/* R07, 17, ... 97 */
 		switch(MIDI_RegHigh)
 		{
 		case 0:
@@ -805,100 +784,85 @@ void FASTCALL MIDI_Write(DWORD adr, uint8_t data)
 }
 
 
-// -----------------------------------------------------------------------
-// MIMPIトーンファイル読み込み（ねこみぢ6）
-// -----------------------------------------------------------------------
-
-static int exstrcmp(char *str, char *cmp) {
-
+/*
+ * MIMPIトーンファイル読み込み（ねこみぢ6）
+ */
+static int exstrcmp(char *str, char *cmp)
+{
 	uint8_t	c;
 
 	while(*cmp) {
 		c = *str++;
-		if ((c >= 'a') && (c <= 'z')) {
+		if ((c >= 'a') && (c <= 'z'))
 			c -= 0x20;
-		}
-		if (c != *cmp++) {
+		if (c != *cmp++)
 			return(TRUE);
-		}
 	}
 	return(FALSE);
 }
 
-static void cutdelimita(char **buf) {
-
+static void cutdelimita(char **buf)
+{
 	uint8_t	c;
 
 	for(;;) {
 		c = **buf;
-		if (!c) {
+		if (!c)
 			break;
-		}
-		if (c > ' ') {
+		if (c > ' ')
 			break;
-		}
 		(*buf)++;
 	}
 }
 
-static int getvalue(char **buf, int cutspace) {
-
+static int getvalue(char **buf, int cutspace)
+{
 	int		ret = 0;
 	int	valhit = 0;
 	uint8_t	c;
 
-	if (cutspace) {
+	if (cutspace)
 		cutdelimita(buf);
-	}
 	for (;; valhit=1) {
 		c = **buf;
 		if (!c) {
-			if (!valhit) {
+			if (!valhit)
 				return(-1);
-			}
-			else {
-				break;
-			}
-		}
-		if ((c < '0') || (c > '9')) {
 			break;
 		}
+		if ((c < '0') || (c > '9'))
+			break;
 		ret = ret * 10 + (c - '0');
 		(*buf)++;
 	}
 	return(ret);
 }
 
-static int file_readline(FILEH fh, char *buf, int len) {
-
+static int file_readline(FILEH fh, char *buf, int len)
+{
 	DWORD	pos;
 	DWORD	readsize;
 	DWORD	i;
 
-	if (len < 2) {
+	if (len < 2)
 		return(-1);
-	}
 	pos = File_Seek(fh, 0, FSEEK_CUR);
-	if (pos == (DWORD)-1) {
+	if (pos == (DWORD)-1)
 		return(-1);
-	}
 	readsize = File_Read(fh, buf, len-1);
-	if (readsize == (DWORD)-1) {
+	if (readsize == (DWORD)-1)
 		return(-1);
-	}
-	if (!readsize) {
+	if (!readsize)
 		return(-1);
-	}
-	for (i=0; i<readsize; i++) {
+	for (i=0; i<readsize; i++)
+	{
 		pos++;
-		if ((buf[i] == 0x0a) || (buf[i] == 0x0d)) {
+		if ((buf[i] == 0x0a) || (buf[i] == 0x0d))
 			break;
-		}
 	}
 	buf[i] = '\0';
-	if (File_Seek(fh, pos, FSEEK_SET) != pos) {
+	if (File_Seek(fh, pos, FSEEK_SET) != pos)
 		return(-1);
-	}
 	return(i);
 }
 

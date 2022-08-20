@@ -1,6 +1,6 @@
-// ---------------------------------------------------------------------------------------
-//  CRTC.C - CRT Controller / Video Controller
-// ---------------------------------------------------------------------------------------
+/*
+ *  CRTC.C - CRT Controller / Video Controller
+ */
 
 #include	"common.h"
 #include	"windraw.h"
@@ -17,7 +17,7 @@ uint32_t TextDotX = 768, TextDotY = 512;
 uint16_t CRTC_VSTART, CRTC_VEND;
 uint16_t CRTC_HSTART, CRTC_HEND;
 uint32_t TextScrollX = 0, TextScrollY = 0;
-uint32_t	GrphScrollX[4] = {0, 0, 0, 0};		// 配列にしちゃった…
+uint32_t	GrphScrollX[4] = {0, 0, 0, 0};		/* 配列にしちゃった… */
 uint32_t	GrphScrollY[4] = {0, 0, 0, 0};
 
 uint8_t	CRTC_FastClr = 0;
@@ -35,9 +35,9 @@ uint8_t	CRTC_RCFlag[2] = {0, 0};
 int HSYNC_CLK = 324;
 extern int VID_MODE, CHANGEAV_TIMING;
 
-// -----------------------------------------------------------------------
-//   らすたーこぴー
-// -----------------------------------------------------------------------
+/*
+ *   らすたーこぴー
+ */
 void CRTC_RasterCopy(void)
 {
 	DWORD line = (((DWORD)CRTC_Regs[0x2d])<<2);
@@ -66,15 +66,16 @@ void CRTC_RasterCopy(void)
 }
 
 
-// -----------------------------------------------------------------------
-//   びでおこんとろーるれじすた
-// -----------------------------------------------------------------------
-// Reg0の色モードは、ぱっと見CRTCと同じだけど役割違うので注意。
-// CRTCはGVRAMへのアクセス方法（メモリマップ上での見え方）が変わるのに対し、
-// VCtrlは、GVRAM→画面の展開方法を制御する。
-// つまり、アクセス方法（CRTC）は16bitモードで、表示は256色モードってな使い
-// 方も許されるのれす。
-// コットン起動時やYs（電波版）OPなどで使われてまふ。
+/* -----------------------------------------------------------------------
+ *   びでおこんとろーるれじすた
+ * -----------------------------------------------------------------------
+ * Reg0の色モードは、ぱっと見CRTCと同じだけど役割違うので注意。
+ * CRTCはGVRAMへのアクセス方法（メモリマップ上での見え方）が変わるのに対し、
+ * VCtrlは、GVRAM→画面の展開方法を制御する。
+ * つまり、アクセス方法（CRTC）は16bitモードで、表示は256色モードってな使い
+ * 方も許されるのれす。
+ * コットン起動時やYs（電波版）OPなどで使われてまふ。
+ */
 
 uint8_t FASTCALL VCtrl_Read(DWORD adr)
 {
@@ -127,10 +128,11 @@ void FASTCALL VCtrl_Write(DWORD adr, uint8_t data)
 }
 
 
-// -----------------------------------------------------------------------
-//   CRTCれじすた
-// -----------------------------------------------------------------------
-// レジスタアクセスのコードが汚い ^^;
+/* -----------------------------------------------------------------------
+ *   CRTCれじすた
+ * -----------------------------------------------------------------------
+ * レジスタアクセスのコードが汚い ^^;
+ */
 
 void CRTC_Init(void)
 {
@@ -152,10 +154,11 @@ uint8_t FASTCALL CRTC_Read(DWORD adr)
 	}
 	else if ( adr==0xe80481 )
 	{
-		// FastClearの注意点：
-		// FastClrビットに1を書き込むと、その時点ではReadBackしても1は見えない。
-		// 1書き込み後の最初の垂直帰線期間で1が立ち、消去を開始する。
-		// 1垂直同期期間で消去がおわり、0に戻る……らしひ（PITAPAT）
+		/* FastClearの注意点：
+		 * FastClrビットに1を書き込むと、その時点ではReadBackしても1は見えない。
+		 * 1書き込み後の最初の垂直帰線期間で1が立ち、消去を開始する。
+		 * 1垂直同期期間で消去がおわり、0に戻る……らしひ（PITAPAT）
+		 */
 		if (CRTC_FastClr)
 			return (CRTC_Mode | 0x02);
 		return (CRTC_Mode & 0xfd);
@@ -187,7 +190,7 @@ void FASTCALL CRTC_Write(DWORD adr, uint8_t data)
 			case 0x05:
 				CRTC_HSTART = (((WORD)CRTC_Regs[0x4]<<8)+CRTC_Regs[0x5]);
 				TextDotX = (CRTC_HEND-CRTC_HSTART)*8;
-				BG_HAdjust = ((long)BG_Regs[0x0d]-(CRTC_HSTART+4))*8;				// 水平方向は解像度による1/2はいらない？（Tetris）
+				BG_HAdjust = ((long)BG_Regs[0x0d]-(CRTC_HSTART+4))*8;				/* 水平方向は解像度による1/2はいらない？（Tetris） */
 				WinDraw_ChangeSize();
 				break;
 			case 0x06:
@@ -204,7 +207,7 @@ void FASTCALL CRTC_Write(DWORD adr, uint8_t data)
 			case 0x0c:
 			case 0x0d:
 				CRTC_VSTART = (((WORD)CRTC_Regs[0xc]<<8)+CRTC_Regs[0xd]);
-				BG_VLINE = ((long)BG_Regs[0x0f]-CRTC_VSTART)/((BG_Regs[0x11]&4)?1:2);	// BGとその他がずれてる時の差分
+				BG_VLINE = ((long)BG_Regs[0x0f]-CRTC_VSTART)/((BG_Regs[0x11]&4)?1:2);	/* BGとその他がずれてる時の差分 */
 				TextDotY = CRTC_VEND-CRTC_VSTART;
 				if ((CRTC_Regs[0x29]&0x14)==0x10)
 				{
@@ -311,9 +314,9 @@ void FASTCALL CRTC_Write(DWORD adr, uint8_t data)
 			case 0x2a:
 			case 0x2b:
 				break;
-			case 0x2c:				// CRTC動作ポートのラスタコピーをONにしておいて（しておいたまま）、
-			case 0x2d:				// Src/Dstだけ次々変えていくのも許されるらしい（ドラキュラとか）
-				CRTC_RCFlag[reg-0x2c] = 1;	// Dst変更後に実行される？
+			case 0x2c:				/* CRTC動作ポートのラスタコピーをONにしておいて（しておいたまま）、 */
+			case 0x2d:				/* Src/Dstだけ次々変えていくのも許されるらしい（ドラキュラとか） */
+				CRTC_RCFlag[reg-0x2c] = 1;	/* Dst変更後に実行される？ */
 				if ((CRTC_Mode&8)&&/*(CRTC_RCFlag[0])&&*/(CRTC_RCFlag[1]))
 				{
 					CRTC_RasterCopy();
@@ -324,18 +327,18 @@ void FASTCALL CRTC_Write(DWORD adr, uint8_t data)
 		}
 	}
 	else if (adr==0xe80481)
-	{					// CRTC動作ポート
+	{					/* CRTC動作ポート */
 		CRTC_Mode = (data|(CRTC_Mode&2));
 		if (CRTC_Mode&8)
-		{				// Raster Copy
+		{				/* Raster Copy */
 			CRTC_RasterCopy();
 			CRTC_RCFlag[0] = 0;
 			CRTC_RCFlag[1] = 0;
 		}
-		if (CRTC_Mode&2)		// 高速クリア
+		if (CRTC_Mode&2)		/* 高速クリア */
 		{
 			CRTC_FastClrLine = vline;
-			// この時点のマスクが有効らしい（クォース）
+			/* この時点のマスクが有効らしい（クォース） */
 			CRTC_FastClrMask = FastClearMask[CRTC_Regs[0x2b]&15];
 		}
 	}

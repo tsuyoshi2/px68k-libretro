@@ -1,7 +1,9 @@
-// ---------------------------------------------------------------------------------------
-//  BG.C - BGとスプライト
-//  ToDo：透明色の処理チェック（特に対Text間）
-// ---------------------------------------------------------------------------------------
+/*
+ *  BG.C - BGとスプライト
+ *  ToDo：透明色の処理チェック（特に対Text間）
+ */
+
+#include <string.h>
 
 #include "common.h"
 #include "windraw.h"
@@ -12,7 +14,6 @@
 #include "bg.h"
 
 #include "m68000.h"
-#include <string.h>
 
 uint8_t	BG[0x8000];
 uint8_t	Sprite_Regs[0x800];
@@ -23,9 +24,9 @@ static uint16_t	BG_BG0END = 0;
 static uint16_t	BG_BG1TOP = 0;
 static uint16_t	BG_BG1END = 0;
 static uint8_t	BG_CHRSIZE = 16;
-DWORD	BG_AdrMask = 511;
-DWORD	BG0ScrollX = 0, BG0ScrollY = 0;
-DWORD	BG1ScrollX = 0, BG1ScrollY = 0;
+static uint32_t BG_AdrMask = 511;
+static uint32_t	BG0ScrollX = 0, BG0ScrollY = 0;
+static uint32_t	BG1ScrollX = 0, BG1ScrollY = 0;
 
 long	BG_HAdjust = 0;
 long	BG_VLINE = 0;
@@ -40,10 +41,9 @@ WORD	BG_PriBuf[1600];
 
 DWORD	VLINEBG = 0;
 
-
-// -----------------------------------------------------------------------
-//   初期化
-// -----------------------------------------------------------------------
+/*
+ *   初期化
+ */
 void BG_Init(void)
 {
 	DWORD i;
@@ -58,9 +58,9 @@ void BG_Init(void)
 }
 
 
-// -----------------------------------------------------------------------
-//   I/O Read
-// -----------------------------------------------------------------------
+/*
+ *   I/O Read
+ */
 uint8_t FASTCALL BG_Read(DWORD adr)
 {
 	if ((adr>=0xeb0000)&&(adr<0xeb0400))
@@ -73,20 +73,19 @@ uint8_t FASTCALL BG_Read(DWORD adr)
 		return BG_Regs[adr-0xeb0800];
 	else if ((adr>=0xeb8000)&&(adr<0xec0000))
 		return BG[adr-0xeb8000];
-	else
-		return 0xff;
+	return 0xff;
 }
 
 
-// -----------------------------------------------------------------------
-//   I/O Write
-// -----------------------------------------------------------------------
+/*
+ *   I/O Write
+ */
 void FASTCALL BG_Write(DWORD adr, uint8_t data)
 {
 	DWORD bg16chr;
-	int s1, s2, v = 0;
-	s1 = (((BG_Regs[0x11]  &4)?2:1)-((BG_Regs[0x11]  &16)?1:0));
-	s2 = (((CRTC_Regs[0x29]&4)?2:1)-((CRTC_Regs[0x29]&16)?1:0));
+	int v  = 0;
+	int s1 = (((BG_Regs[0x11]  &4)?2:1)-((BG_Regs[0x11]  &16)?1:0));
+	int s2 = (((CRTC_Regs[0x29]&4)?2:1)-((CRTC_Regs[0x29]&16)?1:0));
 	if ( !(BG_Regs[0x11]&16) ) v = ((BG_Regs[0x0f]>>s1)-(CRTC_Regs[0x0d]>>s2));
 	if ((adr>=0xeb0000)&&(adr<0xeb0400))
 	{
@@ -98,7 +97,7 @@ void FASTCALL BG_Write(DWORD adr, uint8_t data)
 			WORD t0, t, *pw;
 
 			v = BG_VLINE - 16 - v;
-			// get YPOS pointer (Sprite_Regs[] is little endian)
+			/* get YPOS pointer (Sprite_Regs[] is little endian) */
 			pw = (WORD *)(Sprite_Regs + (adr & 0x3f8) + 2);
 
 #define UPDATE_TDL(t)				\
@@ -125,7 +124,7 @@ void FASTCALL BG_Write(DWORD adr, uint8_t data)
 	else if ((adr>=0xeb0800)&&(adr<0xeb0812))
 	{
 		adr -= 0xeb0800;
-		if (BG_Regs[adr]==data) return;	// データに変化が無ければ帰る
+		if (BG_Regs[adr]==data) return;	/* データに変化が無ければ帰る */
 		BG_Regs[adr] = data;
 		switch(adr)
 		{
@@ -150,20 +149,20 @@ void FASTCALL BG_Write(DWORD adr, uint8_t data)
 			TVRAM_SetAllDirty();
 			break;
 
-		case 0x08:		// BG On/Off Changed
+		case 0x08:		/* BG On/Off Changed */
 			TVRAM_SetAllDirty();
 			break;
 
 		case 0x0d:
-			BG_HAdjust = ((long)BG_Regs[0x0d]-(CRTC_HSTART+4))*8;				// 水平方向は解像度による1/2はいらない？（Tetris）
+			BG_HAdjust = ((long)BG_Regs[0x0d]-(CRTC_HSTART+4))*8;				/* 水平方向は解像度による1/2はいらない？（Tetris） */
 			TVRAM_SetAllDirty();
 			break;
 		case 0x0f:
-			BG_VLINE = ((long)BG_Regs[0x0f]-CRTC_VSTART)/((BG_Regs[0x11]&4)?1:2);	// BGとその他がずれてる時の差分
+			BG_VLINE = ((long)BG_Regs[0x0f]-CRTC_VSTART)/((BG_Regs[0x11]&4)?1:2);	/* BGとその他がずれてる時の差分 */
 			TVRAM_SetAllDirty();
 			break;
 
-		case 0x11:		// BG ScreenRes Changed
+		case 0x11:		/* BG ScreenRes Changed */
 			if (data&3)
 			{
 				if ((BG_BG0TOP==0x4000)||(BG_BG1TOP==0x4000))
@@ -177,10 +176,10 @@ void FASTCALL BG_Write(DWORD adr, uint8_t data)
 				BG_CHREND = 0x2000;
 			BG_CHRSIZE = ((data&3)?16:8);
 			BG_AdrMask = ((data&3)?1023:511);
-			BG_HAdjust = ((long)BG_Regs[0x0d]-(CRTC_HSTART+4))*8;				// 水平方向は解像度による1/2はいらない？（Tetris）
-			BG_VLINE = ((long)BG_Regs[0x0f]-CRTC_VSTART)/((BG_Regs[0x11]&4)?1:2);	// BGとその他がずれてる時の差分
+			BG_HAdjust = ((long)BG_Regs[0x0d]-(CRTC_HSTART+4))*8;				/* 水平方向は解像度による1/2はいらない？（Tetris） */
+			BG_VLINE = ((long)BG_Regs[0x0f]-CRTC_VSTART)/((BG_Regs[0x11]&4)?1:2);	/* BGとその他がずれてる時の差分 */
 			break;
-		case 0x09:		// BG Plane Cfg Changed
+		case 0x09:		/* BG Plane Cfg Changed */
 			TVRAM_SetAllDirty();
 			if (data&0x08)
 			{
@@ -229,7 +228,7 @@ void FASTCALL BG_Write(DWORD adr, uint8_t data)
 	else if ((adr>=0xeb8000)&&(adr<0xec0000))
 	{
 		adr -= 0xeb8000;
-		if (BG[adr]==data) return;			// データに変化が無ければ帰る
+		if (BG[adr]==data) return;			/* データに変化が無ければ帰る */
 		BG[adr] = data;
 		if (adr<0x2000)
 		{
@@ -240,24 +239,24 @@ void FASTCALL BG_Write(DWORD adr, uint8_t data)
 		BGCHR16[bg16chr]   = data>>4;
 		BGCHR16[bg16chr+1] = data&15;
 
-		if (adr<BG_CHREND)				// パターンエリア
+		if (adr<BG_CHREND)				/* パターンエリア */
 		{
 			TVRAM_SetAllDirty();
 		}
-		if ((adr>=BG_BG1TOP)&&(adr<BG_BG1END))	// BG1 MAPエリア
+		if ((adr>=BG_BG1TOP)&&(adr<BG_BG1END))	/* BG1 MAPエリア */
 		{
 			TVRAM_SetAllDirty();
 		}
-		if ((adr>=BG_BG0TOP)&&(adr<BG_BG0END))	// BG0 MAPエリア
+		if ((adr>=BG_BG0TOP)&&(adr<BG_BG0END))	/* BG0 MAPエリア */
 		{
 			TVRAM_SetAllDirty();
 		}
 	}
 }
 
-// -----------------------------------------------------------------------
-//   1ライン分の描画
-// -----------------------------------------------------------------------
+/*
+ *   1ライン分の描画
+ */
 struct SPRITECTRLTBL {
 	WORD	sprite_posx;
 	WORD	sprite_posy;
@@ -267,8 +266,7 @@ struct SPRITECTRLTBL {
 } __attribute__ ((packed));
 typedef struct SPRITECTRLTBL SPRITECTRLTBL_T;
 
-INLINE void
-Sprite_DrawLineMcr(int pri)
+static INLINE void Sprite_DrawLineMcr(int pri)
 {
 	SPRITECTRLTBL_T *sct = (SPRITECTRLTBL_T *)Sprite_Regs;
 	DWORD y;
@@ -289,7 +287,7 @@ Sprite_DrawLineMcr(int pri)
 			y = -y;
 			y += 16;
 
-			// add y, 16; jnc .spline_lpcnt
+			/* add y, 16; jnc .spline_lpcnt */
 			if (y <= 15) {
 				uint8_t *p;
 				DWORD pal;
@@ -433,25 +431,23 @@ void bg_drawline_loopx16(WORD BGTOP, DWORD BGScrollX, DWORD BGScrollY, long adju
 	}
 }
 
-INLINE void
-BG_DrawLineMcr8(WORD BGTOP, DWORD BGScrollX, DWORD BGScrollY)
+static INLINE void BG_DrawLineMcr8(WORD BGTOP, DWORD BGScrollX, DWORD BGScrollY)
 {
        bg_drawline_loopx8(BGTOP, BGScrollX, BGScrollY, BG_HAdjust, 0);
 }
 
-INLINE void
-BG_DrawLineMcr16(WORD BGTOP, DWORD BGScrollX, DWORD BGScrollY)
+static INLINE void BG_DrawLineMcr16(WORD BGTOP, DWORD BGScrollX, DWORD BGScrollY)
 {
 	bg_drawline_loopx16(BGTOP, BGScrollX, BGScrollY, BG_HAdjust, 0);
 }
 
-INLINE void
+static INLINE void
 BG_DrawLineMcr8_ng(WORD BGTOP, DWORD BGScrollX, DWORD BGScrollY)
 {
        bg_drawline_loopx8(BGTOP, BGScrollX, BGScrollY, BG_HAdjust, 1);
 }
 
-INLINE void
+static INLINE void
 BG_DrawLineMcr16_ng(WORD BGTOP, DWORD BGScrollX, DWORD BGScrollY)
 {
        bg_drawline_loopx16(BGTOP, BGScrollX, BGScrollY, 0, 1);
@@ -477,11 +473,11 @@ void FASTCALL BG_DrawLine(int opaq, int gd)
 	func16 = (gd)? BG_DrawLineMcr16 : BG_DrawLineMcr16_ng;
 
 	Sprite_DrawLineMcr(1);
-	if ((BG_Regs[9] & 8) && (BG_CHRSIZE == 8)) { // BG1 on
+	if ((BG_Regs[9] & 8) && (BG_CHRSIZE == 8)) { /* BG1 on */
 		(*func8)(BG_BG1TOP, BG1ScrollX, BG1ScrollY);
 	}
 	Sprite_DrawLineMcr(2);
-	if (BG_Regs[9] & 1) { // BG0 on
+	if (BG_Regs[9] & 1) { /* BG0 on */
 		if (BG_CHRSIZE == 8) {
 			(*func8)(BG_BG0TOP, BG0ScrollX, BG0ScrollY);
 		} else {

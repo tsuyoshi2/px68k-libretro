@@ -4,7 +4,7 @@
 #include "fdd.h"
 #include "disk_dim.h"
 
-// DIM Image Header
+/* DIM Image Header */
 typedef struct {
 	uint8_t	type;
 	uint8_t	trkflag[170];
@@ -15,7 +15,7 @@ typedef struct {
 	uint8_t	overtrack;
 } DIM_HEADER;
 
-// DIM Disk Type
+/* DIM Disk Type */
 enum
 {
 	DIM_2HD = 0,
@@ -63,7 +63,7 @@ int DIM_SetFD(int drv, char* filename)
 	strncpy(DIMFile[drv], filename, MAX_PATH);
 	DIMFile[drv][MAX_PATH-1] = 0;
 
-	DIMImg[drv] = (unsigned char*)malloc(1024*9*170+sizeof(DIM_HEADER));		// Maximum size
+	DIMImg[drv] = (unsigned char*)malloc(1024*9*170+sizeof(DIM_HEADER));		/* Maximum size */
 	if ( !DIMImg[drv] ) return FALSE;
 	memset(DIMImg[drv], 0xe5, 1024*9*170+sizeof(DIM_HEADER));
 	fp = File_Open(DIMFile[drv]);
@@ -140,16 +140,16 @@ static void SetID(int drv, FDCID* id, int c, int h, int r)
 {
 	int type = DIMImg[drv][0];
 	switch (type) {
-		case DIM_2HD:				// 1024byte/sct, 8sct/trk
+		case DIM_2HD:				/* 1024byte/sct, 8sct/trk */
 			id->n = 3; break;
-		case DIM_2HS:				// 1024byte/sct, 9sct/trk
+		case DIM_2HS:				/* 1024byte/sct, 9sct/trk */
 			if ( (c)||(h)||(r!=1) ) r += 9;
 			id->n = 3; break;
 		case DIM_2HDE:
 			if ( (c)||(h)||(r!=1) ) h += 0x80;
 			id->n = 3; break;
-		case DIM_2HC:				// 512byte/sct, 15sct/trk
-		case DIM_2HQ:				// 512byte/sct, 18sct/trk
+		case DIM_2HC: /* 512byte/sct, 15sct/trk */
+		case DIM_2HQ: /* 512byte/sct, 18sct/trk */
 			id->n = 2; break;
 	}
 	id->c = c;
@@ -162,18 +162,18 @@ static int IncTrk(int drv, int r)
 {
 	int type = DIMImg[drv][0];
 	switch (type) {
-		case DIM_2HD:				// 1024byte/sct, 8sct/trk
+		case DIM_2HD: /* 1024byte/sct, 8sct/trk */
 			r = (r+1)&7;
 			break;
-		case DIM_2HS:				// 1024byte/sct, 9sct/trk
-			if ( r>8 ) r -= 9;		// 9SCDRV用
+		case DIM_2HS: /* 1024byte/sct, 9sct/trk */
+			if ( r>8 ) r -= 9; /* 9SCDRV用 */
 		case DIM_2HDE:
 			r = (r+1)%9;
 			break;
-		case DIM_2HC:				// 512byte/sct, 15sct/trk
+		case DIM_2HC: /* 512byte/sct, 15sct/trk */
 			r = (r+1)%15;
 			break;
-		case DIM_2HQ:				// 512byte/sct, 18sct/trk
+		case DIM_2HQ: /* 512byte/sct, 18sct/trk */
 			r = (r+1)%18;
 			break;
 	}
@@ -186,29 +186,29 @@ static int GetPos(int drv, FDCID* id)
 	int ret, c = id->c, h = id->h, r = id->r, n = id->n;
 	int type = DIMImg[drv][0];
 	switch (type) {
-		case DIM_2HD:				// 1024byte/sct, 8sct/trk
+		case DIM_2HD: /* 1024byte/sct, 8sct/trk */
 			if ( (c<0)||(c>84)||(h<0)||(h>1)||(r<1)||(r>8)||(n!=3) ) return 0;
 			ret = SctLength[type]*(c*2+h)+((r-1)<<10);
 			ret += sizeof(DIM_HEADER);
 			break;
-		case DIM_2HS:				// 1024byte/sct, 9sct/trk
-			if ( r>9 ) r -= 9;		// 9SCDRV用
+		case DIM_2HS: /* 1024byte/sct, 9sct/trk */
+			if ( r>9 ) r -= 9; /* 9SCDRV用 */
 			if ( (c<0)||(c>84)||(h<0)||(h>1)||(r<1)||(r>9)||(n!=3) ) return 0;
 			ret = SctLength[type]*(c*2+h)+((r-1)<<10);
 			ret += sizeof(DIM_HEADER);
 			break;
 		case DIM_2HDE:
-			h &= 1;					// 9SCDRV用
+			h &= 1; /* 9SCDRV用 */
 			if ( (c<0)||(c>84)||(h<0)||(h>1)||(r<1)||(r>9)||(n!=3) ) return 0;
 			ret = SctLength[type]*(c*2+h)+((r-1)<<10);
 			ret += sizeof(DIM_HEADER);
 			break;
-		case DIM_2HC:				// 512byte/sct, 15sct/trk
+		case DIM_2HC: /* 512byte/sct, 15sct/trk */
 			if ( (c<0)||(c>84)||(h<0)||(h>1)||(r<1)||(r>15)||(n!=2) ) return 0;
 			ret = SctLength[type]*(c*2+h)+((r-1)<<9);
 			ret += sizeof(DIM_HEADER);
 			break;
-		case DIM_2HQ:				// 512byte/sct, 18sct/trk
+		case DIM_2HQ: /* 512byte/sct, 18sct/trk */
 			if ( (c<0)||(c>84)||(h<0)||(h>1)||(r<1)||(r>18)||(n!=2) ) return 0;
 			ret = SctLength[type]*(c*2+h)+((r-1)<<9);
 			ret += sizeof(DIM_HEADER);
@@ -225,19 +225,19 @@ static int CheckTrack(int drv, int trk)
 {
 	DIM_HEADER* dh = (DIM_HEADER*)DIMImg[drv];
 	switch (dh->type) {
-		case DIM_2HD:				// 1024byte/sct, 8sct/trk
+		case DIM_2HD: /* 1024byte/sct, 8sct/trk */
 			if ( ((trk>153)&&(!dh->overtrack))||(!dh->trkflag[trk]) ) return 0;
 			break;
-		case DIM_2HS:				// 1024byte/sct, 9sct/trk
+		case DIM_2HS: /* 1024byte/sct, 9sct/trk */
 			if ( ((trk>159)&&(!dh->overtrack))||(!dh->trkflag[trk]) ) return 0;
 			break;
 		case DIM_2HDE:
 			if ( ((trk>159)&&(!dh->overtrack))||(!dh->trkflag[trk]) ) return 0;
 			break;
-		case DIM_2HC:				// 512byte/sct, 15sct/trk
+		case DIM_2HC: /* 512byte/sct, 15sct/trk */
 			if ( ((trk>159)&&(!dh->overtrack))||(!dh->trkflag[trk]) ) return 0;
 			break;
-		case DIM_2HQ:				// 512byte/sct, 18sct/trk
+		case DIM_2HQ: /* 512byte/sct, 18sct/trk */
 			if ( ((trk>159)&&(!dh->overtrack))||(!dh->trkflag[trk]) ) return 0;
 			break;
 		default:

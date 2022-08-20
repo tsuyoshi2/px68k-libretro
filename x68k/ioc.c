@@ -1,6 +1,6 @@
-// ---------------------------------------------------------------------------------------
-//  IOC.C - I/O Controller
-// ---------------------------------------------------------------------------------------
+/*
+ *  IOC.C - I/O Controller
+ */
 
 #include "common.h"
 #include "ioc.h"
@@ -20,7 +20,6 @@ uint8_t FASTCALL IOC_Read(DWORD adr)
 		return IOC_IntStat;
 	return 0xff;
 }
-
 
 void FASTCALL IOC_Write(DWORD adr, uint8_t data)
 {

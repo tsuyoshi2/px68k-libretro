@@ -35,9 +35,7 @@ unsigned int read16(unsigned int a) {
 
 unsigned int MyCheckPc(unsigned int pc)
 {
-
-
-  pc-= m68k.membase; // Get the real program counter
+  pc-= m68k.membase; /* Get the real program counter */
   if (pc <= 0xbfffff) 			       					{ m68k.membase=(int) MEM; return m68k.membase+pc; }
   if ((pc >= 0xfc0000) && (pc <= 0xffffff))	{ m68k.membase=(int) IPL - 0xfc0000; return m68k.membase+pc; }
   if ((pc >= 0xc00000) && (pc <= 0xc7ffff)) m68k.membase=(int) GVRAM - 0xc00000;
@@ -45,8 +43,7 @@ unsigned int MyCheckPc(unsigned int pc)
   if ((pc >= 0xea0000) && (pc <= 0xea1fff))	m68k.membase=(int) SCSIIPL - 0xea0000;
   if ((pc >= 0xed0000) && (pc <= 0xed3fff))	m68k.membase=(int) SRAM - 0xed0000;
   if ((pc >= 0xf00000) && (pc <= 0xfbffff))	m68k.membase=(int) FONT - 0xf00000;
-
-  return m68k.membase+pc; // New program counter
+  return m68k.membase+pc; /* New program counter */
 }
 
 #elif defined (HAVE_MUSASHI)
@@ -144,8 +141,8 @@ void m68000_reset(void)
 {
 #if defined (HAVE_CYCLONE)
 	CycloneReset(&m68k);
-	m68k.state_flags = 0; // Go to default state (not stopped, halted, etc.)
-	m68k.srh = 0x27; // Set supervisor mode
+	m68k.state_flags = 0; /* Go to default state (not stopped, halted, etc.) */
+	m68k.srh = 0x27; /* Set supervisor mode */
 #elif defined (HAVE_C68K)
 	C68k_Reset(&C68K);
 #elif defined (HAVE_MUSASHI)
@@ -191,10 +188,6 @@ void m68000_set_irq_line(int irqline, int state)
 #if defined (HAVE_CYCLONE)
 	m68k.irq = irqline;
 #elif defined (HAVE_C68K)
-//	if (irqline == IRQ_LINE_NMI)
-//		irqline = 7;
-
-//	C68k_Set_IRQ(&C68K, irqline, state);
 	C68k_Set_IRQ(&C68K, irqline);
 #elif defined (HAVE_MUSASHI)
 	m68k_set_irq(irqline);
@@ -206,11 +199,7 @@ void m68000_set_irq_line(int irqline, int state)
 	割り込みコールバック関数設定
 --------------------------------------------------------*/
 
-void m68000_set_irq_callback(int (*callback)(int line))
-{
-//	C68k_Set_IRQ_Callback(&C68K, callback);
-}
-
+void m68000_set_irq_callback(int (*callback)(int line)) { }
 
 /*--------------------------------------------------------
 	レジスタ取得
@@ -398,7 +387,7 @@ void m68000_set_reg(int regnum, uint32_t val)
 STATE_SAVE( m68000 )
 {
 #if defined (HAVE_CYCLONE)
-// empty
+/* empty */
 #elif defined (HAVE_C68K)
 	int i;
 	uint32_t pc = C68k_Get_Reg(&C68K, C68K_PC);
@@ -426,7 +415,7 @@ STATE_SAVE( m68000 )
 STATE_LOAD( m68000 )
 {
 #if defined (HAVE_CYCLONE)
-// empty
+/* empty */
 #elif defined (HAVE_C68K)
 	int i;
 	uint32_t pc;

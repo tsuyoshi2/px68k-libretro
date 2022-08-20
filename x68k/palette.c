@@ -1,6 +1,6 @@
-// ---------------------------------------------------------------------------------------
-//  PALETTE.C - Text/BG/Graphic Palette
-// ---------------------------------------------------------------------------------------
+/*
+ *  PALETTE.C - Text/BG/Graphic Palette
+ */
 
 #include	"common.h"
 #include	"windraw.h"
@@ -15,14 +15,11 @@ uint8_t	Pal_Regs[1024];
 WORD	TextPal[256];
 WORD	GrphPal[256];
 WORD	Pal16[65536];
-WORD	Ibit;				// 半透明処理とかで使うかも〜
+WORD	Ibit;				/* 半透明処理とかで使うかも〜 */
 
 WORD	Pal_HalfMask, Pal_Ix2;
-WORD	Pal_R, Pal_G, Pal_B;		// 画面輝度変更時用
+WORD	Pal_R, Pal_G, Pal_B;		/* 画面輝度変更時用 */
 
-// ----- DDrawの16ビットモードの色マスクからX68k→Win用の変換テーブルを作る -----
-// X68kは「GGGGGRRRRRBBBBBI」の構造。Winは「RRRRRGGGGGGBBBBB」の形が多いみたい。が、
-// 違う場合もあるみたいなので計算してみやう。
 void Pal_SetColor(void)
 {
 	WORD TempMask, bit;
@@ -33,9 +30,9 @@ void Pal_SetColor(void)
 
 	r = g = b = 5;
 	Pal_R = Pal_G = Pal_B = 0;
-	TempMask = 0;				// 使われているビットをチェック（Iビット用）
+	TempMask = 0;				/* 使われているビットをチェック（Iビット用） */
 	for (bit=0x8000; bit; bit>>=1)
-	{					// 各色毎に左（上位）から5ビットずつ拾う
+	{					/* 各色毎に左（上位）から5ビットずつ拾う */
 		if ( (WinDraw_Pal16R&bit)&&(r) )
 		{
 			R[--r] = bit;
@@ -58,34 +55,19 @@ void Pal_SetColor(void)
 
 	Ibit = 1;
 	for (bit=1; bit; bit<<=1)
-	{					// 使われていないビット（通常は6ビット以上ある色の
-		if (!(TempMask&bit))		// 最下位ビット）をIビットとして扱う
-		{				// 0のビットが複数だったときを考えて、Ibit=~TempMask; にはしてないです
+	{ /* 使われていないビット（通常は6ビット以上ある色の */
+		if (!(TempMask&bit)) /* 最下位ビット）をIビットとして扱う */
+		{ /* 0のビットが複数だったときを考えて、Ibit=~TempMask; にはしてないです */
 			Ibit = bit;
 			break;
 		}
 	}
 
-	// ねこーねこー
-	// Pal_Ix2 = 0 になったらどうしよう… その時は32bit拡張…
-
-	// → Riva128なんかでは見事になるみたい（笑） でもそれでも特に問題無いかも…
-
 	Pal_HalfMask = ~(B[0] | R[0] | G[0] | Ibit);
 	Pal_Ix2 = Ibit << 1;
 
-/*
-	// どーしても変そうなら、これを入れるか…32bit拡張めんどくさいし（汗
-	if (Ibit==0x8000)			// Ibitが最上位ビットだったら、青の最下位と入れ替え
-	{
-		Ibit = B[0];
-		B[0] = 0;			// 青は4bitになっちゃうけど我慢して ^^;
-		Pal_HalfMask = ~(B[1] | R[0] | G[0] | Ibit | 0x8000);
-		Pal_Ix2 = Ibit << 1;
-	}
-*/
-						// X68kのビット配置に合わせてテーブル作成
-						// すっげ〜手際が悪いね（汗
+	/* X68kのビット配置に合わせてテーブル作成 */
+	/* すっげ〜手際が悪いね（汗 */
 	for (i=0; i<65536; i++)
 	{
 		bit = 0;
@@ -109,10 +91,6 @@ void Pal_SetColor(void)
 	}
 }
 
-
-// -----------------------------------------------------------------------
-//   初期化
-// -----------------------------------------------------------------------
 void Pal_Init(void)
 {
 	memset(Pal_Regs, 0, 1024);
@@ -121,10 +99,9 @@ void Pal_Init(void)
 	Pal_SetColor();
 }
 
-
-// -----------------------------------------------------------------------
-//   I/O Read
-// -----------------------------------------------------------------------
+/*
+ *   I/O Read
+ */
 uint8_t FASTCALL Pal_Read(DWORD adr)
 {
 	if (adr<0xe82400)
@@ -133,9 +110,9 @@ uint8_t FASTCALL Pal_Read(DWORD adr)
 }
 
 
-// -----------------------------------------------------------------------
-//   I/O Write
-// -----------------------------------------------------------------------
+/*
+ *   I/O Write
+ */
 void FASTCALL Pal_Write(DWORD adr, uint8_t data)
 {
 	WORD pal;
@@ -155,7 +132,8 @@ void FASTCALL Pal_Write(DWORD adr, uint8_t data)
 	}
 	else if (adr<0x400)
 	{
-		if (MemByteAccess) return;		// TextPalはバイトアクセスは出来ないらしい（神戸恋愛物語）
+		if (MemByteAccess)
+			return; /* TextPalはバイトアクセスは出来ないらしい（神戸恋愛物語） */
 		Pal_Regs[adr] = data;
 		TVRAM_SetAllDirty();
 		pal = Pal_Regs[adr&0xfffe];
@@ -164,10 +142,9 @@ void FASTCALL Pal_Write(DWORD adr, uint8_t data)
 	}
 }
 
-
-// -----------------------------------------------------------------------
-//   こんとらすと変更（パレットに対するWin側の表示色で実現してます ^^;）
-// -----------------------------------------------------------------------
+/*
+ *   こんとらすと変更（パレットに対するWin側の表示色で実現してます ^^;）
+ */
 void Pal_ChangeContrast(int num)
 {
 	WORD bit;
@@ -183,7 +160,8 @@ void Pal_ChangeContrast(int num)
 	r = g = b = 5;
 
 	for (bit=0x8000; bit; bit>>=1)
-	{					// 各色毎に左（上位）から5ビットずつ拾う
+	{
+		/* 各色毎に左（上位）から5ビットずつ拾う */
 		if ( (WinDraw_Pal16R&bit)&&(r) ) R[--r] = bit;
 		if ( (WinDraw_Pal16G&bit)&&(g) ) G[--g] = bit;
 		if ( (WinDraw_Pal16B&bit)&&(b) ) B[--b] = bit;
