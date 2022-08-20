@@ -5890,7 +5890,7 @@ case 0x4E54:
 case 0x4E55:
 case 0x4E56:
 
-/* LINK
+/* LINK */
 case 0x4E50:
 {
 	u32 res;
