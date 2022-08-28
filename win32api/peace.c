@@ -54,17 +54,10 @@ enum {
 	HTYPE_THREAD,
 	HTYPE_MODULE,
 	HTYPE_FILE,
-	HTYPE_FILEMAPPING,
-	HTYPE_SEMAPHORE,
-	HTYPE_MUTEX,
-	HTYPE_EVENT,
-	HTYPE_HWND,
-	HTYPE_MENU,
-	HTYPE_CONSOLE,
-	HTYPE_KEY
 };
 
-struct internal_handle {
+struct internal_handle
+{
 	void	*p;
 	uint32_t flags;
 	size_t	psize;
@@ -72,7 +65,8 @@ struct internal_handle {
 	int	type;
 };
 
-struct internal_file {
+struct internal_file
+{
 	int	fd;
 };
 
@@ -147,11 +141,6 @@ CreateFile(LPCSTR filename, DWORD rdwr, DWORD share,
 	struct internal_file *fp;
 	HANDLE h;
 	int fd, fmode = 0;
-
-	(void)share;
-	(void)sap;
-	(void)flags;
-	(void)template;
 #ifdef _WIN32
  	fmode |=O_BINARY;
 #endif
@@ -189,34 +178,26 @@ CreateFile(LPCSTR filename, DWORD rdwr, DWORD share,
 DWORD WINAPI
 SetFilePointer(HANDLE h, LONG pos, PLONG newposh, DWORD whence)
 {
-	struct internal_file *fp;
-	off_t newpos;
-	int fd;
-
-	(void)newposh;
-
-	fp = LocalLock(h);
-	fd = fp->fd;
+	struct internal_file *fp = LocalLock(h);
+	int fd                   = fp->fd;
 	LocalUnlock(h);
-	newpos = lseek(fd, pos, whence);
-	return newpos;
+	return lseek(fd, pos, whence);
 }
 
 BOOL WINAPI
 FAKE_CloseHandle(HANDLE h)
 {
-	switch (handletype(h)) {
-	case HTYPE_FILE:
-	    {
-		struct internal_file *fp;
-
-		fp = LocalLock(h);
-		close(fp->fd);
-		LocalUnlock(h);
-	    }
-		break;
-	default:
-		return FALSE;
+	switch (handletype(h))
+	{
+		case HTYPE_FILE:
+			{
+				struct internal_file *fp = LocalLock(h);
+				close(fp->fd);
+				LocalUnlock(h);
+			}
+			break;
+		default:
+			return FALSE;
 	}
 	LocalFree(h);
 	return TRUE;
@@ -242,44 +223,26 @@ GetFileAttributes(LPCSTR path)
 HLOCAL WINAPI
 LocalAlloc(UINT flags, UINT bytes)
 {
-
 	return GlobalAlloc(flags, bytes);
 }
 
-HLOCAL WINAPI
-LocalFree(HLOCAL h)
-{
+HLOCAL WINAPI LocalFree(HLOCAL h) { return GlobalFree(h);  }
 
-	return GlobalFree(h);
-}
+PVOID WINAPI LocalLock(HLOCAL h)  { return GlobalLock(h);  }
 
-PVOID WINAPI
-LocalLock(HLOCAL h)
-{
-
-	return GlobalLock(h);
-}
-
-BOOL WINAPI
-LocalUnlock(HLOCAL h)
-{
-
-	return GlobalUnlock(h);
-}
+BOOL WINAPI LocalUnlock(HLOCAL h) { return GlobalUnlock(h);}
 
 HGLOBAL WINAPI
 GlobalAlloc(UINT flags, DWORD bytes)
 {
-	struct internal_handle *p;
-
-	(void)flags;
-
-	p = malloc(bytes + sizeof(struct internal_handle));
-	if (p != 0) {
-		p->p = &p[1];
-		p->psize = bytes;
+	struct internal_handle *p = (struct internal_handle*)
+		malloc(bytes + sizeof(struct internal_handle));
+	if (p)
+	{
+		p->p        = &p[1];
+		p->psize    = bytes;
 		p->refcount = 0;
-		p->type = HTYPE_MEMORY;
+		p->type     = HTYPE_MEMORY;
 		return p->p;
 	}
 	return 0;
@@ -292,23 +255,20 @@ GlobalFree(HGLOBAL h)
 
 	if (h == 0)
 		return 0;
-	if (!isfixed(h)) {
-		free(ih);
+	if (!isfixed(h))
 		return 0;
-	}
 	ih = GlobalHandle(h);
-	if (ih->p == &ih[1]) {
+	if (ih->p == &ih[1])
+	{
 		free(ih);
 		return 0;
 	}
-
 	return h;
 }
 
 HGLOBAL WINAPI
 GlobalHandle(PCVOID p)
 {
-
 	return (HGLOBAL)(p - sizeof(struct internal_handle));
 }
 
@@ -332,10 +292,8 @@ GlobalUnlock(HGLOBAL h)
 	if (isfixed(h) || ih->refcount == 0)
 		return FALSE;
 
-	if (--ih->refcount != 0) {
-		/* still locked */
+	if (--ih->refcount != 0) /* still locked? */
 		return TRUE;
-	}
 
 	/* unlocked */
 	return FALSE;
@@ -348,20 +306,20 @@ GetPrivateProfileString(LPCSTR sect, LPCSTR key, LPCSTR defvalue,
 	char lbuf[256];
 	FILE *fp;
 
-	if (sect == NULL
-	 || key == NULL
+	if (sect     == NULL
+	 || key      == NULL
 	 || defvalue == NULL
-	 || buf == NULL
-	 || len == 0
-	 || inifile == NULL)
+	 || buf      == NULL
+	 || len      == 0
+	 || inifile  == NULL)
 		return 0;
 
 	memset(buf, 0, len);
 
-	fp = fopen(inifile, "r");
-	if (fp == NULL)
+	if (!(fp = fopen(inifile, "r")))
 		goto nofile;
-	while (!feof(fp)) {
+	while (!feof(fp))
+	{
 		fgets(lbuf, sizeof(lbuf), fp);
 		/* XXX should be case insensitive */
 		if (lbuf[0] == '['
@@ -371,7 +329,8 @@ GetPrivateProfileString(LPCSTR sect, LPCSTR key, LPCSTR defvalue,
 	}
 	if (feof(fp))
 		goto notfound;
-	while (!feof(fp)) {
+	while (!feof(fp))
+	{
 		fgets(lbuf, sizeof(lbuf), fp);
 		if (lbuf[0] == '[' && strchr(lbuf, ']'))
 			goto notfound;
@@ -402,15 +361,16 @@ GetPrivateProfileInt(LPCSTR sect, LPCSTR key, INT defvalue, LPCSTR inifile)
 	char lbuf[256];
 	FILE *fp;
 
-	if (sect == NULL
-	 || key == NULL
+	if (sect    == NULL
+	 || key     == NULL
 	 || inifile == NULL)
 		return 0;
 
-	fp = fopen(inifile, "r");
-	if (fp == NULL)
+	if (!(fp = fopen(inifile, "r")))
 		goto nofile;
-	while (!feof(fp)) {
+
+	while (!feof(fp))
+	{
 		fgets(lbuf, sizeof(lbuf), fp);
 		/* XXX should be case insensitive */
 		if (lbuf[0] == '['
@@ -420,13 +380,15 @@ GetPrivateProfileInt(LPCSTR sect, LPCSTR key, INT defvalue, LPCSTR inifile)
 	}
 	if (feof(fp))
 		goto notfound;
-	while (!feof(fp)) {
+	while (!feof(fp))
+	{
 		fgets(lbuf, sizeof(lbuf), fp);
 		if (lbuf[0] == '[' && strchr(lbuf, ']'))
 			goto notfound;
 		/* XXX should be case insensitive */
 		if (!strncasecmp(key, lbuf, strlen(key))
-		    && lbuf[strlen(key)] == '=') {
+		    && lbuf[strlen(key)] == '=')
+		{
 			int value;
 			sscanf(&lbuf[strlen(key) + 1], "%d", &value);
 			fclose(fp);
