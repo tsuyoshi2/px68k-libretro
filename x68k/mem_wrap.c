@@ -272,20 +272,12 @@ static void
 wm_opm(DWORD addr, uint8_t val)
 {
 	uint8_t t;
-#ifdef RFMDRV
-	char buf[2];
-#endif
 
 	t = addr & 3;
 	if (t == 1)
 		OPM_Write(0, val);
 	else if (t == 3)
 		OPM_Write(1, val);
-#ifdef RFMDRV
-	buf[0] = t;
-	buf[1] = val;
-	send(rfd_sock, buf, sizeof(buf), 0);
-#endif
 }
 
 static void 
