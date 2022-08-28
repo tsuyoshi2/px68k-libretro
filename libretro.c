@@ -162,6 +162,83 @@ static void extract_directory(char *buf, const char *path, size_t size)
       buf[0] = '\0';
 }
 
+/* BEGIN MIDI INTERFACE */
+#include "x68k/midi.h"
+#include "win32api/mmsystem.h"
+static int libretro_supports_midi_output = 0;
+static struct retro_midi_interface midi_cb = { 0 };
+
+void midi_out_short_msg(DWORD dwMsg)
+{
+   if (libretro_supports_midi_output && midi_cb.output_enabled())
+   {
+      midi_cb.write(dwMsg         & 0xFF, 0); /* status byte */
+      midi_cb.write((dwMsg >> 8)  & 0xFF, 0); /* note no. */
+      midi_cb.write((dwMsg >> 16) & 0xFF, 0); /* velocity */
+      midi_cb.write((dwMsg >> 24) & 0xFF, 0); /* none */
+   }
+}
+
+void midi_out_long_msg(LPSTR lpData, size_t length)
+{
+   if (libretro_supports_midi_output && midi_cb.output_enabled())
+   {
+      int i;
+      for (i = 0; i < length; i++)
+         midi_cb.write((uint8_t)lpData[i], 0);
+   }
+}
+
+int midi_out_open(LPHMIDIOUT phmo)
+{
+   if (libretro_supports_midi_output && midi_cb.output_enabled())
+   {
+      *phmo = &midi_cb;
+      return 0;
+   }
+   return 1;
+}
+
+static void update_variable_midi_interface(void)
+{
+   struct retro_variable var;
+
+   var.key = "px68k_midi_output";
+   var.value = NULL;
+
+   if (environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE, &var) && var.value)
+   {
+      if (!strcmp(var.value, "disabled"))
+         Config.MIDI_SW = 0;
+      else if (!strcmp(var.value, "enabled"))
+         Config.MIDI_SW = 1;
+   }
+
+   var.key = "px68k_midi_output_type";
+   var.value = NULL;
+
+   if (environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE, &var) && var.value)
+   {
+      if (!strcmp(var.value, "LA"))
+         Config.MIDI_Type = 0;
+      else if (!strcmp(var.value, "GM"))
+         Config.MIDI_Type = 1;
+      else if (!strcmp(var.value, "GS"))
+         Config.MIDI_Type = 2;
+      else if (!strcmp(var.value, "XG"))
+         Config.MIDI_Type = 3;
+   }
+}
+
+static void midi_interface_init(void)
+{
+   libretro_supports_midi_output = 0;
+   if (environ_cb(RETRO_ENVIRONMENT_GET_MIDI_INTERFACE, &midi_cb))
+      libretro_supports_midi_output = 1;
+}
+
+/* END OF MIDI INTERFACE */
+
 static void update_variable_disk_drive_swap(void)
 {
    struct retro_variable var =
@@ -1268,6 +1345,8 @@ void retro_init(void)
     environ_cb(RETRO_ENVIRONMENT_SET_KEYBOARD_CALLBACK, &cbk);
 */
 
+   midi_interface_init();
+
    /* set sane defaults */
    Config.save_fdd_path = 1;
    Config.clockmhz = 10;
@@ -1288,11 +1367,14 @@ void retro_deinit(void)
 {
    end_loop_retro();
    libretro_supports_input_bitmasks = 0;
+   libretro_supports_midi_output    = 0;
 }
 
 void retro_reset(void)
 {
    WinX68k_Reset();
+   if (Config.MIDI_SW && Config.MIDI_Reset)
+	   MIDI_Reset();
 }
 
 static int firstcall = 1;
@@ -1331,6 +1413,7 @@ void retro_run(void)
       firstcall = 0;
       /* Initialization done */
       update_variables();
+      update_variable_midi_interface();
       soundbuf_size = SNDSZ;
       return;
    }
@@ -1373,6 +1456,9 @@ void retro_run(void)
          audio_samples_discard(nsamples - soundbuf_size);
    }
    raudio_callback(soundbuf, NULL, soundbuf_size << 2);
+
+   if (libretro_supports_midi_output && midi_cb.output_enabled())
+	   midi_cb.flush();
 
    audio_batch_cb((const int16_t*)soundbuf, soundbuf_size);
    video_cb(videoBuffer, retrow, retroh, /*retrow*/ 800 << 1/*2*/);
