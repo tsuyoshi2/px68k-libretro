@@ -32,21 +32,18 @@
 #include	"mercury.h"
 #include	"fmg_wrap.h"
 
-int16_t	playing = 0;
-
 #define PCMBUF_SIZE 2*2*48000
-uint8_t pcmbuffer[PCMBUF_SIZE];
-uint8_t *pcmbufp = pcmbuffer;
+
+static uint8_t pcmbuffer[PCMBUF_SIZE];
+static uint8_t rsndbuf  [PCMBUF_SIZE];
+static int16_t playing     = 0;
+static DWORD ratebase      = 22050;
+static long snd_precounter = 0;
+static int audio_fd        = 1;
+
 uint8_t *pbsp = pcmbuffer;
 uint8_t *pbrp = pcmbuffer, *pbwp = pcmbuffer;
 uint8_t *pbep = &pcmbuffer[PCMBUF_SIZE];
-DWORD ratebase = 22050;
-long DSound_PreCounter = 0;
-uint8_t rsndbuf[PCMBUF_SIZE];
-
-int audio_fd = 1;
-
-void raudio_callback(void *userdata, unsigned char *stream, int len);
 
 int DSound_Init(unsigned long rate)
 {
@@ -64,8 +61,7 @@ int DSound_Init(unsigned long rate)
 	return 1;
 }
 
-void
-DSound_Play(void)
+void DSound_Play(void)
 {
    	if (audio_fd >= 0) {
 		ADPCM_SetVolume((uint8_t)Config.PCM_VOL);
@@ -73,8 +69,7 @@ DSound_Play(void)
 	}
 }
 
-void
-DSound_Stop(void)
+void DSound_Stop(void)
 {
    	if (audio_fd >= 0) {
 		ADPCM_SetVolume(0);
@@ -82,8 +77,7 @@ DSound_Stop(void)
 	}
 }
 
-int
-DSound_Cleanup(void)
+int DSound_Cleanup(void)
 {
 	playing = 0;
 
@@ -95,10 +89,8 @@ DSound_Cleanup(void)
 
 static void sound_send(int length)
 {
-   int rate = 0;
-
-   ADPCM_Update((int16_t *)pbwp, length, rate, pbsp, pbep);
-   OPM_Update((int16_t *)pbwp, length, rate, pbsp, pbep);
+   ADPCM_Update((int16_t *)pbwp, length, pbsp, pbep);
+   OPM_Update((int16_t *)pbwp, length, pbsp, pbep);
 
    pbwp += length * sizeof(WORD) * 2;
    if (pbwp >= pbep)
@@ -113,24 +105,18 @@ void DSound_Send0(long clock)
 	if (audio_fd < 0)
 		return;
 
-	DSound_PreCounter += (ratebase * clock);
+	snd_precounter += (ratebase * clock);
 
-	while (DSound_PreCounter >= 10000000L)
+	while (snd_precounter >= 10000000L)
 	{
 		length++;
-		DSound_PreCounter -= 10000000L;
+		snd_precounter -= 10000000L;
 	}
 
 	if (length == 0)
 		return;
 
 	sound_send(length);
-}
-
-static void DSound_Send(int length)
-{
-	if (audio_fd >= 0)
-		sound_send(length);
 }
 
 int audio_samples_avail(void)
@@ -183,7 +169,11 @@ cb_start:
 
       /* needs more data */
       if (datalen < len)
-         DSound_Send((len - datalen) / 4);
+      {
+	      int length = (len - datalen) / 4;
+	      if (audio_fd >= 0)
+		      sound_send(length);
+      }
 
       /* change to TYPEC or TYPED */
       if (pbrp > pbwp)
@@ -215,11 +205,15 @@ cb_start:
          lenb = len - lena;
 
          if (pbwp - pbsp < lenb)
-            DSound_Send((lenb - (pbwp - pbsp)) / 4);
+	 {
+		 int length = (lenb - (pbwp - pbsp)) / 4;
+		 if (audio_fd >= 0)
+			 sound_send(length);
+	 }
 
          memcpy(rsndbuf, pbrp, lena);
          memcpy(&rsndbuf[lena], pbsp, lenb);
-         buf = rsndbuf;
+         buf  = rsndbuf;
          pbrp = pbsp + lenb;
       }
    }

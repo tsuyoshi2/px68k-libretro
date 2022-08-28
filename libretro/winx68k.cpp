@@ -115,8 +115,9 @@ void WinX68k_SCSICheck(void)
 	}
 }
 
-int
-WinX68k_LoadROMs(void)
+#define	NELEMENTS(array)	((int)(sizeof(array) / sizeof(array[0])))
+
+int WinX68k_LoadROMs(void)
 {
 	static const char *BIOSFILE[] = {
 		"iplrom.dat", "iplrom30.dat", "iplromco.dat", "iplromxv.dat"

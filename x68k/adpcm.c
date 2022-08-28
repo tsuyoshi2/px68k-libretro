@@ -111,7 +111,7 @@ void FASTCALL ADPCM_PreUpdate(DWORD clock)
 /*
  *   DSoundが指定してくる分だけバッファにデータを書き出す
  */
-void FASTCALL ADPCM_Update(int16_t *buffer, DWORD length, int rate, uint8_t *pbsp, uint8_t *pbep)
+void ADPCM_Update(int16_t *buffer, DWORD length, uint8_t *pbsp, uint8_t *pbep)
 {
 	int outs;
 	signed int outl, outr;
@@ -172,28 +172,6 @@ void FASTCALL ADPCM_Update(int16_t *buffer, DWORD length, int rate, uint8_t *pbs
 		tmpl = INTERPOLATE(OutsIpL, 0);
 		if ( tmpl>32767 ) tmpl = 32767; else if ( tmpl<(-32768) ) tmpl = -32768;
 		*(buffer++) = (int16_t)tmpl;
-		/* PSP以外はrateは0 */
-		if (rate == 22050) {
-			if (buffer >= (int16_t *)pbep) {
-				buffer = (int16_t *)pbsp;
-			}
-			*(buffer++) = (int16_t)tmpr;
-			*(buffer++) = (int16_t)tmpl;
-		} else if (rate == 11025) {
-			if (buffer >= (int16_t *)pbep)
-				buffer = (int16_t *)pbsp;
-			*(buffer++) = (int16_t)tmpr;
-			*(buffer++) = (int16_t)tmpl;
-			if (buffer >= (int16_t *)pbep)
-				buffer = (int16_t *)pbsp;
-			*(buffer++) = (int16_t)tmpr;
-			*(buffer++) = (int16_t)tmpl;
-			if (buffer >= (int16_t *)pbep)
-				buffer = (int16_t *)pbsp;
-			*(buffer++) = (int16_t)tmpr;
-			*(buffer++) = (int16_t)tmpl;
-		}
-
 		length--;
 	}
 

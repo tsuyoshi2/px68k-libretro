@@ -30,7 +30,7 @@ namespace FM
 		uint32_t	GetReg(uint32_t addr);
 		uint32_t	ReadStatus() { return status & 0x03; }
 		
-		void 	Mix(int16_t* buffer, int nsamples, int rate, uint8_t* pbsp, uint8_t* pbep);
+		void 	Mix(int16_t* buffer, int nsamples, uint8_t* pbsp, uint8_t* pbep);
 		
 		void	SetVolume(int db);
 		void	SetChannelMask(uint32_t mask);

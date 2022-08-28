@@ -39,6 +39,9 @@
 #include "joystick.h"
 #include "keyboard.h"
 
+#define		SCREEN_WIDTH		768
+#define		FULLSCREEN_WIDTH	800
+
 extern uint16_t *videoBuffer;
 WORD menu_buffer[800*600];
 
