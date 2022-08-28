@@ -5,9 +5,9 @@
 //	$fmgen-Id: psg.cpp,v 1.10 2002/05/15 21:38:01 cisc Exp $
 
 #include <stdint.h>
+#include <math.h>
 #include "common.h"
 
-#include "headers.h"
 #include "misc.h"
 #include "psg.h"
 

@@ -3,7 +3,7 @@
 //	Copyright (C) cisc 1998, 2003.
 // ---------------------------------------------------------------------------
 
-#include "headers.h"
+#include <math.h>
 #include "misc.h"
 #include "opm.h"
 #include "fmgeninl.h"
