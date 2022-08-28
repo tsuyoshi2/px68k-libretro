@@ -264,9 +264,9 @@ void WinX68k_Exec(void)
 	int KeyIntCnt = 0, MouseIntCnt = 0;
 	DWORD t_start = timeGetTime(), t_end;
 
-	if(!(Memory_ReadD(0xed0008)==Config.ram_size)){
-		Memory_WriteB(0xe8e00d, 0x31);             // SRAM write permission
-		Memory_WriteD(0xed0008, Config.ram_size);         // Define RAM amount
+	if(!(cpu_readmem24_dword(0xed0008)==Config.ram_size)){
+		cpu_writemem24(0xe8e00d, 0x31);             // SRAM write permission
+		cpu_writemem24_dword(0xed0008, Config.ram_size);         // Define RAM amount
 	}
 
 	Joystick_Update(0, -1, 0);
@@ -793,9 +793,9 @@ extern "C" void exec_app_retro(void)
 
 extern "C" void end_loop_retro(void)
 {
-   Memory_WriteB(0xe8e00d, 0x31);                     // SRAM write permission
-   Memory_WriteD(0xed0040, Memory_ReadD(0xed0040)+1); // Estimated operation time(min.)
-   Memory_WriteD(0xed0044, Memory_ReadD(0xed0044)+1); // Estimated booting times
+   cpu_writemem24(0xe8e00d, 0x31);                     // SRAM write permission
+   cpu_writemem24_dword(0xed0040, cpu_readmem24_dword(0xed0040)+1); // Estimated operation time(min.)
+   cpu_writemem24_dword(0xed0044, cpu_readmem24_dword(0xed0044)+1); // Estimated booting times
 
    OPM_Cleanup();
 #ifndef	NO_MERCURY

@@ -115,10 +115,10 @@ void m68000_init(void)
 
 #elif defined (HAVE_C68K)
     C68k_Init(&C68K, my_irqh_callback);
-    C68k_Set_ReadB(&C68K, Memory_ReadB);
-    C68k_Set_ReadW(&C68K, Memory_ReadW);
-    C68k_Set_WriteB(&C68K, Memory_WriteB);
-    C68k_Set_WriteW(&C68K, Memory_WriteW);
+    C68k_Set_ReadB(&C68K, cpu_readmem24);
+    C68k_Set_ReadW(&C68K, cpu_readmem24_word);
+    C68k_Set_WriteB(&C68K, cpu_writemem24);
+    C68k_Set_WriteW(&C68K, cpu_writemem24_word);
 	C68k_Set_Fetch(&C68K, 0x000000, 0xbfffff, (pointer)MEM);
     C68k_Set_Fetch(&C68K, 0xc00000, 0xc7ffff, (pointer)GVRAM);
     C68k_Set_Fetch(&C68K, 0xe00000, 0xe7ffff, (pointer)TVRAM);
