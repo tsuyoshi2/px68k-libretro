@@ -57,13 +57,14 @@ int D88_SetFD(int drv, char* filename)
 	strncpy(D88File[drv], filename, MAX_PATH);
 	D88File[drv][MAX_PATH-1] = 0;
 
-	fp = File_Open(D88File[drv]);
-	if ( !fp ) {
+	fp = file_open(D88File[drv]);
+	if ( !fp )
+	{
 		memset(D88File[drv], 0, MAX_PATH);
 		return 0;
 	}
-	File_Seek(fp, 0, FSEEK_SET);
-	if ( File_Read(fp, &D88Head[drv], sizeof(D88_HEADER))!=sizeof(D88_HEADER) ) goto d88_set_error;
+	file_seek(fp, 0, FSEEK_SET);
+	if ( file_lread(fp, &D88Head[drv], sizeof(D88_HEADER))!=sizeof(D88_HEADER) ) goto d88_set_error;
 
 	if ( D88Head[drv].protect ) {
 		FDD_SetReadOnly(drv);
@@ -75,9 +76,9 @@ int D88_SetFD(int drv, char* filename)
 		
 		if ( (ptr>=(long)sizeof(D88_HEADER))&&(ptr<D88Head[drv].fd_size) ) {
 			d88s.sectors = 65535;
-			File_Seek(fp, ptr, FSEEK_SET);
+			file_seek(fp, ptr, FSEEK_SET);
 			for (sct=0; sct<d88s.sectors; sct++) {
-				if ( File_Read(fp, &d88s, sizeof(D88_SECTOR))!=sizeof(D88_SECTOR) ) goto d88_set_error;
+				if ( file_lread(fp, &d88s, sizeof(D88_SECTOR))!=sizeof(D88_SECTOR) ) goto d88_set_error;
 				si = (D88_SECTINFO*)malloc(sizeof(D88_SECTINFO)+d88s.size);
 				if ( !si ) goto d88_set_error;
 				if ( sct ) {
@@ -86,17 +87,17 @@ int D88_SetFD(int drv, char* filename)
 					D88Trks[drv][trk] = si;
 				}
 				memcpy(&si->sect, &d88s, sizeof(D88_SECTOR));
-				if ( File_Read(fp, ((unsigned char*)si)+sizeof(D88_SECTINFO), d88s.size)!=d88s.size ) goto d88_set_error;
+				if ( file_lread(fp, ((unsigned char*)si)+sizeof(D88_SECTINFO), d88s.size)!=d88s.size ) goto d88_set_error;
 				si->next = 0;
 				if (oldsi) oldsi = si;
 			}
 		}
 	}
-	File_Close(fp);
+	file_close(fp);
 	return 1;
 
 d88_set_error:
-	File_Close(fp);
+	file_close(fp);
 	FDD_SetReadOnly(drv);
 	return 0;
 }
@@ -110,7 +111,7 @@ int D88_Eject(int drv)
 	if ( !D88File[drv][0] ) return 0;
 
 	if ( !FDD_IsReadOnly(drv) ) {
-		fp = File_Open(D88File[drv]);
+		fp = file_open(D88File[drv]);
 		if ( fp ) {
 			pos = sizeof(D88_HEADER);
 			for (trk=0; trk<164; trk++) {
@@ -125,16 +126,16 @@ int D88_Eject(int drv)
 				}
 			}
 			D88Head[drv].fd_size = pos;
-			File_Write(fp, &D88Head[drv], sizeof(D88_HEADER));
+			file_lwrite(fp, &D88Head[drv], sizeof(D88_HEADER));
 			for (trk=0; trk<164; trk++) {
 				D88_SECTINFO *si = D88Trks[drv][trk];
 				while ( si ) {
-					File_Write(fp, &si->sect, sizeof(D88_SECTOR)+si->sect.size);
+					file_lwrite(fp, &si->sect, sizeof(D88_SECTOR)+si->sect.size);
 					si = si->next;
 				}
 				D88Trks[drv][trk] = 0;
 			}
-			File_Close(fp);
+			file_close(fp);
 		}
 	}
 

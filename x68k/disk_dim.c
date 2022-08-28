@@ -66,15 +66,16 @@ int DIM_SetFD(int drv, char* filename)
 	DIMImg[drv] = (unsigned char*)malloc(1024*9*170+sizeof(DIM_HEADER));		/* Maximum size */
 	if ( !DIMImg[drv] ) return 0;
 	memset(DIMImg[drv], 0xe5, 1024*9*170+sizeof(DIM_HEADER));
-	fp = File_Open(DIMFile[drv]);
-	if ( !fp ) {
+	fp = file_open(DIMFile[drv]);
+	if ( !fp )
+	{
 		memset(DIMFile[drv], 0, MAX_PATH);
 		FDD_SetReadOnly(drv);
 		return 0;
 	}
 
-	File_Seek(fp, 0, FSEEK_SET);
-	if ( File_Read(fp, DIMImg[drv], sizeof(DIM_HEADER))!=sizeof(DIM_HEADER) ) goto dim_set_error;
+	file_seek(fp, 0, FSEEK_SET);
+	if ( file_lread(fp, DIMImg[drv], sizeof(DIM_HEADER))!=sizeof(DIM_HEADER) ) goto dim_set_error;
 	dh = (DIM_HEADER*)DIMImg[drv];
 	if ( dh->type>9 ) goto dim_set_error;
 	len = SctLength[dh->type];
@@ -82,16 +83,17 @@ int DIM_SetFD(int drv, char* filename)
 	p = DIMImg[drv]+sizeof(DIM_HEADER);
 	for (i=0; i<170; i++) {
 		if ( dh->trkflag[i] ) {
-			if ( File_Read(fp, p, len)!=len ) goto dim_set_error;
+			if ( file_lread(fp, p, len)!=len )
+				goto dim_set_error;
 		}
 		p += len;
 	}
-	File_Close(fp);
+	file_close(fp);
 	if ( !dh->overtrack ) memset(dh->trkflag, 1, 170);
 	return 1;
 
 dim_set_error:
-	File_Close(fp);
+	file_close(fp);
 	FDD_SetReadOnly(drv);
 	return 0;
 }
@@ -111,17 +113,17 @@ int DIM_Eject(int drv)
 	len = SctLength[dh->type];
 	p = DIMImg[drv]+sizeof(DIM_HEADER);
 	if ( !FDD_IsReadOnly(drv) ) {
-		fp = File_Open(DIMFile[drv]);
+		fp = file_open(DIMFile[drv]);
 		if ( !fp ) goto dim_eject_error;
-		File_Seek(fp, 0, FSEEK_SET);
-		if ( File_Write(fp, DIMImg[drv], sizeof(DIM_HEADER))!=sizeof(DIM_HEADER) ) goto dim_eject_error;
+		file_seek(fp, 0, FSEEK_SET);
+		if ( file_lwrite(fp, DIMImg[drv], sizeof(DIM_HEADER))!=sizeof(DIM_HEADER) ) goto dim_eject_error;
 		for (i=0; i<170; i++) {
 			if ( dh->trkflag[i] ) {
-				if ( File_Write(fp, p, len)!=len ) goto dim_eject_error;
+				if ( file_lwrite(fp, p, len)!=len ) goto dim_eject_error;
 			}
 			p += len;
 		}
-		File_Close(fp);
+		file_close(fp);
 	}
 	free(DIMImg[drv]);
 	DIMImg[drv] = 0;

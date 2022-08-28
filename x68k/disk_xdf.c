@@ -38,15 +38,15 @@ int XDF_SetFD(int drv, char* filename)
 	XDFImg[drv] = (unsigned char*)malloc(1261568);
 	if ( !XDFImg[drv] ) return 0;
 	memset(XDFImg[drv], 0xe5, 1261568);
-	fp = File_Open(XDFFile[drv]);
+	fp = file_open(XDFFile[drv]);
 	if ( !fp ) {
 		memset(XDFFile[drv], 0, MAX_PATH);
 		FDD_SetReadOnly(drv);
 		return 0;
 	}
-	File_Seek(fp, 0, FSEEK_SET);
-	File_Read(fp, XDFImg[drv], 1261568);
-	File_Close(fp);
+	file_seek(fp, 0, FSEEK_SET);
+	file_lread(fp, XDFImg[drv], 1261568);
+	file_close(fp);
 	return 1;
 }
 
@@ -60,11 +60,11 @@ int XDF_Eject(int drv)
 		return 0;
 	}
 	if ( !FDD_IsReadOnly(drv) ) {
-		fp = File_Open(XDFFile[drv]);
+		fp = file_open(XDFFile[drv]);
 		if ( !fp ) goto xdf_eject_error;
-		File_Seek(fp, 0, FSEEK_SET);
-		if ( File_Write(fp, XDFImg[drv], 1261568)!=1261568 ) goto xdf_eject_error;
-		File_Close(fp);
+		file_seek(fp, 0, FSEEK_SET);
+		if ( file_lwrite(fp, XDFImg[drv], 1261568)!=1261568 ) goto xdf_eject_error;
+		file_close(fp);
 	}
 	free(XDFImg[drv]);
 	XDFImg[drv] = 0;

@@ -74,21 +74,21 @@ int16_t SASI_Seek(void)
 	void *fp;
 
 	memset(SASI_Buf, 0, 256);
-	if (!(fp = File_Open(Config.HDImage[SASI_Device*2+SASI_Unit])))
+	if (!(fp = file_open(Config.HDImage[SASI_Device*2+SASI_Unit])))
 	{
 		memset(SASI_Buf, 0, 256);
 		return -1;
 	}
-	if (File_Seek(fp, SASI_Sector<<8, FSEEK_SET)!=(SASI_Sector<<8)) 
+	if (file_seek(fp, SASI_Sector<<8, FSEEK_SET)!=(SASI_Sector<<8)) 
 		goto error;
-	if (File_Read(fp, SASI_Buf, 256)!=256)
+	if (file_lread(fp, SASI_Buf, 256)!=256)
 		goto error;
-	File_Close(fp);
+	file_close(fp);
 
 	return 1;
 
 error:
-	File_Close(fp);
+	file_close(fp);
 	return 0;
 }
 
@@ -98,18 +98,18 @@ error:
  */
 int16_t SASI_Flush(void)
 {
-	void *fp = File_Open(Config.HDImage[SASI_Device*2+SASI_Unit]);
+	void *fp = file_open(Config.HDImage[SASI_Device*2+SASI_Unit]);
 	if (!fp) return -1;
-	if (File_Seek(fp, SASI_Sector<<8, FSEEK_SET)!=(SASI_Sector<<8))
+	if (file_seek(fp, SASI_Sector<<8, FSEEK_SET)!=(SASI_Sector<<8))
 		goto error;
-	if (File_Write(fp, SASI_Buf, 256)!=256)
+	if (file_lwrite(fp, SASI_Buf, 256)!=256)
 		goto error;
-	File_Close(fp);
+	file_close(fp);
 
 	return 1;
 
 error:
-	File_Close(fp);
+	file_close(fp);
 	return 0;
 }
 
