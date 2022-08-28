@@ -47,10 +47,10 @@ extern "C" {
 FILEH file_open(const char *filename);
 FILEH file_create(const char *filename, int ftype);
 DWORD file_seek(FILEH handle, long pointer, int16_t mode);
-DWORD file_lread(FILEH handle, void *data, DWORD length);
-DWORD file_lwrite(FILEH handle, void *data, DWORD length);
-WORD file_read(FILEH handle, void *data, WORD length);
-WORD file_write(FILEH handle, void *data, WORD length);
+size_t file_lread(FILEH handle, void *data, DWORD length);
+size_t file_lwrite(FILEH handle, void *data, DWORD length);
+size_t file_read(FILEH handle, void *data, WORD length);
+size_t file_write(FILEH handle, void *data, WORD length);
 int16_t file_close(FILEH handle);
 void file_setcd(const char *exename);
 FILEH file_open_c(const char *filename);

@@ -35,8 +35,6 @@
 #include "fileio.h"
 #include "prop.h"
 
-static uint8_t ini_title[] = "WinX68k";
-
 static uint8_t initialized = 0;
 
 Win68Conf Config;
@@ -48,8 +46,7 @@ extern int winx, winy;
 extern char retro_system_conf[512];
 extern char slash;
 
-int
-set_modulepath(char *path, size_t len)
+int set_modulepath(char *path, size_t len)
 {
         strcpy(path,retro_system_conf);
         sprintf(winx68k_ini, "%s%cconfig",retro_system_conf,slash);
@@ -121,23 +118,24 @@ void LoadConfig(void)
 	if (!initialized)
 		LoadDefaults();
 
-	GetPrivateProfileString(ini_title, "StartDir", "", buf, MAX_PATH, winx68k_ini);
+	GetPrivateProfileString("WinX68k", "StartDir", "", buf, MAX_PATH, winx68k_ini);
 	if (buf[0] != 0)
 		strncpy(filepath, buf, sizeof(filepath));
 	else
 		filepath[0] = 0;
 
 	if (Config.save_fdd_path)
-		for (i = 0; i < 2; i++) {
+		for (i = 0; i < 2; i++)
+		{
 			sprintf(buf, "FDD%d", i);
-			GetPrivateProfileString(ini_title, buf, "", Config.FDDImage[i], MAX_PATH, winx68k_ini);
+			GetPrivateProfileString("WinX68k", buf, "", Config.FDDImage[i], MAX_PATH, winx68k_ini);
 		}
 
 	if (Config.save_hdd_path)
 		for (i=0; i<16; i++)
 		{
 			sprintf(buf, "HDD%d", i);
-			GetPrivateProfileString(ini_title, buf, "", Config.HDImage[i], MAX_PATH, winx68k_ini);
+			GetPrivateProfileString("WinX68k", buf, "", Config.HDImage[i], MAX_PATH, winx68k_ini);
 		}
 }
 
@@ -148,19 +146,19 @@ void SaveConfig(void)
 	char	buf[MAX_PATH], buf2[MAX_PATH];
 	FILEH fp;
 
-	WritePrivateProfileString(ini_title, "StartDir", filepath, winx68k_ini);
+	WritePrivateProfileString("WinX68k", "StartDir", filepath, winx68k_ini);
 
 	if (Config.save_fdd_path)
 		for (i = 0; i < 2; i++)
 		{
 			sprintf(buf, "FDD%d", i);
-			WritePrivateProfileString(ini_title, buf, Config.FDDImage[i], winx68k_ini);
+			WritePrivateProfileString("WinX68k", buf, Config.FDDImage[i], winx68k_ini);
 		}
 
 	if (Config.save_hdd_path)
 		for (i=0; i<16; i++)
 		{
 			sprintf(buf, "HDD%d", i);
-			WritePrivateProfileString(ini_title, buf, Config.HDImage[i], winx68k_ini);
+			WritePrivateProfileString("WinX68k", buf, Config.HDImage[i], winx68k_ini);
 		}
 }

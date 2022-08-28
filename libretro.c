@@ -44,6 +44,8 @@ const float framerates[][MODES] = {
 #define SOUNDRATE 44100.0
 #define SNDSZ round(SOUNDRATE / FRAMERATE)
 
+static int firstcall = 1;
+
 static char RPATH[512];
 static char RETRO_DIR[512];
 static const char *retro_save_directory;
@@ -430,11 +432,10 @@ static char CMDFILE[512];
 
 static int loadcmdfile(char *argv)
 {
-   int res = 0;
-
+   int res  = 0;
    FILE *fp = fopen(argv, "r");
 
-   if (fp != NULL)
+   if (fp)
    {
       if (fgets(CMDFILE, 512, fp) != NULL)
          res = 1;
@@ -444,19 +445,15 @@ static int loadcmdfile(char *argv)
    return res;
 }
 
-static int HandleExtension(char *path, char *ext)
+static size_t handle_extension(char *path, char *ext)
 {
-   int len = strlen(path);
-
+   size_t len = strlen(path);
    if (len >= 4 &&
          path[len - 4] == '.' &&
          path[len - 3] == ext[0] &&
          path[len - 2] == ext[1] &&
          path[len - 1] == ext[2])
-   {
       return 1;
-   }
-
    return 0;
 }
 
@@ -558,17 +555,14 @@ static void Add_Option(const char* option)
    sprintf(XARGV[PARAMCOUNT++], "%s\0", option);
 }
 
-static int isM3U = 0;
-
-static int load(const char *argv)
+static int retro_load_game_internal(const char *argv)
 {
    if (strlen(argv) > strlen("cmd"))
    {
       int res = 0;
-      if (HandleExtension((char*)argv, "cmd") || HandleExtension((char*)argv, "CMD"))
+      if (handle_extension((char*)argv, "cmd") || handle_extension((char*)argv, "CMD"))
       {
-         res = loadcmdfile((char*)argv);
-         if (!res)
+         if (!(res = loadcmdfile((char*)argv)))
          {
             if (log_cb)
                log_cb(RETRO_LOG_ERROR, "%s\n", "[libretro]: failed to read cmd file ...");
@@ -577,7 +571,7 @@ static int load(const char *argv)
 
          parse_cmdline(CMDFILE);
       }
-      else if (HandleExtension((char*)argv, "m3u") || HandleExtension((char*)argv, "M3U"))
+      else if (handle_extension((char*)argv, "m3u") || handle_extension((char*)argv, "M3U"))
       {
          if (!read_m3u((char*)argv))
          {
@@ -595,8 +589,6 @@ static int load(const char *argv)
             sprintf((char*)argv, "%s \"%s\"", "px68k", disk.path[0]);
 
          disk.inserted[0] = true;
-         isM3U = 1;
-
          parse_cmdline(argv);
       }
    }
@@ -1239,13 +1231,12 @@ bool retro_load_game(const struct retro_game_info *info)
 
    if (info && info->path)
    {
-      const char *full_path = 0;
-      no_content = 0;
-      full_path = info->path;
+      const char *full_path = info->path;
+      no_content            = 0;
       strcpy(RPATH, full_path);
       extract_directory(base_dir, info->path, sizeof(base_dir));
 
-      if (!load(RPATH))
+      if (!retro_load_game_internal(RPATH))
          return false;
    }
 
@@ -1262,6 +1253,8 @@ bool retro_load_game_special(unsigned game_type, const struct retro_game_info *i
 
 void retro_unload_game(void)
 {
+   RPATH[0]    = '\0';
+   firstcall   = 0;
 }
 
 unsigned retro_get_region(void)
@@ -1349,10 +1342,10 @@ void retro_init(void)
 
    /* set sane defaults */
    Config.save_fdd_path = 1;
-   Config.clockmhz = 10;
-   Config.ram_size = 2 * 1024 *1024;
-   Config.JOY_TYPE[0] = 0;
-   Config.JOY_TYPE[1] = 0;
+   Config.clockmhz      = 10;
+   Config.ram_size      = 2 * 1024 *1024;
+   Config.JOY_TYPE[0]   = 0;
+   Config.JOY_TYPE[1]   = 0;
 
    update_variables();
 
@@ -1377,9 +1370,7 @@ void retro_reset(void)
 	   MIDI_Reset();
 }
 
-static int firstcall = 1;
-
-static void rumbleFrames(void)
+static void rumble_frames(void)
 {
    static int last_read_state;
 
@@ -1410,7 +1401,7 @@ void retro_run(void)
    if (firstcall)
    {
       pre_main();
-      firstcall = 0;
+      firstcall     = 0;
       /* Initialization done */
       update_variables();
       update_variable_midi_interface();
@@ -1442,8 +1433,7 @@ void retro_run(void)
    }
 
    input_poll_cb();
-
-   rumbleFrames();
+   rumble_frames();
 
    FDD_IsReading = 0;
 

@@ -69,44 +69,36 @@ file_seek(FILEH handle, long pointer, int16_t mode)
 	return SetFilePointer(handle, pointer, 0, mode);
 }
 
-DWORD
-file_lread(FILEH handle, void *data, DWORD length)
+size_t file_lread(FILEH handle, void *data, DWORD length)
 {
-	DWORD	readsize;
-
-	if (ReadFile(handle, data, length, &readsize, NULL) == 0)
+	size_t readsize;
+	if (read_file(handle, data, length, &readsize) == 0)
 		return 0;
 	return readsize;
 }
 
-DWORD
-file_lwrite(FILEH handle, void *data, DWORD length)
+size_t file_lwrite(FILEH handle, void *data, DWORD length)
 {
-	DWORD	writesize;
-
-	if (WriteFile(handle, data, length, &writesize, NULL) == 0)
+	size_t writesize;
+	if (write_file(handle, data, length, &writesize) == 0)
 		return 0;
 	return writesize;
 }
 
-WORD
-file_read(FILEH handle, void *data, WORD length)
+size_t file_read(FILEH handle, void *data, WORD length)
 {
-	DWORD	readsize;
-
-	if (ReadFile(handle, data, length, &readsize, NULL) == 0)
+	size_t readsize;
+	if (read_file(handle, data, length, &readsize) == 0)
 		return 0;
-	return (WORD)readsize;
+	return readsize;
 }
 
-WORD
-file_write(FILEH handle, void *data, WORD length)
+size_t file_write(FILEH handle, void *data, WORD length)
 {
-	DWORD	writesize;
-
-	if (WriteFile(handle, data, length, &writesize, NULL) == 0)
+	size_t writesize;
+	if (write_file(handle, data, length, &writesize) == 0)
 		return 0;
-	return (WORD)writesize;
+	return writesize;
 }
 
 int16_t file_close(FILEH handle)

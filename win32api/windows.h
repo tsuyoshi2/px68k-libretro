@@ -18,11 +18,9 @@ typedef	unsigned int	UINT;
 
 #ifdef HAVE_C68k
 #include "/m68000/c68k/core.h"
-typedef	u8	BYTE;
 typedef	u16	WORD;
 typedef	u32	DWORD;
 #else
-typedef	unsigned char	BYTE;
 typedef	unsigned short	WORD;
 typedef	unsigned int	DWORD;
 #endif
@@ -35,11 +33,8 @@ typedef	long		*PLONG;
 typedef	DWORD		*PDWORD;
 
 typedef	void *		LPSECURITY_ATTRIBUTES;
-typedef	void *		LPOVERLAPPED;
 
 typedef void *		HANDLE;
-typedef	HANDLE		HLOCAL;
-typedef	HANDLE		HGLOBAL;
 
 #ifndef FASTCALL
 #define FASTCALL
@@ -99,48 +94,10 @@ typedef	HANDLE		HGLOBAL;
 #define	FILE_CURRENT			1
 #define	FILE_END			2
 
-
 /*
  * replace
  */
 #define	timeGetTime()		FAKE_GetTickCount()
-
-/*
- * WIN32 structure
- */
-typedef struct {
-	WORD	bfType;
-	DWORD	bfSize;
-	WORD	bfReserved1;
-	WORD	bfReserved2;
-	DWORD	bfOffBits;
-} __attribute__ ((packed)) BITMAPFILEHEADER;
-
-typedef struct {
-	DWORD	biSize;
-	LONG	biWidth;
-	LONG	biHeight;
-	WORD	biPlanes;
-	WORD	biBitCount;
-	DWORD	biCompression;
-	DWORD	biSizeImage;
-	LONG	biXPelsPerMeter;
-	LONG	biYPelsPerMeter;
-	DWORD	biClrUsed;
-	DWORD	biClrImportant;
-} __attribute__ ((packed)) BITMAPINFOHEADER;
-
-typedef struct {
-	BYTE	rgbBlue;
-	BYTE	rgbGreen;
-	BYTE	rgbRed;
-	BYTE	rgbReserved;
-} __attribute__ ((packed)) RGBQUAD;
-
-typedef struct {
-	BITMAPINFOHEADER	bmiHeader;
-	RGBQUAD			bmiColors[1];
-} __attribute__ ((packed)) BITMAPINFO;
 
 /*
  * prototype

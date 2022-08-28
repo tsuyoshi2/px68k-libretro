@@ -96,7 +96,7 @@ DWORD FAKE_GetTickCount(void)
 	return tv.tv_usec / 1000 + tv.tv_sec * 1000;
 }
 
-static PVOID LocalLock(HLOCAL h)
+static void *local_lock(void *h)
 {
 	struct internal_handle *ih = h;
 
@@ -107,7 +107,7 @@ static PVOID LocalLock(HLOCAL h)
 	return ih->p;
 }
 
-static int LocalUnlock(HLOCAL h)
+static int local_unlock(void *h)
 {
 	struct internal_handle *ih = h;
 
@@ -121,7 +121,7 @@ static int LocalUnlock(HLOCAL h)
 	return 0;
 }
 
-static HLOCAL LocalAlloc(UINT flags, UINT bytes) 
+static void *local_alloc(size_t bytes) 
 {
 	struct internal_handle *p = (struct internal_handle*)
 		malloc(bytes + sizeof(struct internal_handle));
@@ -136,46 +136,46 @@ static HLOCAL LocalAlloc(UINT flags, UINT bytes)
 	return 0;
 }
 
-static HLOCAL LocalFree(HLOCAL h)
+static void *local_free(void *h)
 {
 	struct internal_handle *ih = h;
 
 	if (h == 0)
-		return 0;
+		return NULL;
 	if (!isfixed(h))
-		return 0;
-	ih = (HGLOBAL)(h - sizeof(struct internal_handle));
+		return NULL;
+	ih = (HANDLE)(h - sizeof(struct internal_handle));
 	if (ih->p == &ih[1])
 	{
 		free(ih);
-		return 0;
+		return NULL;
 	}
 	return h;
 }
 
-int ReadFile(HANDLE h, PVOID buf, DWORD len, PDWORD lp, LPOVERLAPPED lpov)
+int read_file(HANDLE h, PVOID buf, DWORD len, size_t *lp)
 {
 	struct internal_file *fp;
 	if (h == (HANDLE)INVALID_HANDLE_VALUE)
 		return 0;
 
-	fp  = LocalLock(h);
+	fp  = local_lock(h);
 	*lp = read(fp->fd, buf, len);
-	LocalUnlock(h);
+	local_unlock(h);
 	if (*lp <= 0)
 		return 0;
 	return 1;
 }
 
-int WriteFile(HANDLE h, PCVOID buf, DWORD len, PDWORD lp, LPOVERLAPPED lpov)
+int write_file(HANDLE h, PCVOID buf, DWORD len, size_t *lp)
 {
 	struct internal_file *fp;
 	if (h == (HANDLE)INVALID_HANDLE_VALUE)
 		return 0;
 
-	fp  = LocalLock(h);
+	fp  = local_lock(h);
 	*lp = write(fp->fd, buf, len);
-	LocalUnlock(h);
+	local_unlock(h);
 	if (*lp <= 0)
 		return 0;
 	return 1;
@@ -216,38 +216,33 @@ HANDLE CreateFile(const char *filename, DWORD rdwr, DWORD share,
 	if (fd < 0)
 		return (HANDLE)INVALID_HANDLE_VALUE;
 
-	h = LocalAlloc(0, sizeof(struct internal_file));
+	h = local_alloc(sizeof(struct internal_file));
 	sethandletype(h, HTYPE_FILE);
-	fp = LocalLock(h);
+	fp     = local_lock(h);
 	fp->fd = fd;
-	LocalUnlock(h);
+	local_unlock(h);
 	return h;
 }
 
 DWORD SetFilePointer(HANDLE h, LONG pos, PLONG newposh, DWORD whence)
 {
-	struct internal_file *fp = LocalLock(h);
+	struct internal_file *fp = local_lock(h);
 	int fd                   = fp->fd;
-	LocalUnlock(h);
+	local_unlock(h);
 	return lseek(fd, pos, whence);
 }
 
 int FAKE_CloseHandle(HANDLE h)
 {
-	switch (handletype(h))
-	{
-		case HTYPE_FILE:
-			{
-				struct internal_file *fp = LocalLock(h);
-				close(fp->fd);
-				LocalUnlock(h);
-			}
-			break;
-		default:
-			return 0;
-	}
-	LocalFree(h);
-	return 1;
+        if (handletype(h) == HTYPE_FILE)
+        {
+		struct internal_file *fp = local_lock(h);
+		close(fp->fd);
+		local_unlock(h);
+		local_free(h);
+		return 1;
+        }
+	return 0;
 }
 
 size_t GetPrivateProfileString(const char *sect, const char *key,

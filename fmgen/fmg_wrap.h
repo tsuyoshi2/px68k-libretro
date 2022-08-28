@@ -12,7 +12,6 @@ uint8_t FASTCALL OPM_Read(WORD a);
 void FASTCALL OPM_Timer(DWORD step);
 void OPM_SetVolume(uint8_t vol);
 void OPM_SetRate(int clock, int rate);
-void OPM_RomeoOut(unsigned int delay);
 
 int M288_Init(int clock, int rate, const char* path);
 void M288_Cleanup(void);

@@ -61,16 +61,12 @@ void FileIO::Close()
 //	ファイル殻の読み出し
 // ---------------------------------------------------------------------------
 
-int32_t FileIO::Read(void* dest, int32_t size)
+void FileIO::Read(void* dest, int32_t size)
 {
+	size_t readsize;
 	uint32_t flags = GetFlags();
-	if (!(flags & open))
-		return -1;
-	
-	DWORD readsize;
-	if (!ReadFile(hfile, dest, size, &readsize, 0))
-		return -1;
-	return readsize;
+	if ((flags & open))
+		read_file(hfile, dest, size, &readsize);
 }
 
 // ---------------------------------------------------------------------------

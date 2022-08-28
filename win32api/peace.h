@@ -9,8 +9,8 @@ extern "C" {
 
 DWORD	FAKE_GetTickCount(void);
 
-int	ReadFile(HANDLE, PVOID, DWORD, PDWORD, LPOVERLAPPED);
-int	WriteFile(HANDLE, PCVOID, DWORD, PDWORD, LPOVERLAPPED);
+int	read_file(HANDLE, PVOID, DWORD, size_t*);
+int	write_file(HANDLE, PCVOID, DWORD, size_t*);
 HANDLE	CreateFile(const char*, DWORD, DWORD, LPSECURITY_ATTRIBUTES,
 		DWORD, DWORD, HANDLE);
 DWORD	SetFilePointer(HANDLE, LONG, PLONG, DWORD);

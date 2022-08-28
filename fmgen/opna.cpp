@@ -17,14 +17,6 @@
 //	TOFIX:
 //	 OPN ch3 が常にPrepareの対象となってしまう障害
 
-
-// ---------------------------------------------------------------------------
-//	OPNA: ADPCM データの格納方式の違い (8bit/1bit) をエミュレートしない
-//	このオプションを有効にすると ADPCM メモリへのアクセス(特に 8bit モード)が
-//	多少軽くなるかも
-//
-//#define NO_BITTYPE_EMULATION
-
 #include "file.h"
 
 namespace FM
@@ -233,7 +225,6 @@ uint32_t OPN::GetReg(uint32_t addr)
 //	レジスタアレイにデータを設定
 void OPN::SetReg(uint32_t addr, uint32_t data)
 {
-//	LOG2("reg[%.2x] <- %.2x\n", addr, data);
 	if (addr >= 0x100)
 		return;
 	
@@ -532,7 +523,6 @@ void OPNABase::SetReg(uint32_t addr, uint32_t data)
 	// Status Mask -----------------------------------------------------------
 	case 0x29:
 		reg29 = data;
-//		UpdateStatus(); //?
 		break;
 	
 	// Prescaler -------------------------------------------------------------
@@ -637,22 +627,17 @@ void OPNABase::SetADPCMBReg(uint32_t addr, uint32_t data)
 		adpcmreg[addr - 0x02 + 0] = data;
 		startaddr = (adpcmreg[1]*256+adpcmreg[0]) << 6;
 		memaddr = startaddr;
-//		LOG1("  startaddr %.6x", startaddr);
 		break;
 
 	case 0x04:		// Stop Address L
 	case 0x05:		// Stop Address H
 		adpcmreg[addr - 0x04 + 2] = data;
 		stopaddr = (adpcmreg[3]*256+adpcmreg[2] + 1) << 6;
-//		LOG1("  stopaddr %.6x", stopaddr);
 		break;
 
 	case 0x08:		// ADPCM data
 		if ((control1 & 0x60) == 0x60)
-		{
-//			LOG2("  Wr [0x%.5x] = %.2x", memaddr, data);
 			WriteRAM(data);
-		}
 		break;
 
 	case 0x09:		// delta-N L
@@ -672,7 +657,6 @@ void OPNABase::SetADPCMBReg(uint32_t addr, uint32_t data)
 	case 0x0d:		// Limit Address H
 		adpcmreg[addr - 0x0c + 6] = data;
 		limitaddr = (adpcmreg[7]*256+adpcmreg[6] + 1) << 6;
-//		LOG1("  limitaddr %.6x", limitaddr);
 		break;
 
 	case 0x10:		// Flag Control
@@ -682,10 +666,7 @@ void OPNABase::SetADPCMBReg(uint32_t addr, uint32_t data)
 			UpdateStatus();
 		}
 		else
-		{
 			stmask = ~(data & 0x1f);
-//			UpdateStatus();					//???
-		}
 		break;
 	}
 }	
@@ -701,16 +682,10 @@ uint32_t OPNA::GetReg(uint32_t addr)
 
 	if (addr == 0x108)
 	{
-//		LOG1("%d:reg[108] ->   ", Diag::GetCPUTick());
-		
 		uint32_t data = adpcmreadbuf & 0xff;
 		adpcmreadbuf >>= 8;
 		if ((control1 & 0x60) == 0x20)
-		{
 			adpcmreadbuf |= ReadRAM() << 8;
-//			LOG2("Rd [0x%.6x:%.2x] ", memaddr, adpcmreadbuf >> 8);
-		}
-//		LOG0("%.2x\n");
 		return data;
 	}
 	
@@ -730,24 +705,19 @@ void OPNABase::SetStatus(uint32_t bits)
 {
 	if (!(status & bits))
 	{
-//		LOG2("SetStatus(%.2x %.2x)\n", bits, stmask);
 		status |= bits & stmask;
 		UpdateStatus();
 	}
-//	else
-//		LOG1("SetStatus(%.2x) - ignored\n", bits);
 }
 
 void OPNABase::ResetStatus(uint32_t bits)
 {
 	status &= ~bits;
-//	LOG1("ResetStatus(%.2x)\n", bits);
 	UpdateStatus();
 }
 
 inline void OPNABase::UpdateStatus()
 {
-//	LOG2("%d:INT = %d\n", Diag::GetCPUTick(), (status & stmask & reg29) != 0);
 	Intr((status & stmask & reg29) != 0);
 }
 
@@ -756,7 +726,6 @@ inline void OPNABase::UpdateStatus()
 //
 void OPNABase::WriteRAM(uint32_t data)
 {
-#ifndef NO_BITTYPE_EMULATION
 	if (!(control2 & 2))
 	{
 		// 1 bit mode
@@ -781,10 +750,6 @@ void OPNABase::WriteRAM(uint32_t data)
 		p[0x38000] = (p[0x38000] & ~mask) | (uint8_t(data) & mask);
 		memaddr += 2;
 	}
-#else
-	adpcmbuf[(memaddr >> granuality) & 0x3ffff] = data;
-	memaddr += 1 << granuality;
-#endif
 
 	if (memaddr == stopaddr)
 	{
@@ -793,10 +758,7 @@ void OPNABase::WriteRAM(uint32_t data)
 		memaddr &= 0x3fffff;
 	}
 	if (memaddr == limitaddr)
-	{
-//		LOG1("Limit ! (%.8x)\n", limitaddr);
 		memaddr = 0;
-	}
 	SetStatus(8);
 }
 
@@ -806,7 +768,6 @@ void OPNABase::WriteRAM(uint32_t data)
 uint32_t OPNABase::ReadRAM()
 {
 	uint32_t data;
-#ifndef NO_BITTYPE_EMULATION
 	if (!(control2 & 2))
 	{
 		// 1 bit mode
@@ -831,10 +792,6 @@ uint32_t OPNABase::ReadRAM()
 		data >>= bank;
 		memaddr += 2;
 	}
-#else
-	data = adpcmbuf[(memaddr >> granuality) & 0x3ffff];
-	memaddr += 1 << granuality;
-#endif
 	if (memaddr == stopaddr)
 	{
 		SetStatus(4);
@@ -842,10 +799,7 @@ uint32_t OPNABase::ReadRAM()
 		memaddr &= 0x3fffff;
 	}
 	if (memaddr == limitaddr)
-	{
-//		LOG1("Limit ! (%.8x)\n", limitaddr);
 		memaddr = 0;
-	}
 	if (memaddr < stopaddr)
 		SetStatus(8);
 	return data;
@@ -878,7 +832,6 @@ int OPNABase::ReadRAMN()
 	uint32_t data;
 	if (granuality > 0)
 	{
-#ifndef NO_BITTYPE_EMULATION
 		if (!(control2 & 2))
 		{
 			data = adpcmbuf[(memaddr >> 4) & 0x3ffff];
@@ -902,13 +855,6 @@ int OPNABase::ReadRAMN()
 			if (memaddr & 1)
 				return DecodeADPCMBSample(data);
 		}
-#else
-		data = adpcmbuf[(memaddr >> granuality) & adpcmmask];
-		memaddr += 1 << (granuality-1);
-		if (memaddr & (1 << (granuality-1)))
-			return DecodeADPCMBSample(data >> 4);
-		data &= 0x0f;
-#endif
 	}
 	else
 	{
@@ -975,13 +921,10 @@ void OPNABase::ADPCMBMix(int16_t* dest, uint32_t count)
 	uint32_t maskl = control2 & 0x80 ? -1 : 0;
 	uint32_t maskr = control2 & 0x40 ? -1 : 0;
 	if (adpcmmask_)
-	{
 		maskl = maskr = 0;
-	}
  	
 	if (adpcmplay)
 	{
-//		LOG2("ADPCM Play: %d   DeltaN: %d\n", adpld, deltan);
 		if (adpld <= 8192)		// fplay < fsamp
 		{
 			for (; count>0; count--)
@@ -1124,10 +1067,6 @@ void OPNABase::BuildLFOTable()
 
 inline void OPNABase::LFO()
 {
-//	LOG3("%4d - %8d, %8d\n", c, lfocount, lfodcount);
-
-//	Operator::SetPML(pmtable[(lfocount >> (FM_LFOCBITS+1)) & 0xff]);
-//	Operator::SetAML(amtable[(lfocount >> (FM_LFOCBITS+1)) & 0xff]);
 	chip.SetPML(pmtable[(lfocount >> (FM_LFOCBITS+1)) & 0xff]);
 	chip.SetAML(amtable[(lfocount >> (FM_LFOCBITS+1)) & 0xff]);
 	lfocount += lfodcount;
@@ -1355,7 +1294,6 @@ void OPNA::SetReg(uint32_t addr, uint32_t data)
 	{
 	case 0x29:
 		reg29 = data;
-//		UpdateStatus(); //?
 		break;
 	
 	// Rhythm ----------------------------------------------------------------
@@ -1704,7 +1642,6 @@ void Y288::SetReg(uint32_t addr, uint32_t data)
 
 	case 0x29:
 		reg29 = data;
-//		UpdateStatus(); //?
 		break;
 
 	case 0x2d: case 0x2e: case 0x2f:

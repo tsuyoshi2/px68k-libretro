@@ -36,7 +36,7 @@ public:
 	bool Open(const char* filename, uint32_t flg = 0);
 	void Close();
 
-	int32_t Read(void* dest, int32_t len);
+	void Read(void* dest, int32_t len);
 	bool Seek(int32_t fpos, SeekMethod method);
 
 	uint32_t GetFlags() { return flags; }
