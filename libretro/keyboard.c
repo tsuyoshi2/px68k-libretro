@@ -35,12 +35,7 @@
 uint8_t	KeyBufWP;
 uint8_t	KeyBufRP;
 uint8_t	KeyBuf[KeyBufSize];
-uint8_t	KeyEnable = 1;
 uint8_t	KeyIntFlag = 0;
-
-struct keyboard_key kbd_key[] = {
-#include "keytbl.inc"
-};
 
 void
 Keyboard_Init(void)
@@ -49,7 +44,6 @@ Keyboard_Init(void)
 	KeyBufWP = 0;
 	KeyBufRP = 0;
 	memset(KeyBuf, 0, KeyBufSize);
-	KeyEnable = 1;
 	KeyIntFlag = 0;
 
 }
@@ -61,8 +55,7 @@ Keyboard_Init(void)
 #define	NC	0
 #define KEYTABLE_MAX 512
 
-
-uint8_t KeyTable[KEYTABLE_MAX] = {
+static uint8_t KeyTable[KEYTABLE_MAX] = {
 		  NC,  NC,  NC,  NC,  NC,  NC,  NC,  NC,
 		0x0f,0x10,  NC,  NC,  NC,0x1d,  NC,  NC,
 		  NC,  NC,  NC,  NC,  NC,  NC,  NC,  NC,
@@ -131,75 +124,6 @@ uint8_t KeyTable[KEYTABLE_MAX] = {
 		  NC,  NC,  NC,  NC,  NC,  NC,  NC,0x37
 };
 
-uint8_t KeyTableMaster[KEYTABLE_MAX] = {
-		  NC,  NC,  NC,  NC,  NC,  NC,  NC,  NC,
-		  NC,  NC,  NC,  NC,  NC,  NC,  NC,  NC,
-		  NC,  NC,  NC,  NC,  NC,  NC,  NC,  NC,
-		  NC,  NC,  NC,  NC,  NC,  NC,  NC,  NC,
-		0x35,0x02,0x03,0x04,0x05,0x06,0x07,0x08,
-		0x09,0x0a,0x28,0x27,0x31,0x0c,0x32,0x33,
-		0x0b,0x02,0x03,0x04,0x05,0x06,0x07,0x08,
-		0x09,0x0a,0x28,0x27,0x31,0x0c,0x32,0x33,
-		0x1b,0x1e,0x2e,0x2c,0x20,0x13,0x21,0x22,
-		0x23,0x18,0x24,0x25,0x26,0x30,0x2f,0x10,
-		0x1a,0x11,0x14,0x1f,0x15,0x17,0x2d,0x12,
-		0x2b,0x16,0x2a,0x1c,0x0e,0x29,0x0d,0x34,
-		0x1b,0x1e,0x2e,0x2c,0x20,0x13,0x21,0x22,
-		0x23,0x18,0x24,0x25,0x26,0x30,0x2f,0x19,
-		0x1a,0x11,0x14,0x1f,0x15,0x17,0x2d,0x12,
-		0x2b,0x16,0x2a,0x1c,0x0e,0x29,0x0d,  NC,
-		  NC,  NC,  NC,  NC,  NC,  NC,  NC,  NC,
-		  NC,  NC,  NC,  NC,  NC,  NC,  NC,  NC,
-		  NC,  NC,  NC,  NC,  NC,  NC,  NC,  NC,
-		  NC,  NC,  NC,  NC,  NC,  NC,  NC,  NC,
-		  NC,  NC,  NC,  NC,  NC,  NC,  NC,  NC,
-		  NC,  NC,  NC,  NC,  NC,  NC,  NC,  NC,
-		  NC,  NC,  NC,  NC,  NC,  NC,  NC,  NC,
-		  NC,  NC,  NC,  NC,  NC,  NC,  NC,  NC,
-		  NC,  NC,  NC,  NC,  NC,  NC,  NC,  NC,
-		  NC,  NC,  NC,  NC,  NC,  NC,  NC,  NC,
-		  NC,  NC,  NC,  NC,  NC,  NC,  NC,  NC,
-		  NC,  NC,  NC,  NC,  NC,  NC,  NC,  NC,
-		  NC,  NC,  NC,  NC,  NC,  NC,  NC,  NC,
-		  NC,  NC,  NC,  NC,  NC,  NC,  NC,  NC,
-		  NC,  NC,  NC,  NC,  NC,  NC,  NC,  NC,
-		  NC,  NC,  NC,  NC,  NC,  NC,  NC,  NC,
-
-
-		  NC,  NC,  NC,  NC,  NC,  NC,  NC,  NC,
-		0x0f,0x10,0x1d,  NC,  NC,0x1d,  NC,  NC,
-		  NC,  NC,  NC,0x61,  NC,  NC,  NC,  NC,
-		  NC,  NC,0x63,0x01,  NC,  NC,  NC,  NC,
-		  NC,  NC,0x56,  NC,  NC,  NC,  NC,  NC,
-		  NC,  NC,  NC,  NC,  NC,  NC,  NC,  NC,
-		  NC,  NC,  NC,  NC,  NC,  NC,  NC,  NC,
-		  NC,  NC,  NC,  NC,  NC,  NC,  NC,  NC,
-		  NC,  NC,  NC,  NC,  NC,  NC,  NC,  NC,
-		  NC,  NC,  NC,  NC,  NC,  NC,  NC,  NC,
-		0x36,  NC,  NC,  NC,  NC,0x39,0x38,0x3a,
-		  NC,  NC,  NC,  NC,  NC,  NC,  NC,  NC,
-		  NC,  NC,0x5e,  NC,  NC,  NC,  NC,  NC,
-		  NC,  NC,  NC,0x61,  NC,  NC,  NC,  NC,
-		  NC,  NC,  NC,  NC,  NC,  NC,  NC,  NC,
-		  NC,  NC,  NC,  NC,  NC,  NC,  NC,  NC,
-		  NC,  NC,  NC,  NC,  NC,  NC,  NC,  NC,
-		  NC,  NC,  NC,  NC,  NC,  NC,  NC,  NC,
-		  NC,  NC,  NC,  NC,  NC,0x36,  NC,  NC,
-		  NC,  NC,0x39,0x38,0x3a,  NC,0x5e,0x37,
-		  NC,  NC,  NC,  NC,  NC,  NC,  NC,  NC,
-		  NC,  NC,0x41,0x46,  NC,0x42,  NC,0x40,
-		0x4f,0x4b,0x4c,0x4d,0x47,0x48,0x49,0x43,
-		0x44,0x45,  NC,  NC,  NC,  NC,0x63,0x64,
-		0x65,0x66,0x67,0x68,0x69,0x6a,0x6b,0x6c,
-		  NC,  NC,  NC,  NC,  NC,  NC,  NC,  NC,
-		  NC,  NC,  NC,  NC,  NC,  NC,  NC,  NC,
-		  NC,  NC,  NC,  NC,  NC,  NC,  NC,  NC,
-		  NC,0x70,0x70,0x71,0x71,0x5d,  NC,0x55,
-		0x55,0x55,0x55,  NC,  NC,  NC,  NC,  NC,
-		  NC,  NC,  NC,  NC,  NC,  NC,  NC,  NC,
-		  NC,  NC,  NC,  NC,  NC,  NC,  NC,0x37
-};
-
 /* P6K: PX68K_KEYBOARD */
 #define P6K_UP 1
 #define P6K_DOWN 2
@@ -219,9 +143,8 @@ void send_keycode(uint8_t code, int flag)
 
 static uint8_t get_x68k_keycode(DWORD wp)
 {
-	if (wp < KEYTABLE_MAX/2) {
+	if (wp < KEYTABLE_MAX/2)
 		return KeyTable[wp];
-	}
 
 	switch (wp) {
 	case RETROK_UP:
@@ -452,12 +375,7 @@ Keyboard_Int(void)
 		LastKey = 0;
 }
 
-/********** ソフトウェアキーボード **********/
-
-
 int Keyboard_IsSwKeyboard(void)
 {
-
 	return FALSE;
-
 }

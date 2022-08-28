@@ -47,16 +47,14 @@ extern uint8_t Debug_Text, Debug_Grp, Debug_Sp;
 
 WORD *ScrBuf = 0;
 
-int Draw_Opaque;
-
 int winx = 0, winy = 0;
 static uint32_t winh = 0, winw = 0;
 static uint32_t root_width, root_height;
 
 WORD WinDraw_Pal16B, WinDraw_Pal16R, WinDraw_Pal16G;
 
-DWORD WindowX = 0;
-DWORD WindowY = 0;
+static DWORD WindowX = 0;
+static DWORD WindowY = 0;
 
 void WinDraw_InitWindowSize(WORD width, WORD height)
 {

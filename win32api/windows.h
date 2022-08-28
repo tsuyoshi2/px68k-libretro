@@ -164,18 +164,6 @@ typedef struct {
 	RGBQUAD			bmiColors[1];
 } __attribute__ ((packed)) BITMAPINFO;
 
-typedef struct {
-	DWORD	top;
-	DWORD	left;
-	DWORD	bottom;
-	DWORD	right;
-} RECT;
-
-typedef struct {
-	WORD	x;
-	WORD	y;
-} POINT;
-
 /*
  * prototype
  */

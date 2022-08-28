@@ -35,23 +35,11 @@
 #include "fileio.h"
 #include "prop.h"
 
-uint8_t	LastCode = 0;
-uint8_t	KEYCONFFILE[] = "xkeyconf.dat";
+static uint8_t ini_title[] = "WinX68k";
 
-int	CurrentHDDNo = 0;
-
-uint8_t ini_title[] = "WinX68k";
-
-uint8_t initialized = 0;
-
-static const char MIDI_TYPE_NAME[4][3] = {
-	"LA", "GM", "GS", "XG"
-};
-
-uint8_t KeyTableBk[512];
+static uint8_t initialized = 0;
 
 Win68Conf Config;
-Win68Conf ConfBk;
 
 extern char filepath[MAX_PATH];
 extern char winx68k_ini[MAX_PATH];

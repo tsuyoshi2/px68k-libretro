@@ -30,21 +30,16 @@
 #include "crtc.h"
 #include "mouse.h"
 
-float	MouseDX = 0;
-float	MouseDY = 0;
-uint8_t	MouseStat = 0;
-uint8_t	MouseSW = 0;
-
-POINT	CursorPos;
-int	mousex = 0, mousey = 0;
+static float   MouseDX   = 0;
+static float   MouseDY   = 0;
+static uint8_t MouseStat = 0;
+static uint8_t MouseSW   = 0;
 
 void Mouse_Init(void)
 {
-	if (Config.JoyOrMouse) {
+	if (Config.JoyOrMouse)
 		Mouse_StartCapture(1);
-	}
 }
-
 
 /*
  *	Mouse Event Occurred
@@ -81,7 +76,6 @@ void Mouse_Event(int param, float dx, float dy)
  */
 void Mouse_SetData(void)
 {
-	POINT pt;
 	int x, y;
 
 	if (MouseSW) {
@@ -126,13 +120,10 @@ void Mouse_SetData(void)
  */
 void Mouse_StartCapture(int flag)
 {
-	if (flag && !MouseSW) {
+	if (flag && !MouseSW)
 		MouseSW = 1;
-	} else 	if (!flag && MouseSW) {
+	else if (!flag && MouseSW)
 		MouseSW = 0;
-	}
 }
 
-void Mouse_ChangePos(void)
-{
-}
+void Mouse_ChangePos(void) { }
