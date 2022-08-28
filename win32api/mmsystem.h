@@ -5,16 +5,13 @@
 
 #include "windows.h"
 
-typedef void *          HMIDIOUT;
-typedef HMIDIOUT *      LPHMIDIOUT;
-
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-void midi_out_short_msg(DWORD dwMsg);
+void midi_out_short_msg(size_t dwMsg);
 void midi_out_long_msg(char *s, size_t len);
-int midi_out_open(LPHMIDIOUT phmo);
+int midi_out_open(void **phmo);
 
 #ifdef __cplusplus
 };

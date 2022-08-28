@@ -34,7 +34,7 @@ enum {						/* 各機種リセット用に一応。 */
 	MIDI_XG
 };
 
-HMIDIOUT	hOut = 0;
+static void *hOut = NULL;
 int		MIDI_CTRL;
 int		MIDI_POS;
 int		MIDI_SYSCOUNT;
@@ -113,7 +113,7 @@ static uint8_t EXCV_XGRESET[] = { 0xf0, 0x43, 0x10, 0x4C, 0x00, 0x00, 0x7E, 0x00
 #define	MIDI_ACTIVESENSE	0xfe
 #define	MIDI_SYSTEMRESET	0xff
 
-#define MIDIOUTS(a,b,c) (((DWORD)c << 16) | ((DWORD)b << 8) | (DWORD)a)
+#define MIDIOUTS(a,b,c) (((size_t)c << 16) | ((size_t)b << 8) | (size_t)a)
 
 /*
  *   割り込み
@@ -208,7 +208,7 @@ void MIDI_Reset(void)
 
 	if (hOut)
 	{
-		DWORD msg;
+		size_t msg;
 		switch(MIDI_MODULE)
 		{
 			case MIDI_NOTUSED:
@@ -257,7 +257,7 @@ void MIDI_Init(void)
 	if (!hOut)
 	{
 		if (midi_out_open(&hOut) != 0)
-			hOut = 0;
+			hOut = NULL;
 	}
 }
 
@@ -266,7 +266,7 @@ void MIDI_Cleanup(void)
 	if (hOut)
 	{
 		MIDI_Reset();
-		hOut = 0;
+		hOut = NULL;
 	}
 }
 

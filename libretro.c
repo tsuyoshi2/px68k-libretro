@@ -173,14 +173,14 @@ static void extract_directory(char *buf, const char *path, size_t size)
 static int libretro_supports_midi_output = 0;
 static struct retro_midi_interface midi_cb = { 0 };
 
-void midi_out_short_msg(DWORD dwMsg)
+void midi_out_short_msg(size_t msg)
 {
    if (libretro_supports_midi_output && midi_cb.output_enabled())
    {
-      midi_cb.write(dwMsg         & 0xFF, 0); /* status byte */
-      midi_cb.write((dwMsg >> 8)  & 0xFF, 0); /* note no. */
-      midi_cb.write((dwMsg >> 16) & 0xFF, 0); /* velocity */
-      midi_cb.write((dwMsg >> 24) & 0xFF, 0); /* none */
+      midi_cb.write(msg         & 0xFF, 0); /* status byte */
+      midi_cb.write((msg >> 8)  & 0xFF, 0); /* note no. */
+      midi_cb.write((msg >> 16) & 0xFF, 0); /* velocity */
+      midi_cb.write((msg >> 24) & 0xFF, 0); /* none */
    }
 }
 
@@ -194,7 +194,7 @@ void midi_out_long_msg(char *s, size_t len)
    }
 }
 
-int midi_out_open(LPHMIDIOUT phmo)
+int midi_out_open(void **phmo)
 {
    if (libretro_supports_midi_output && midi_cb.output_enabled())
    {
