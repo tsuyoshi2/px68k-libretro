@@ -445,14 +445,14 @@ inline void OPM::MixSubL(int activech, ISample** idest)
 // ---------------------------------------------------------------------------
 //	¹çÀ® (stereo)
 //
-void OPM::Mix(Sample* buffer, int nsamples, int rate, uint8_t* pbsp, uint8_t* pbep)
+void OPM::Mix(int16_t* buffer, int nsamples, int rate, uint8_t* pbsp, uint8_t* pbep)
 {
 #define IStoSample(s)	((Limit(s, 0xffff, -0x10000) * fmvolume) >> 14)
 
-#define CHECK_BUF_END() if ((uint8_t*)dest >= pbep) {dest = (Sample *)pbsp;}
+#define CHECK_BUF_END() if ((uint8_t*)dest >= pbep) {dest = (int16_t *)pbsp;}
 
-	Sample* dest;
-	Sample dval0, dval1;
+	int16_t* dest;
+	int16_t dval0, dval1;
 	int i;
 	
 	// odd bits - active, even bits - lfo

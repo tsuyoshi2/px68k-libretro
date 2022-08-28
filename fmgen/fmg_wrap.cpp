@@ -137,7 +137,7 @@ void FASTCALL OPM_Write(DWORD adr, uint8_t data)
 
 void OPM_Update(int16_t *buffer, int length, int rate, uint8_t *pbsp, uint8_t *pbep)
 {
-	if ( opm ) opm->Mix((FM::Sample*)buffer, length, rate, pbsp, pbep);
+	if ( opm ) opm->Mix((int16_t*)buffer, length, rate, pbsp, pbep);
 }
 
 
@@ -294,8 +294,8 @@ void FASTCALL M288_Write(DWORD adr, uint8_t data)
 
 void M288_Update(int16_t *buffer, int length)
 {
-	if ( ymf288a ) ymf288a->Mix((FM::Sample*)buffer, length);
-	if ( ymf288b ) ymf288b->Mix((FM::Sample*)buffer, length);
+	if ( ymf288a ) ymf288a->Mix((int16_t*)buffer, length);
+	if ( ymf288b ) ymf288b->Mix((int16_t*)buffer, length);
 }
 
 

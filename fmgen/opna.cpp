@@ -326,7 +326,7 @@ void OPN::SetChannelMask(uint32_t mask)
 
 
 //	合成(2ch)
-void OPN::Mix(Sample* buffer, int nsamples)
+void OPN::Mix(int16_t* buffer, int nsamples)
 {
 #define IStoSample(s)	((Limit(s, 0x7fff, -0x8000) * fmvolume) >> 14)
 	
@@ -348,8 +348,8 @@ void OPN::Mix(Sample* buffer, int nsamples)
 	int actch = (((ch[2].Prepare() << 2) | ch[1].Prepare()) << 2) | ch[0].Prepare();
 	if (actch & 0x15)
 	{
-		Sample* limit = buffer + nsamples * 2;
-		for (Sample* dest = buffer; dest < limit; dest+=2)
+		int16_t* limit = buffer + nsamples * 2;
+		for (int16_t* dest = buffer; dest < limit; dest+=2)
 		{
 			ISample s = 0;
 			if (actch & 0x01) s  = ch[0].Calc();
@@ -970,7 +970,7 @@ inline void OPNABase::DecodeADPCMB()
 // ---------------------------------------------------------------------------
 //	ADPCM 合成
 //	
-void OPNABase::ADPCMBMix(Sample* dest, uint32_t count)
+void OPNABase::ADPCMBMix(int16_t* dest, uint32_t count)
 {
 	uint32_t maskl = control2 & 0x80 ? -1 : 0;
 	uint32_t maskr = control2 & 0x40 ? -1 : 0;
@@ -1049,7 +1049,7 @@ stop:
 //	in:		buffer		合成先
 //			nsamples	合成サンプル数
 //
-void OPNABase::FMMix(Sample* buffer, int nsamples)
+void OPNABase::FMMix(int16_t* buffer, int nsamples)
 {
 	if (fmvolume > 0)
 	{
@@ -1138,7 +1138,7 @@ inline void OPNABase::LFO()
 //
 #define IStoSample(s)	((Limit(s, 0x7fff, -0x8000) * fmvolume) >> 14)
 
-void OPNABase::Mix6(Sample* buffer, int nsamples, int activech)
+void OPNABase::Mix6(int16_t* buffer, int nsamples, int activech)
 {
 	// Mix
 	ISample ibuf[4];
@@ -1150,8 +1150,8 @@ void OPNABase::Mix6(Sample* buffer, int nsamples, int activech)
 	idest[4] = &ibuf[pan[4]];
 	idest[5] = &ibuf[pan[5]];
 
-	Sample* limit = buffer + nsamples * 2;
-	for (Sample* dest = buffer; dest < limit; dest+=2)
+	int16_t* limit = buffer + nsamples * 2;
+	for (int16_t* dest = buffer; dest < limit; dest+=2)
 	{
 		ibuf[1] = ibuf[2] = ibuf[3] = 0;
 		if (activech & 0xaaa)
@@ -1410,11 +1410,11 @@ void OPNA::SetReg(uint32_t addr, uint32_t data)
 // ---------------------------------------------------------------------------
 //	リズム合成
 //
-void OPNA::RhythmMix(Sample* buffer, uint32_t count)
+void OPNA::RhythmMix(int16_t* buffer, uint32_t count)
 {
 	if (rhythmtvol < 128 && rhythm[0].sample && (rhythmkey & 0x3f))
 	{
-		Sample* limit = buffer + count * 2;
+		int16_t* limit = buffer + count * 2;
 		for (int i=0; i<6; i++)
 		{
 			Rhythm& r = rhythm[i];
@@ -1427,11 +1427,9 @@ void OPNA::RhythmMix(Sample* buffer, uint32_t count)
 				int maskr = -(r.pan & 1);
 
 				if (rhythmmask_ & (1 << i))
-				{
 					maskl = maskr = 0;
-				}
 				
-				for (Sample* dest = buffer; dest<limit && r.pos < r.size; dest+=2)
+				for (int16_t* dest = buffer; dest<limit && r.pos < r.size; dest+=2)
 				{
 					int sample = (r.sample[r.pos / 1024] * vol) >> 12;
 					r.pos += r.step;
@@ -1474,7 +1472,7 @@ void OPNA::SetVolumeADPCM(int db)
 //	in:		buffer		合成先
 //			nsamples	合成サンプル数
 //
-void OPNA::Mix(Sample* buffer, int nsamples)
+void OPNA::Mix(int16_t* buffer, int nsamples)
 {
 	FMMix(buffer, nsamples);
 	psg.Mix(buffer, nsamples);
@@ -1722,11 +1720,11 @@ void Y288::SetReg(uint32_t addr, uint32_t data)
 // ---------------------------------------------------------------------------
 //	リズム合成
 //
-void Y288::RhythmMix(Sample* buffer, uint32_t count)
+void Y288::RhythmMix(int16_t* buffer, uint32_t count)
 {
 	if (rhythmtvol < 128 && rhythm[0].sample && (rhythmkey & 0x3f))
 	{
-		Sample* limit = buffer + count * 2;
+		int16_t* limit = buffer + count * 2;
 		for (int i=0; i<6; i++)
 		{
 			Rhythm& r = rhythm[i];
@@ -1738,7 +1736,7 @@ void Y288::RhythmMix(Sample* buffer, uint32_t count)
 				int maskl = -((r.pan >> 1) & 1);
 				int maskr = -(r.pan & 1);
 				
-				for (Sample* dest = buffer; dest<limit && r.pos < r.size; dest+=2)
+				for (int16_t* dest = buffer; dest<limit && r.pos < r.size; dest+=2)
 				{
 					int sample = (r.sample[r.pos / 1024] * vol) >> 12;
 					r.pos += r.step;
@@ -1781,13 +1779,7 @@ uint32_t Y288::GetReg(uint32_t addr)
 	return 0;
 }
 
-
-// ---------------------------------------------------------------------------
-//	合成
-//	in:		buffer		合成先
-//			nsamples	合成サンプル数
-//
-void Y288::Mix(Sample* buffer, int nsamples)
+void Y288::Mix(int16_t* buffer, int nsamples)
 {
 	FMMix(buffer, nsamples);
 	psg.Mix(buffer, nsamples);

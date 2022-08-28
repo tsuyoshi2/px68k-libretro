@@ -203,12 +203,9 @@ void PSG::SetReg(uint32_t regnum, uint8_t data)
 // ---------------------------------------------------------------------------
 //
 //
-inline void PSG::StoreSample(Sample& dest, int32_t data)
+inline void PSG::StoreSample(int16_t& dest, int32_t data)
 {
-	if (sizeof(Sample) == 2)
-		dest = (Sample) Limit(dest + data, 0x7fff, -0x8000);
-	else
-		dest += data;
+	dest = (int16_t) Limit(dest + data, 0x7fff, -0x8000);
 }
 
 // ---------------------------------------------------------------------------
@@ -216,7 +213,7 @@ inline void PSG::StoreSample(Sample& dest, int32_t data)
 //	dest		PCM データを展開するポインタ
 //	nsamples	展開する PCM のサンプル数
 //
-void PSG::Mix(Sample* dest, int nsamples)
+void PSG::Mix(int16_t* dest, int nsamples)
 {
 	uint8_t chenable[3], nenable[3];
 	uint8_t r7 = ~reg[7];

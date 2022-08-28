@@ -312,7 +312,6 @@ void FM::Operator::Reset()
 	out_ = out2_ = 0;
 
 	param_changed_ = true;
-	PARAMCHANGE(0);
 }
 
 void Operator::MakeTable()
@@ -356,7 +355,6 @@ void Operator::MakeTable()
 inline void FM::Operator::SetDPBN(uint32_t dp, uint32_t bn)
 {
 	dp_ = dp, bn_ = bn; param_changed_ = true; 
-	PARAMCHANGE(1);
 }
 
 
@@ -488,7 +486,6 @@ void Operator::SetFNum(uint32_t f)
 	dp_ = (f & 2047) << ((f >> 11) & 7);
 	bn_ = notetable[(f >> 7) & 127];
 	param_changed_ = true;
-	PARAMCHANGE(2);
 }
 
 //	１サンプル合成

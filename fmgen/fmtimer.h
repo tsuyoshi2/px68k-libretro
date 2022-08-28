@@ -8,7 +8,6 @@
 #define FM_TIMER_H
 
 #include <stdint.h>
-// ---------------------------------------------------------------------------
 
 namespace FM
 {
@@ -39,9 +38,6 @@ namespace FM
 		int32_t	timer_step;
 	};
 
-// ---------------------------------------------------------------------------
-//	½é´ü²½
-//
 inline void Timer::Reset()
 {
 	timera_count = 0;

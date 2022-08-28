@@ -12,68 +12,6 @@
 #include "fmtimer.h"
 #include "psg.h"
 
-// ---------------------------------------------------------------------------
-//	class OPN/OPNA
-//	OPN/OPNA に良く似た音を生成する音源ユニット
-//	
-//	interface:
-//	bool Init(uint32_t clock, uint32_t rate, bool, const char* path);
-//		初期化．このクラスを使用する前にかならず呼んでおくこと．
-//		OPNA の場合はこの関数でリズムサンプルを読み込む
-//
-//		clock:	OPN/OPNA/OPNB のクロック周波数(Hz)
-//
-//		rate:	生成する PCM の標本周波数(Hz)
-//
-//		path:	リズムサンプルのパス(OPNA のみ有効)
-//				省略時はカレントディレクトリから読み込む
-//				文字列の末尾には '\' や '/' などをつけること
-//
-//		返り値	初期化に成功すれば true
-//
-//	bool LoadRhythmSample(const char* path)
-//		(OPNA ONLY)
-//		Rhythm サンプルを読み直す．
-//		path は Init の path と同じ．
-//		
-//	bool SetRate(uint32_t clock, uint32_t rate, bool)
-//		クロックや PCM レートを変更する
-//		引数等は Init を参照のこと．
-//	
-//	void Mix(FM_SAMPLETYPE* dest, int nsamples)
-//		Stereo PCM データを nsamples 分合成し， dest で始まる配列に
-//		加える(加算する)
-//		・dest には sample*2 個分の領域が必要
-//		・格納形式は L, R, L, R... となる．
-//		・あくまで加算なので，あらかじめ配列をゼロクリアする必要がある
-//		・FM_SAMPLETYPE が short 型の場合クリッピングが行われる.
-//		・この関数は音源内部のタイマーとは独立している．
-//		  Timer は Count と GetNextEvent で操作する必要がある．
-//	
-//	void Reset()
-//		音源をリセット(初期化)する
-//
-//	void SetReg(uint32_t reg, uint32_t data)
-//		音源のレジスタ reg に data を書き込む
-//	
-//	uint32_t GetReg(uint32_t reg)
-//		音源のレジスタ reg の内容を読み出す
-//		読み込むことが出来るレジスタは PSG, ADPCM の一部，ID(0xff) とか
-//	
-//	uint32_t ReadStatus()/ReadStatusEx()
-//		音源のステータスレジスタを読み出す
-//		ReadStatusEx は拡張ステータスレジスタの読み出し(OPNA)
-//		busy フラグは常に 0
-//	
-//	bool Count(uint32_t t)
-//		音源のタイマーを t [μ秒] 進める．
-//		音源の内部状態に変化があった時(timer オーバーフロー)
-//		true を返す
-//
-//	void SetVolumeFM(int db)/SetVolumePSG(int db) ...
-//		各音源の音量を＋−方向に調節する．標準値は 0.
-//		単位は約 1/2 dB，有効範囲の上限は 20 (10dB)
-//
 namespace FM
 {
 	//	OPN Base -------------------------------------------------------
@@ -141,8 +79,8 @@ namespace FM
 		uint32_t	GetReg(uint32_t addr);	
 	
 	protected:
-		void	FMMix(Sample* buffer, int nsamples);
-		void 	Mix6(Sample* buffer, int nsamples, int activech);
+		void	FMMix(int16_t* buffer, int nsamples);
+		void 	Mix6(int16_t* buffer, int nsamples, int activech);
 		
 		void	MixSubS(int activech, ISample**);
 		void	MixSubSL(int activech, ISample**);
@@ -153,7 +91,7 @@ namespace FM
 		void	LFO();
 
 		void	DecodeADPCMB();
-		void	ADPCMBMix(Sample* dest, uint32_t count);
+		void	ADPCMBMix(int16_t* dest, uint32_t count);
 
 		void	WriteRAM(uint32_t data);
 		uint32_t	ReadRAM();
@@ -228,7 +166,7 @@ namespace FM
 		bool	SetRate(uint32_t c, uint32_t r, bool=false);
 		
 		void	Reset();
-		void 	Mix(Sample* buffer, int nsamples);
+		void 	Mix(int16_t* buffer, int nsamples);
 		void 	SetReg(uint32_t addr, uint32_t data);
 		uint32_t	GetReg(uint32_t addr);
 		uint32_t	ReadStatus() { return status & 0x03; }
@@ -259,7 +197,7 @@ namespace FM
 		bool	LoadRhythmSample(const char*);
 	
 		bool	SetRate(uint32_t c, uint32_t r, bool = false);
-		void 	Mix(Sample* buffer, int nsamples);
+		void 	Mix(int16_t* buffer, int nsamples);
 
 		void	Reset();
 		void 	SetReg(uint32_t addr, uint32_t data);
@@ -283,7 +221,7 @@ namespace FM
 			uint32_t	rate;		// さんぷるのれーと
 		};
 	
-		void	RhythmMix(Sample* buffer, uint32_t count);
+		void	RhythmMix(int16_t* buffer, uint32_t count);
 
 	// リズム音源関係
 		Rhythm	rhythm[6];
@@ -304,7 +242,7 @@ namespace FM
 					 uint8_t *_adpcmb = 0, int _adpcmb_size = 0);
 	
 		bool	SetRate(uint32_t c, uint32_t r, bool = false);
-		void 	Mix(Sample* buffer, int nsamples);
+		void 	Mix(int16_t* buffer, int nsamples);
 
 		void	Reset();
 		void 	SetReg(uint32_t addr, uint32_t data);
@@ -333,7 +271,7 @@ namespace FM
 		};
 	
 		int		DecodeADPCMASample(uint32_t);
-		void	ADPCMAMix(Sample* buffer, uint32_t count);
+		void	ADPCMAMix(int16_t* buffer, uint32_t count);
 		static void InitADPCMATable();
 		
 	// ADPCMA 関係
@@ -362,7 +300,7 @@ namespace FM
 		bool	SetRate(uint32_t c, uint32_t r, bool);
 		
 		void	Reset();
-		void 	Mix(Sample* buffer, int nsamples);
+		void 	Mix(int16_t* buffer, int nsamples);
 		void 	SetReg(uint32_t addr, uint32_t data);
 		uint32_t	GetReg(uint32_t addr);
 		uint32_t	ReadStatus() { return status & 0x03; }
@@ -397,7 +335,7 @@ namespace FM
 		bool	LoadRhythmSample(const char*);
 	
 		bool	SetRate(uint32_t c, uint32_t r, bool ipflag = false);
-		void 	Mix(Sample* buffer, int nsamples);
+		void 	Mix(int16_t* buffer, int nsamples);
 
 		void	SetVolumeRhythmTotal(int db);
 		void	SetVolumeRhythm(int index, int db);
@@ -419,7 +357,7 @@ namespace FM
 			uint32_t	rate;		// さんぷるのれーと
 		};
 	
-		void	RhythmMix(Sample* buffer, uint32_t count);
+		void	RhythmMix(int16_t* buffer, uint32_t count);
 
 	// リズム音源関係
 		Rhythm	rhythm[6];
