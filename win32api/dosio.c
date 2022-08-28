@@ -40,52 +40,36 @@ extern char slash;
 static char  curpath[MAX_PATH+32] = "";
 static char *curfilep = curpath;
 
-FILEH file_open(const char *filename)
+void *file_open(const char *filename)
 {
-	FILEH ret = CreateFile(filename, GENERIC_READ | GENERIC_WRITE,
-	    0, 0, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
-	if (ret == (FILEH)INVALID_HANDLE_VALUE)
+	void *ret = create_file(filename, GENERIC_READ | GENERIC_WRITE,
+	    OPEN_EXISTING);
+	if (ret == (void*)INVALID_HANDLE_VALUE)
 	{
-		ret = CreateFile(filename, GENERIC_READ,
-		    0, 0, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
-		if (ret == (FILEH)INVALID_HANDLE_VALUE)
-			return (FILEH)0;
+		ret = create_file(filename, GENERIC_READ,
+		    OPEN_EXISTING);
+		if (ret == (void*)INVALID_HANDLE_VALUE)
+			return (void*)0;
 	}
 	return ret;
 }
 
-FILEH file_create(const char *filename, int ftype)
+void* file_create(const char *filename, int ftype)
 {
-	FILEH ret = CreateFile(filename, GENERIC_READ | GENERIC_WRITE,
-	    0, 0, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
-	if (ret == (FILEH)INVALID_HANDLE_VALUE)
-		return (FILEH)0;
+	void* ret = create_file(filename, GENERIC_READ | GENERIC_WRITE,
+	    CREATE_ALWAYS);
+	if (ret == (void*)INVALID_HANDLE_VALUE)
+		return (void*)0;
 	return ret;
 }
 
 DWORD
-file_seek(FILEH handle, long pointer, int16_t mode)
+file_seek(void* handle, long pointer, int16_t mode)
 {
-	return SetFilePointer(handle, pointer, 0, mode);
+	return set_file_pointer(handle, pointer, mode);
 }
 
-size_t file_lread(FILEH handle, void *data, DWORD length)
-{
-	size_t readsize;
-	if (read_file(handle, data, length, &readsize) == 0)
-		return 0;
-	return readsize;
-}
-
-size_t file_lwrite(FILEH handle, void *data, DWORD length)
-{
-	size_t writesize;
-	if (write_file(handle, data, length, &writesize) == 0)
-		return 0;
-	return writesize;
-}
-
-size_t file_read(FILEH handle, void *data, WORD length)
+size_t file_lread(void* handle, void *data, DWORD length)
 {
 	size_t readsize;
 	if (read_file(handle, data, length, &readsize) == 0)
@@ -93,7 +77,7 @@ size_t file_read(FILEH handle, void *data, WORD length)
 	return readsize;
 }
 
-size_t file_write(FILEH handle, void *data, WORD length)
+size_t file_lwrite(void *handle, void *data, DWORD length)
 {
 	size_t writesize;
 	if (write_file(handle, data, length, &writesize) == 0)
@@ -101,7 +85,23 @@ size_t file_write(FILEH handle, void *data, WORD length)
 	return writesize;
 }
 
-int16_t file_close(FILEH handle)
+size_t file_read(void *handle, void *data, WORD length)
+{
+	size_t readsize;
+	if (read_file(handle, data, length, &readsize) == 0)
+		return 0;
+	return readsize;
+}
+
+size_t file_write(void *handle, void *data, WORD length)
+{
+	size_t writesize;
+	if (write_file(handle, data, length, &writesize) == 0)
+		return 0;
+	return writesize;
+}
+
+int16_t file_close(void *handle)
 {
 	FAKE_CloseHandle(handle);
 	return 0;
@@ -115,13 +115,13 @@ void file_setcd(const char *exename)
 	*curfilep = '\0';
 }
 
-FILEH file_open_c(const char *filename)
+void *file_open_c(const char *filename)
 {
 	strncpy(curfilep, filename, MAX_PATH - (curfilep - curpath));
 	return file_open(curpath);
 }
 
-FILEH file_create_c(const char *filename, int ftype)
+void *file_create_c(const char *filename, int ftype)
 {
 	strncpy(curfilep, filename, MAX_PATH - (curfilep - curpath));
 	return file_create(curpath, ftype);

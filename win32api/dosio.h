@@ -34,8 +34,6 @@
 #include "common.h"
 #include "appftype.h"
 
-#define		FILEH		HANDLE
-
 #define		FSEEK_SET	0
 #define		FSEEK_CUR	1
 #define		FSEEK_END	2
@@ -44,17 +42,17 @@
 extern "C" {
 #endif
 
-FILEH file_open(const char *filename);
-FILEH file_create(const char *filename, int ftype);
-DWORD file_seek(FILEH handle, long pointer, int16_t mode);
-size_t file_lread(FILEH handle, void *data, DWORD length);
-size_t file_lwrite(FILEH handle, void *data, DWORD length);
-size_t file_read(FILEH handle, void *data, WORD length);
-size_t file_write(FILEH handle, void *data, WORD length);
-int16_t file_close(FILEH handle);
+void *file_open(const char *filename);
+void *file_create(const char *filename, int ftype);
+DWORD file_seek(void *handle, long pointer, int16_t mode);
+size_t file_lread(void *handle, void *data, DWORD length);
+size_t file_lwrite(void *handle, void *data, DWORD length);
+size_t file_read(void *handle, void *data, WORD length);
+size_t file_write(void *handle, void *data, WORD length);
+int16_t file_close(void *handle);
 void file_setcd(const char *exename);
-FILEH file_open_c(const char *filename);
-FILEH file_create_c(const char *filename, int ftype);
+void *file_open_c(const char *filename);
+void *file_create_c(const char *filename, int ftype);
 
 void plusyen(char *s, size_t len);
 

@@ -9,12 +9,11 @@ extern "C" {
 
 DWORD	FAKE_GetTickCount(void);
 
-int	read_file(HANDLE, PVOID, DWORD, size_t*);
-int	write_file(HANDLE, PCVOID, DWORD, size_t*);
-HANDLE	CreateFile(const char*, DWORD, DWORD, LPSECURITY_ATTRIBUTES,
-		DWORD, DWORD, HANDLE);
-DWORD	SetFilePointer(HANDLE, LONG, PLONG, DWORD);
-int	FAKE_CloseHandle(HANDLE);
+int	read_file(void*, void *, size_t, size_t*);
+int	write_file(void*, const void *, size_t, size_t*);
+void *  create_file(const char*, DWORD, DWORD);
+DWORD	set_file_pointer(void*, LONG, DWORD);
+int	FAKE_CloseHandle(void*);
 
 size_t	GetPrivateProfileString(const char *, const char*, const char*, char*,
 		size_t, const char*);

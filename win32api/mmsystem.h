@@ -5,7 +5,7 @@
 
 #include "windows.h"
 
-typedef HANDLE          HMIDIOUT;
+typedef void *          HMIDIOUT;
 typedef HMIDIOUT *      LPHMIDIOUT;
 
 #ifdef __cplusplus

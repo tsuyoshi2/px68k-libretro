@@ -61,6 +61,8 @@ static bool joypad1, joypad2;
 
 static bool opt_analog;
 
+static char CMDFILE[512];
+
 int retrow = 800;
 int retroh = 600;
 int CHANGEAV = 0;
@@ -85,7 +87,8 @@ static int opt_rumble_enabled = 1;
 
 #define MAX_DISKS 10
 
-typedef enum {
+typedef enum
+{
    FDD0 = 0,
    FDD1 = 1
 } disk_drive;
@@ -428,8 +431,6 @@ void retro_set_audio_sample_batch(retro_audio_sample_batch_t cb) { audio_batch_c
 void retro_set_input_poll(retro_input_poll_t cb) { input_poll_cb = cb; }
 void retro_set_input_state(retro_input_state_t cb) { input_state_cb = cb; }
 
-static char CMDFILE[512];
-
 static int loadcmdfile(char *argv)
 {
    int res  = 0;
@@ -708,9 +709,9 @@ static void parse_cmdline(const char *argv)
    }
 }
 
-static struct retro_input_descriptor inputDescriptors[64];
+static struct retro_input_descriptor input_descs[64];
 
-static struct retro_input_descriptor inputDescriptorsP1[] = {
+static struct retro_input_descriptor input_descs_p1[] = {
    { 0, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_A, "A" },
    { 0, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_B, "B" },
    { 0, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_X, "X" },
@@ -728,7 +729,7 @@ static struct retro_input_descriptor inputDescriptorsP1[] = {
    { 0, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_R3, "R3" },
    { 0, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_L3, "L3" },
 };
-static struct retro_input_descriptor inputDescriptorsP2[] = {
+static struct retro_input_descriptor input_descs_p2[] = {
    { 1, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_A, "A" },
    { 1, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_B, "B" },
    { 1, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_X, "X" },
@@ -748,27 +749,27 @@ static struct retro_input_descriptor inputDescriptorsP2[] = {
 
 };
 
-static struct retro_input_descriptor inputDescriptorsNull[] = {
+static struct retro_input_descriptor input_descs_null[] = {
    { 0, 0, 0, 0, NULL }
 };
 
 
-static void retro_set_controller_descriptors()
+static void retro_set_controller_descriptors(void)
 {
    unsigned i;
    unsigned size = 16;
 
    for (i = 0; i < (2 * size); i++)
-      inputDescriptors[i] = inputDescriptorsNull[0];
+      input_descs[i] = input_descs_null[0];
 
    if (joypad1 && joypad2)
    {
       for (i = 0; i < (2 * size); i++)
       {
          if (i < size)
-            inputDescriptors[i] = inputDescriptorsP1[i];
+            input_descs[i] = input_descs_p1[i];
          else
-            inputDescriptors[i] = inputDescriptorsP2[i - size];
+            input_descs[i] = input_descs_p2[i - size];
       }
    }
    else if (joypad1 || joypad2)
@@ -776,14 +777,14 @@ static void retro_set_controller_descriptors()
       for (i = 0; i < size; i++)
       {
          if (joypad1)
-            inputDescriptors[i] = inputDescriptorsP1[i];
+            input_descs[i] = input_descs_p1[i];
          else
-            inputDescriptors[i] = inputDescriptorsP2[i];
+            input_descs[i] = input_descs_p2[i];
       }
    }
    else
-      inputDescriptors[0] = inputDescriptorsNull[0];
-   environ_cb(RETRO_ENVIRONMENT_SET_INPUT_DESCRIPTORS, &inputDescriptors);
+      input_descs[0] = input_descs_null[0];
+   environ_cb(RETRO_ENVIRONMENT_SET_INPUT_DESCRIPTORS, &input_descs);
 }
 
 void retro_set_controller_port_device(unsigned port, unsigned device)

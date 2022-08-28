@@ -33,11 +33,10 @@ bool FileIO::Open(const char* filename, uint32_t flg)
 {
 	Close();
 
-	DWORD access = (flg & readonly ? 0 : GENERIC_WRITE) | GENERIC_READ;
-	DWORD share = (flg & readonly) ? FILE_SHARE_READ : 0;
-	DWORD creation = flg & create ? CREATE_ALWAYS : OPEN_EXISTING;
+	DWORD access   = (flg & readonly  ? 0 : GENERIC_WRITE) | GENERIC_READ;
+	DWORD creation = (flg & create)   ? CREATE_ALWAYS : OPEN_EXISTING;
 
-	hfile = CreateFile(filename, access, share, 0, creation, 0, 0);
+	hfile          = create_file(filename, access, creation);
 	
 	flags = (flg & readonly) | (hfile == INVALID_HANDLE_VALUE ? 0 : open);
 	return !!(flags & open);
@@ -99,5 +98,5 @@ bool FileIO::Seek(int32_t pos, SeekMethod method)
 		return false;
 	}
 
-	return 0xffffffff != SetFilePointer(hfile, pos, 0, wmethod);
+	return 0xffffffff != set_file_pointer(hfile, pos, wmethod);
 }

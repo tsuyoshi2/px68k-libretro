@@ -42,7 +42,7 @@ public:
 	uint32_t GetFlags() { return flags; }
 
 private:
-	HANDLE hfile;
+	void *hfile;
 	uint32_t flags;
 	
 	FileIO(const FileIO&);

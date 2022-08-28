@@ -144,7 +144,7 @@ static void *local_free(void *h)
 		return NULL;
 	if (!isfixed(h))
 		return NULL;
-	ih = (HANDLE)(h - sizeof(struct internal_handle));
+	ih = (void*)(h - sizeof(struct internal_handle));
 	if (ih->p == &ih[1])
 	{
 		free(ih);
@@ -153,10 +153,10 @@ static void *local_free(void *h)
 	return h;
 }
 
-int read_file(HANDLE h, PVOID buf, DWORD len, size_t *lp)
+int read_file(void* h, void *buf, size_t len, size_t *lp)
 {
 	struct internal_file *fp;
-	if (h == (HANDLE)INVALID_HANDLE_VALUE)
+	if (h == (void*)INVALID_HANDLE_VALUE)
 		return 0;
 
 	fp  = local_lock(h);
@@ -167,10 +167,10 @@ int read_file(HANDLE h, PVOID buf, DWORD len, size_t *lp)
 	return 1;
 }
 
-int write_file(HANDLE h, PCVOID buf, DWORD len, size_t *lp)
+int write_file(void* h, const void *buf, size_t len, size_t *lp)
 {
 	struct internal_file *fp;
-	if (h == (HANDLE)INVALID_HANDLE_VALUE)
+	if (h == (void*)INVALID_HANDLE_VALUE)
 		return 0;
 
 	fp  = local_lock(h);
@@ -181,12 +181,11 @@ int write_file(HANDLE h, PCVOID buf, DWORD len, size_t *lp)
 	return 1;
 }
 
-HANDLE CreateFile(const char *filename, DWORD rdwr, DWORD share,
-	    LPSECURITY_ATTRIBUTES sap,
-	    DWORD crmode, DWORD flags, HANDLE template)
+void* create_file(const char *filename, DWORD rdwr,
+	    DWORD crmode)
 {
 	struct internal_file *fp;
-	HANDLE h;
+	void* h;
 	int fd, fmode = 0;
 #ifdef _WIN32
  	fmode |=O_BINARY;
@@ -214,7 +213,7 @@ HANDLE CreateFile(const char *filename, DWORD rdwr, DWORD share,
 	}
 	fd = open(filename, fmode, 0644);
 	if (fd < 0)
-		return (HANDLE)INVALID_HANDLE_VALUE;
+		return (void*)INVALID_HANDLE_VALUE;
 
 	h = local_alloc(sizeof(struct internal_file));
 	sethandletype(h, HTYPE_FILE);
@@ -224,7 +223,7 @@ HANDLE CreateFile(const char *filename, DWORD rdwr, DWORD share,
 	return h;
 }
 
-DWORD SetFilePointer(HANDLE h, LONG pos, PLONG newposh, DWORD whence)
+DWORD set_file_pointer(void* h, LONG pos, DWORD whence)
 {
 	struct internal_file *fp = local_lock(h);
 	int fd                   = fp->fd;
@@ -232,7 +231,7 @@ DWORD SetFilePointer(HANDLE h, LONG pos, PLONG newposh, DWORD whence)
 	return lseek(fd, pos, whence);
 }
 
-int FAKE_CloseHandle(HANDLE h)
+int FAKE_CloseHandle(void* h)
 {
         if (handletype(h) == HTYPE_FILE)
         {

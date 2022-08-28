@@ -71,7 +71,7 @@ void SASI_Init(void)
  */
 int16_t SASI_Seek(void)
 {
-	FILEH fp;
+	void *fp;
 
 	memset(SASI_Buf, 0, 256);
 	if (!(fp = File_Open(Config.HDImage[SASI_Device*2+SASI_Unit])))
@@ -98,7 +98,7 @@ error:
  */
 int16_t SASI_Flush(void)
 {
-	FILEH fp = File_Open(Config.HDImage[SASI_Device*2+SASI_Unit]);
+	void *fp = File_Open(Config.HDImage[SASI_Device*2+SASI_Unit]);
 	if (!fp) return -1;
 	if (File_Seek(fp, SASI_Sector<<8, FSEEK_SET)!=(SASI_Sector<<8))
 		goto error;

@@ -25,17 +25,6 @@ typedef	unsigned short	WORD;
 typedef	unsigned int	DWORD;
 #endif
 
-typedef	void		VOID;
-typedef	void		*PVOID;
-typedef	void		*LPVOID;
-typedef	const void	*PCVOID;
-typedef	long		*PLONG;
-typedef	DWORD		*PDWORD;
-
-typedef	void *		LPSECURITY_ATTRIBUTES;
-
-typedef void *		HANDLE;
-
 #ifndef FASTCALL
 #define FASTCALL
 #endif
@@ -56,14 +45,6 @@ typedef void *		HANDLE;
 #endif
 #endif
 
-#define	RGB(r,g,b)	((DWORD)((uint8_t)(r))|((WORD)((uint8_t)(g)))|((DWORD)((uint8_t)(b))))
-
-/* for BITMAP */
-#define BI_RGB			0
-#define BI_RLE8			1
-#define BI_RLE4			2
-#define	BI_BITFIELDS		3
-
 /* for dosio.c */
 #define	GENERIC_READ			1
 #define	GENERIC_WRITE			2
@@ -72,23 +53,7 @@ typedef void *		HANDLE;
 #define	CREATE_ALWAYS			2
 #define	CREATE_NEW			3
 
-#define	FILE_SHARE_READ			0x00000001  
-#define	FILE_SHARE_WRITE		0x00000002  
-#define	FILE_SHARE_DELETE		0x00000004  
-
-#define	FILE_ATTRIBUTE_READONLY		0x01
-#define	FILE_ATTRIBUTE_HIDDEN		0x02
-#define	FILE_ATTRIBUTE_SYSTEM		0x04
-#define	FILE_ATTRIBUTE_VOLUME		0x08
-#define	FILE_ATTRIBUTE_DIRECTORY	0x10
-#define	FILE_ATTRIBUTE_ARCHIVE		0x20
-#define	FILE_ATTRIBUTE_NORMAL		0x40
-
-#define	INVALID_HANDLE_VALUE		(HANDLE)-1
-
-#define	NO_ERROR			0
-#define	ERROR_FILE_NOT_FOUND		2
-#define	ERROR_SHARING_VIOLATION		32
+#define	INVALID_HANDLE_VALUE		(void*)-1
 
 #define	FILE_BEGIN			0
 #define	FILE_CURRENT			1

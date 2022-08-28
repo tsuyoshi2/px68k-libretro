@@ -110,7 +110,7 @@ void LoadConfig(void)
 {
 	int	i, j;
 	char	buf[MAX_PATH];
-	FILEH fp;
+	void *fp;
 
 	/* Because we are not loading defauts for most items from a config file,
 	 * directly set default config at first call
@@ -144,7 +144,7 @@ void SaveConfig(void)
 {
 	int	i, j;
 	char	buf[MAX_PATH], buf2[MAX_PATH];
-	FILEH fp;
+	void *fp;
 
 	WritePrivateProfileString("WinX68k", "StartDir", filepath, winx68k_ini);
 

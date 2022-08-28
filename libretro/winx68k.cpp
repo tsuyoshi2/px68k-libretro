@@ -127,7 +127,7 @@ WinX68k_LoadROMs(void)
 	};
 	static const char FONTFILE[] = "cgrom.dat";
 	static const char FONTFILETMP[] = "cgrom.tmp";
-	FILEH fp;
+	void *fp;
 	int i;
 	uint8_t tmp;
 
