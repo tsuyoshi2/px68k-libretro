@@ -231,7 +231,7 @@ DWORD set_file_pointer(void* h, LONG pos, DWORD whence)
 	return lseek(fd, pos, whence);
 }
 
-int FAKE_CloseHandle(void* h)
+void file_close(void * h)
 {
         if (handletype(h) == HTYPE_FILE)
         {
@@ -239,9 +239,7 @@ int FAKE_CloseHandle(void* h)
 		close(fp->fd);
 		local_unlock(h);
 		local_free(h);
-		return 1;
         }
-	return 0;
 }
 
 size_t GetPrivateProfileString(const char *sect, const char *key,

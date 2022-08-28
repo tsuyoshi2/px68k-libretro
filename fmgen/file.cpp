@@ -3,6 +3,7 @@
 #include "common.h"
 
 #include "file.h"
+#include "../libretro/fileio.h"
 
 // ---------------------------------------------------------------------------
 //	πΩ√€/æ√Ã«
@@ -50,7 +51,7 @@ void FileIO::Close()
 	uint32_t flags = GetFlags();
 	if (flags & open)
 	{
-		FAKE_CloseHandle(hfile);
+		file_close(hfile);
 		flags = 0;
 	}
 }

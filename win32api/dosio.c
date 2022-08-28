@@ -101,12 +101,6 @@ size_t file_write(void *handle, void *data, WORD length)
 	return writesize;
 }
 
-int16_t file_close(void *handle)
-{
-	FAKE_CloseHandle(handle);
-	return 0;
-}
-
 void file_setcd(const char *exename)
 {
 	strncpy(curpath, exename, sizeof(curpath));
