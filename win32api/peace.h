@@ -12,7 +12,6 @@ DWORD	FAKE_GetTickCount(void);
 int	read_file(void*, void *, size_t, size_t*);
 int	write_file(void*, const void *, size_t, size_t*);
 void *  create_file(const char*, DWORD, DWORD);
-DWORD	set_file_pointer(void*, LONG, DWORD);
 
 size_t	GetPrivateProfileString(const char *, const char*, const char*, char*,
 		size_t, const char*);

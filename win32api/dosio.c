@@ -63,12 +63,6 @@ void* file_create(const char *filename, int ftype)
 	return ret;
 }
 
-DWORD
-file_seek(void* handle, long pointer, int16_t mode)
-{
-	return set_file_pointer(handle, pointer, mode);
-}
-
 size_t file_lread(void* handle, void *data, DWORD length)
 {
 	size_t readsize;

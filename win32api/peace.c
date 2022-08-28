@@ -223,7 +223,7 @@ void* create_file(const char *filename, DWORD rdwr,
 	return h;
 }
 
-DWORD set_file_pointer(void* h, LONG pos, DWORD whence)
+DWORD file_seek(void* h, long pos, int16_t whence)
 {
 	struct internal_file *fp = local_lock(h);
 	int fd                   = fp->fd;

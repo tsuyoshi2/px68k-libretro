@@ -98,5 +98,5 @@ bool FileIO::Seek(int32_t pos, SeekMethod method)
 		return false;
 	}
 
-	return 0xffffffff != set_file_pointer(hfile, pos, wmethod);
+	return 0xffffffff != file_seek(hfile, pos, wmethod);
 }
