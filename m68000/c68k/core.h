@@ -82,71 +82,12 @@ typedef uintptr_t pointer;
 
 #endif /* !GEKKO */
 
-/* Terrible, but I'm not sure how to do the equivalent in inline */
-#ifdef HAVE_C99_VARIADIC_MACROS
-#define AddString(s, ...) \
-   { \
-      sprintf(s, __VA_ARGS__); \
-      s += strlen(s); \
-   }
-#else
-#define AddString(s, r...) \
-   { \
-      sprintf(s, ## r); \
-      s += strlen(s); \
-   }
-#endif
-
-#ifndef _
-#define _(a) (a)
-#endif
-
 /* Minimum/maximum values */
 
 #undef MIN
 #undef MAX
 #define MIN(a,b)  ((a) < (b) ? (a) : (b))
 #define MAX(a,b)  ((a) > (b) ? (a) : (b))
-
-#ifdef __GNUC__
-
-#ifndef UNUSED
-#define UNUSED __attribute ((unused))
-#endif
-
-#ifdef DEBUG
-#define USED_IF_DEBUG
-#else
-#define USED_IF_DEBUG __attribute ((unused))
-#endif
-
-#ifdef SMPC_DEBUG
-#define USED_IF_SMPC_DEBUG
-#else
-#define USED_IF_SMPC_DEBUG __attribute ((unused))
-#endif
-
-/* LIKELY(x) indicates that x is likely to be true (nonzero);
- * UNLIKELY(x) indicates that x is likely to be false (zero).
- * Use like: "if (UNLIKELY(a < b)) {...}" */
-#define LIKELY(x) (__builtin_expect(!!(x), 1))
-#define UNLIKELY(x) (__builtin_expect(!!(x), 0))
-
-#else
-
-#define UNUSED
-#define USED_IF_DEBUG
-#define USED_IF_SMPC_DEBUG
-#define LIKELY(x) (x)
-#define UNLIKELY(x) (x)
-
-#endif
-
-#ifdef USE_16BPP
-typedef u16 pixel_t;
-#else
-typedef u32 pixel_t;
-#endif
 
 #ifdef _MSC_VER
 #define snprintf sprintf_s

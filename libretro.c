@@ -179,13 +179,13 @@ void midi_out_short_msg(DWORD dwMsg)
    }
 }
 
-void midi_out_long_msg(LPSTR lpData, size_t length)
+void midi_out_long_msg(char *s, size_t len)
 {
    if (libretro_supports_midi_output && midi_cb.output_enabled())
    {
       int i;
-      for (i = 0; i < length; i++)
-         midi_cb.write((uint8_t)lpData[i], 0);
+      for (i = 0; i < len; i++)
+         midi_cb.write((uint8_t)s[i], 0);
    }
 }
 

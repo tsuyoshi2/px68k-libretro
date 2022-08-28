@@ -32,37 +32,34 @@
 
 #include <stdint.h>
 #include <sys/param.h>
-#include <time.h>
 
 #include "dosio.h"
 
 extern char slash;
 
-static char	curpath[MAX_PATH+32] = "";
-static LPSTR	curfilep = curpath;
+static char  curpath[MAX_PATH+32] = "";
+static char *curfilep = curpath;
 
-/* ファイル操作 */
-FILEH
-file_open(LPSTR filename)
+FILEH file_open(const char *filename)
 {
 	FILEH ret = CreateFile(filename, GENERIC_READ | GENERIC_WRITE,
 	    0, 0, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
-	if (ret == (FILEH)INVALID_HANDLE_VALUE) {
+	if (ret == (FILEH)INVALID_HANDLE_VALUE)
+	{
 		ret = CreateFile(filename, GENERIC_READ,
 		    0, 0, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
 		if (ret == (FILEH)INVALID_HANDLE_VALUE)
-			return (FILEH)FALSE;
+			return (FILEH)0;
 	}
 	return ret;
 }
 
-FILEH
-file_create(LPSTR filename, int ftype)
+FILEH file_create(const char *filename, int ftype)
 {
 	FILEH ret = CreateFile(filename, GENERIC_READ | GENERIC_WRITE,
 	    0, 0, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
 	if (ret == (FILEH)INVALID_HANDLE_VALUE)
-		return (FILEH)FALSE;
+		return (FILEH)0;
 	return ret;
 }
 
@@ -112,62 +109,43 @@ file_write(FILEH handle, void *data, WORD length)
 	return (WORD)writesize;
 }
 
-int16_t
-file_close(FILEH handle)
+int16_t file_close(FILEH handle)
 {
-
 	FAKE_CloseHandle(handle);
 	return 0;
 }
 
-void
-file_setcd(LPSTR exename)
+void file_setcd(const char *exename)
 {
-
 	strncpy(curpath, exename, sizeof(curpath));
 	plusyen(curpath, sizeof(curpath));
-	curfilep = curpath + strlen(exename) + 1;
+	curfilep  = curpath + strlen(exename) + 1;
 	*curfilep = '\0';
 }
 
-FILEH
-file_open_c(LPSTR filename)
+FILEH file_open_c(const char *filename)
 {
-
 	strncpy(curfilep, filename, MAX_PATH - (curfilep - curpath));
 	return file_open(curpath);
 }
 
-FILEH
-file_create_c(LPSTR filename, int ftype)
+FILEH file_create_c(const char *filename, int ftype)
 {
-
 	strncpy(curfilep, filename, MAX_PATH - (curfilep - curpath));
 	return file_create(curpath, ftype);
 }
 
-LPSTR
-getFileName(LPSTR filename)
+void plusyen(char *s, size_t len)
 {
-	LPSTR p, q;
+	size_t pos = strlen(s);
 
-	for (p = q = filename; *p != '\0'; p++)
-		if (*p == slash)
-			q = p + 1;
-	return q;
-}
-
-void
-plusyen(LPSTR str, int len)
-{
-	int	pos = strlen(str);
-
-	if (pos) {
-		if (str[pos-1] == slash)
+	if (pos)
+	{
+		if (s[pos-1] == slash)
 			return;
 	}
 	if ((pos + 2) >= len)
 		return;
-	str[pos++] = slash;
-	str[pos] = '\0';
+	s[pos++] = slash;
+	s[pos]   = '\0';
 }

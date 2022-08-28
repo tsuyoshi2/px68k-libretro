@@ -194,93 +194,93 @@ void FDD_SetFDInt(void)
 int FDD_Seek(int drv, int trk, FDCID* id)
 {
 	int type;
-	if ( (drv<0)||(drv>3) ) return FALSE;
+	if ( (drv<0)||(drv>3) ) return 0;
 	type = fdd.Types[drv];
 	if ( Seek[type] )
 		return Seek[type](drv, trk, id);
-	return FALSE;
+	return 0;
 }
 
 int FDD_ReadID(int drv, FDCID* id)
 {
 	int type;
-	if ( (drv<0)||(drv>3) ) return FALSE;
+	if ( (drv<0)||(drv>3) ) return 0;
 	type = fdd.Types[drv];
 	if ( ReadID[type] )
 		return ReadID[type](drv, id);
-	return FALSE;
+	return 0;
 }
 
 int FDD_WriteID(int drv, int trk, unsigned char* buf, int num)
 {
 	int type;
-	if ( (drv<0)||(drv>3) ) return FALSE;
+	if ( (drv<0)||(drv>3) ) return 0;
 	type = fdd.Types[drv];
 	if ( WriteID[type] )
 		return WriteID[type](drv, trk, buf, num);
-	return FALSE;
+	return 0;
 }
 
 
 int FDD_Read(int drv, FDCID* id, unsigned char* buf)
 {
 	int type;
-	if ( (drv<0)||(drv>3) ) return FALSE;
+	if ( (drv<0)||(drv>3) ) return 0;
 	type = fdd.Types[drv];
 	if ( Read[type] )
 	{
 		FDD_IsReading = 1;
 		return Read[type](drv, id, buf);
 	}
-	return FALSE;
+	return 0;
 }
 
 
 int FDD_ReadDiag(int drv, FDCID* id, FDCID* retid, unsigned char* buf)
 {
 	int type;
-	if ( (drv<0)||(drv>3) ) return FALSE;
+	if ( (drv<0)||(drv>3) ) return 0;
 	type = fdd.Types[drv];
 	if ( ReadDiag[type] )
 		return ReadDiag[type](drv, id, retid, buf);
-	return FALSE;
+	return 0;
 }
 
 
 int FDD_Write(int drv, FDCID* id, unsigned char* buf, int del)
 {
 	int type;
-	if ( (drv<0)||(drv>3) ) return FALSE;
+	if ( (drv<0)||(drv>3) ) return 0;
 	type = fdd.Types[drv];
 	if ( Write[type] )
 		return Write[type](drv, id, buf, del);
-	return FALSE;
+	return 0;
 }
 
 
 int FDD_GetCurrentID(int drv, FDCID* id)
 {
 	int type;
-	if ( (drv<0)||(drv>3) ) return FALSE;
+	if ( (drv<0)||(drv>3) ) return 0;
 	type = fdd.Types[drv];
 	if ( GetCurrentID[type] )
 		return GetCurrentID[type](drv, id);
-	return FALSE;
+	return 0;
 }
 
 
 int FDD_IsReady(int drv)
 {
-	if ( (drv<0)||(drv>3) ) return FALSE;
+	if ( (drv<0)||(drv>3) ) return 0;
 	if ( (fdd.Types[drv]!=FD_Non)&&(!fdd.SetDelay[drv]) )
-		return TRUE;
-	return FALSE;
+		return 1;
+	return 0;
 }
 
 
 int FDD_IsReadOnly(int drv)
 {
-	if ( (drv<0)||(drv>3) ) return FALSE;
+	if ( (drv<0)||(drv>3) ) return 0;
 	return fdd.ROnly[drv];
 }
 

@@ -90,13 +90,13 @@ int OPM_Init(int clock, int rate)
 	memset(RMData, 0, sizeof(RMData));
 
 	opm = new MyOPM();
-	if ( !opm ) return FALSE;
-	if ( !opm->Init(clock, rate, TRUE) ) {
+	if ( !opm ) return 0;
+	if ( !opm->Init(clock, rate, 1) ) {
 		delete opm;
 		opm = NULL;
-		return FALSE;
+		return 0;
 	}
-	return TRUE;
+	return 1;
 }
 
 
@@ -109,7 +109,7 @@ void OPM_Cleanup(void)
 
 void OPM_SetRate(int clock, int rate)
 {
-	if ( opm ) opm->SetRate(clock, rate, TRUE);
+	if ( opm ) opm->SetRate(clock, rate, 1);
 }
 
 
@@ -232,15 +232,15 @@ int M288_Init(int clock, int rate, const char* path)
 	ymf288b = new YMF288();
 	if ( (!ymf288a)||(!ymf288b) ) {
 		M288_Cleanup();
-		return FALSE;
+		return 0;
 	}
-	if ( (!ymf288a->Init(clock, rate, TRUE, path))||(!ymf288b->Init(clock, rate, TRUE, path)) ) {
+	if ( (!ymf288a->Init(clock, rate, 1, path))||(!ymf288b->Init(clock, rate, 1, path)) ) {
 		M288_Cleanup();
-		return FALSE;
+		return 0;
 	}
 	ymf288a->SetInt(1);
 	ymf288b->SetInt(0);
-	return TRUE;
+	return 1;
 }
 
 
@@ -254,8 +254,8 @@ void M288_Cleanup(void)
 
 void M288_SetRate(int clock, int rate)
 {
-	if ( ymf288a ) ymf288a->SetRate(clock, rate, TRUE);
-	if ( ymf288b ) ymf288b->SetRate(clock, rate, TRUE);
+	if ( ymf288a ) ymf288a->SetRate(clock, rate, 1);
+	if ( ymf288b ) ymf288b->SetRate(clock, rate, 1);
 }
 
 

@@ -88,8 +88,7 @@ struct internal_file
     ((isfixed(h)) ?							\
         ptrtohandle(h)->type : (((struct internal_handle *)(h))->type))
 
-DWORD WINAPI
-FAKE_GetTickCount(void)
+DWORD FAKE_GetTickCount(void)
 {
 	struct timeval tv;
 
@@ -97,143 +96,32 @@ FAKE_GetTickCount(void)
 	return tv.tv_usec / 1000 + tv.tv_sec * 1000;
 }
 
-BOOL WINAPI
-ReadFile(HANDLE h, PVOID buf, DWORD len, PDWORD lp, LPOVERLAPPED lpov)
+static PVOID LocalLock(HLOCAL h)
 {
-	struct internal_file *fp;
+	struct internal_handle *ih = h;
 
-	(void)lpov;
+	if (isfixed(h))
+		return h;
+	ih->refcount++;
 
-	if (h == (HANDLE)INVALID_HANDLE_VALUE)
-		return FALSE;
-
-	fp = LocalLock(h);
-	*lp = read(fp->fd, buf, len);
-	LocalUnlock(h);
-	if (*lp <= 0)
-		return FALSE;
-	return TRUE;
+	return ih->p;
 }
 
-BOOL WINAPI
-WriteFile(HANDLE h, PCVOID buf, DWORD len, PDWORD lp, LPOVERLAPPED lpov)
+static int LocalUnlock(HLOCAL h)
 {
-	struct internal_file *fp;
+	struct internal_handle *ih = h;
 
-	(void)lpov;
+	if (isfixed(h) || ih->refcount == 0)
+		return 0;
 
-	if (h == (HANDLE)INVALID_HANDLE_VALUE)
-		return FALSE;
+	if (--ih->refcount != 0) /* still locked? */
+		return 1;
 
-	fp = LocalLock(h);
-	*lp = write(fp->fd, buf, len);
-	LocalUnlock(h);
-	if (*lp <= 0)
-		return FALSE;
-	return TRUE;
+	/* unlocked */
+	return 0;
 }
 
-HANDLE WINAPI
-CreateFile(LPCSTR filename, DWORD rdwr, DWORD share,
-	    LPSECURITY_ATTRIBUTES sap,
-	    DWORD crmode, DWORD flags, HANDLE template)
-{
-	struct internal_file *fp;
-	HANDLE h;
-	int fd, fmode = 0;
-#ifdef _WIN32
- 	fmode |=O_BINARY;
-#endif
-	switch (rdwr & (GENERIC_READ|GENERIC_WRITE)) {
-	case GENERIC_READ:
-		fmode |= O_RDONLY;
-		break;
-	case GENERIC_WRITE:
-		fmode |= O_WRONLY;
-		break;
-	case GENERIC_READ|GENERIC_WRITE:
-		fmode |= O_RDWR;
-	default:
-		break;
-	}
-	switch (crmode) {
-	case CREATE_ALWAYS:
-		fmode |= O_CREAT;
-		break;	
-	case OPEN_EXISTING:
-		break;
-	}
-	fd = open(filename, fmode, 0644);
-	if (fd < 0)
-		return (HANDLE)INVALID_HANDLE_VALUE;
-
-	h = LocalAlloc(0, sizeof(struct internal_file));
-	sethandletype(h, HTYPE_FILE);
-	fp = LocalLock(h);
-	fp->fd = fd;
-	LocalUnlock(h);
-	return h;
-}
-
-DWORD WINAPI
-SetFilePointer(HANDLE h, LONG pos, PLONG newposh, DWORD whence)
-{
-	struct internal_file *fp = LocalLock(h);
-	int fd                   = fp->fd;
-	LocalUnlock(h);
-	return lseek(fd, pos, whence);
-}
-
-BOOL WINAPI
-FAKE_CloseHandle(HANDLE h)
-{
-	switch (handletype(h))
-	{
-		case HTYPE_FILE:
-			{
-				struct internal_file *fp = LocalLock(h);
-				close(fp->fd);
-				LocalUnlock(h);
-			}
-			break;
-		default:
-			return FALSE;
-	}
-	LocalFree(h);
-	return TRUE;
-}
-
-DWORD WINAPI
-GetFileAttributes(LPCSTR path)
-{
-	struct stat sb;
-	DWORD attr = FILE_ATTRIBUTE_NORMAL;
-
-	if (stat(path, &sb) == 0) {
-		if (S_ISDIR(sb.st_mode))
-			return FILE_ATTRIBUTE_DIRECTORY;
-		if (!(sb.st_mode & S_IWUSR))
-			attr |= FILE_ATTRIBUTE_READONLY;
-		return attr;
-	}
-
-	return -1;
-}
-
-HLOCAL WINAPI
-LocalAlloc(UINT flags, UINT bytes)
-{
-	return GlobalAlloc(flags, bytes);
-}
-
-HLOCAL WINAPI LocalFree(HLOCAL h) { return GlobalFree(h);  }
-
-PVOID WINAPI LocalLock(HLOCAL h)  { return GlobalLock(h);  }
-
-BOOL WINAPI LocalUnlock(HLOCAL h) { return GlobalUnlock(h);}
-
-HGLOBAL WINAPI
-GlobalAlloc(UINT flags, DWORD bytes)
+static HLOCAL LocalAlloc(UINT flags, UINT bytes) 
 {
 	struct internal_handle *p = (struct internal_handle*)
 		malloc(bytes + sizeof(struct internal_handle));
@@ -248,8 +136,7 @@ GlobalAlloc(UINT flags, DWORD bytes)
 	return 0;
 }
 
-HGLOBAL WINAPI
-GlobalFree(HGLOBAL h)
+static HLOCAL LocalFree(HLOCAL h)
 {
 	struct internal_handle *ih = h;
 
@@ -257,7 +144,7 @@ GlobalFree(HGLOBAL h)
 		return 0;
 	if (!isfixed(h))
 		return 0;
-	ih = GlobalHandle(h);
+	ih = (HGLOBAL)(h - sizeof(struct internal_handle));
 	if (ih->p == &ih[1])
 	{
 		free(ih);
@@ -266,42 +153,106 @@ GlobalFree(HGLOBAL h)
 	return h;
 }
 
-HGLOBAL WINAPI
-GlobalHandle(PCVOID p)
+int ReadFile(HANDLE h, PVOID buf, DWORD len, PDWORD lp, LPOVERLAPPED lpov)
 {
-	return (HGLOBAL)(p - sizeof(struct internal_handle));
+	struct internal_file *fp;
+	if (h == (HANDLE)INVALID_HANDLE_VALUE)
+		return 0;
+
+	fp  = LocalLock(h);
+	*lp = read(fp->fd, buf, len);
+	LocalUnlock(h);
+	if (*lp <= 0)
+		return 0;
+	return 1;
 }
 
-LPVOID WINAPI
-GlobalLock(HGLOBAL h)
+int WriteFile(HANDLE h, PCVOID buf, DWORD len, PDWORD lp, LPOVERLAPPED lpov)
 {
-	struct internal_handle *ih = h;
+	struct internal_file *fp;
+	if (h == (HANDLE)INVALID_HANDLE_VALUE)
+		return 0;
 
-	if (isfixed(h))
-		return h;
-	ih->refcount++;
-
-	return ih->p;
+	fp  = LocalLock(h);
+	*lp = write(fp->fd, buf, len);
+	LocalUnlock(h);
+	if (*lp <= 0)
+		return 0;
+	return 1;
 }
 
-BOOL WINAPI
-GlobalUnlock(HGLOBAL h)
+HANDLE CreateFile(const char *filename, DWORD rdwr, DWORD share,
+	    LPSECURITY_ATTRIBUTES sap,
+	    DWORD crmode, DWORD flags, HANDLE template)
 {
-	struct internal_handle *ih = h;
+	struct internal_file *fp;
+	HANDLE h;
+	int fd, fmode = 0;
+#ifdef _WIN32
+ 	fmode |=O_BINARY;
+#endif
+	switch (rdwr & (GENERIC_READ|GENERIC_WRITE))
+	{
+		case GENERIC_READ:
+			fmode |= O_RDONLY;
+			break;
+		case GENERIC_WRITE:
+			fmode |= O_WRONLY;
+			break;
+		case GENERIC_READ|GENERIC_WRITE:
+			fmode |= O_RDWR;
+		default:
+			break;
+	}
+	switch (crmode)
+	{
+		case CREATE_ALWAYS:
+			fmode |= O_CREAT;
+			break;	
+		case OPEN_EXISTING:
+			break;
+	}
+	fd = open(filename, fmode, 0644);
+	if (fd < 0)
+		return (HANDLE)INVALID_HANDLE_VALUE;
 
-	if (isfixed(h) || ih->refcount == 0)
-		return FALSE;
-
-	if (--ih->refcount != 0) /* still locked? */
-		return TRUE;
-
-	/* unlocked */
-	return FALSE;
+	h = LocalAlloc(0, sizeof(struct internal_file));
+	sethandletype(h, HTYPE_FILE);
+	fp = LocalLock(h);
+	fp->fd = fd;
+	LocalUnlock(h);
+	return h;
 }
 
-DWORD WINAPI
-GetPrivateProfileString(LPCSTR sect, LPCSTR key, LPCSTR defvalue,
-			 LPSTR buf, DWORD len, LPCSTR inifile)
+DWORD SetFilePointer(HANDLE h, LONG pos, PLONG newposh, DWORD whence)
+{
+	struct internal_file *fp = LocalLock(h);
+	int fd                   = fp->fd;
+	LocalUnlock(h);
+	return lseek(fd, pos, whence);
+}
+
+int FAKE_CloseHandle(HANDLE h)
+{
+	switch (handletype(h))
+	{
+		case HTYPE_FILE:
+			{
+				struct internal_file *fp = LocalLock(h);
+				close(fp->fd);
+				LocalUnlock(h);
+			}
+			break;
+		default:
+			return 0;
+	}
+	LocalFree(h);
+	return 1;
+}
+
+size_t GetPrivateProfileString(const char *sect, const char *key,
+		const char *defvalue,
+		char *buf, size_t len, const char *inifile)
 {
 	char lbuf[256];
 	FILE *fp;
@@ -355,8 +306,7 @@ nofile:
 	return strlen(buf);
 }
 
-UINT WINAPI
-GetPrivateProfileInt(LPCSTR sect, LPCSTR key, INT defvalue, LPCSTR inifile)
+UINT GetPrivateProfileInt(const char *sect, const char *key, INT defvalue, const char *inifile)
 {
 	char lbuf[256];
 	FILE *fp;

@@ -60,7 +60,7 @@ int D88_SetFD(int drv, char* filename)
 	fp = File_Open(D88File[drv]);
 	if ( !fp ) {
 		memset(D88File[drv], 0, MAX_PATH);
-		return FALSE;
+		return 0;
 	}
 	File_Seek(fp, 0, FSEEK_SET);
 	if ( File_Read(fp, &D88Head[drv], sizeof(D88_HEADER))!=sizeof(D88_HEADER) ) goto d88_set_error;
@@ -93,12 +93,12 @@ int D88_SetFD(int drv, char* filename)
 		}
 	}
 	File_Close(fp);
-	return TRUE;
+	return 1;
 
 d88_set_error:
 	File_Close(fp);
 	FDD_SetReadOnly(drv);
-	return FALSE;
+	return 0;
 }
 
 
@@ -107,7 +107,7 @@ int D88_Eject(int drv)
 	int trk, pos;
 	FILEH fp;
 
-	if ( !D88File[drv][0] ) return FALSE;
+	if ( !D88File[drv][0] ) return 0;
 
 	if ( !FDD_IsReadOnly(drv) ) {
 		fp = File_Open(D88File[drv]);
@@ -150,15 +150,15 @@ int D88_Eject(int drv)
 	memset(&D88Head[drv], 0, sizeof(D88_HEADER));
 	memset(D88File[drv], 0, MAX_PATH);
 
-	return TRUE;
+	return 1;
 }
 
 
 int D88_Seek(int drv, int trk, FDCID* id)
 {
-	if ( (drv<0)||(drv>3) ) return FALSE;
-	if ( (trk<0)||(trk>163) ) return FALSE;
-	if ( !D88Trks[drv][trk] ) return FALSE;
+	if ( (drv<0)||(drv>3) ) return 0;
+	if ( (trk<0)||(trk>163) ) return 0;
+	if ( !D88Trks[drv][trk] ) return 0;
 	if ( D88Top[drv]!=D88Trks[drv][trk] ) {
 		D88Cur[drv] = D88Top[drv] = D88Trks[drv][trk];
 	}
@@ -166,18 +166,18 @@ int D88_Seek(int drv, int trk, FDCID* id)
 	id->h = D88Cur[drv]->sect.h;
 	id->r = D88Cur[drv]->sect.r;
 	id->n = D88Cur[drv]->sect.n;
-	return TRUE;
+	return 1; 
 }
 
 
 int D88_GetCurrentID(int drv, FDCID* id)
 {
-	if ( !D88Cur[drv] ) return FALSE;
+	if ( !D88Cur[drv] ) return 0;
 	id->c = D88Cur[drv]->sect.c;
 	id->h = D88Cur[drv]->sect.h;
 	id->r = D88Cur[drv]->sect.r;
 	id->n = D88Cur[drv]->sect.n;
-	return TRUE;
+	return 1;
 }
 
 
@@ -185,7 +185,7 @@ int D88_ReadID(int drv, FDCID* id)
 {
 	D88_SECTINFO *si = D88Cur[drv];
 	int ret = 1;
-	if ( !si ) return FALSE;
+	if ( !si ) return 0;
 	id->c = si->sect.c;
 	id->h = si->sect.h;
 	id->r = si->sect.r;
@@ -206,8 +206,8 @@ int D88_WriteID(int drv, int trk, unsigned char* buf, int num)
 {
 	int i;
 	unsigned char c = buf[num<<2];
-	if ( (drv<0)||(drv>3) ) return FALSE;
-	if ( (trk<0)||(trk>163) ) return FALSE;
+	if ( (drv<0)||(drv>3) ) return 0;
+	if ( (trk<0)||(trk>163) ) return 0;
 	if ( D88Trks[drv][trk] ) {
 		D88_SECTINFO *si = D88Trks[drv][trk];
 		while ( si ) {
@@ -238,17 +238,17 @@ int D88_WriteID(int drv, int trk, unsigned char* buf, int num)
 		oldsi = si;
 	}
 	D88Cur[drv] = D88Top[drv] = D88Trks[drv][trk];
-	return TRUE;
+	return 1;
 
 d88_writeid_error:
-	return FALSE;
+	return 0;
 }
 
 
 int D88_Read(int drv, FDCID* id, unsigned char* buf)
 {
 	D88_SECTINFO *si = D88Top[drv];
-	if ( !si ) return FALSE;
+	if ( !si ) return 0;
 	do {
 		if ( (id->c==si->sect.c)&&(id->h==si->sect.h)&&(id->r==si->sect.r)&&(id->n==si->sect.n) ) {
 			int len = 128<<id->n;
@@ -267,7 +267,7 @@ int D88_Read(int drv, FDCID* id, unsigned char* buf)
 		si = si->next;
 	} while ( si );
 	D88Cur[drv] = D88Top[drv];
-	return FALSE;
+	return 0;
 }
 
 
@@ -276,7 +276,7 @@ int D88_ReadDiag(int drv, FDCID* id, FDCID* retid, unsigned char* buf)
 	D88_SECTINFO *si = D88Cur[drv];
 	int size = 128<<id->n;
 	int ret = 1;
-	if ( !si ) return FALSE;
+	if ( !si ) return 0;
 	memcpy(buf, ((unsigned char*)si)+sizeof(D88_SECTINFO), size);
 	if ( si->next )
 		D88Cur[drv] = si->next;
@@ -297,8 +297,8 @@ int D88_ReadDiag(int drv, FDCID* id, FDCID* retid, unsigned char* buf)
 int D88_Write(int drv, FDCID* id, unsigned char* buf, int del)
 {
 	D88_SECTINFO *si = D88Top[drv];
-	if ( !si ) return FALSE;
-	if ( FDD_IsReadOnly(drv) ) return FALSE;
+	if ( !si ) return 0;
+	if ( FDD_IsReadOnly(drv) ) return 0;
 	do {
 		if ( (id->c==si->sect.c)&&(id->h==si->sect.h)&&(id->r==si->sect.r)&&(id->n==si->sect.n) ) {
 			int len = 128<<id->n;
@@ -308,10 +308,10 @@ int D88_Write(int drv, FDCID* id, unsigned char* buf, int del)
 				D88Cur[drv] = si->next;
 			else
 				D88Cur[drv] = D88Top[drv];
-			return TRUE;
+			return 1;
 		}
 		si = si->next;
 	} while ( si );
 	D88Cur[drv] = D88Top[drv];
-	return FALSE;
+	return 0;
 }

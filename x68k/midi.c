@@ -614,9 +614,9 @@ static int exstrcmp(char *str, char *cmp)
 		if ((c >= 'a') && (c <= 'z'))
 			c -= 0x20;
 		if (c != *cmp++)
-			return(TRUE);
+			return 1;
 	}
-	return(FALSE);
+	return 0;
 }
 
 static void cutdelimita(char **buf)
@@ -693,7 +693,7 @@ static void mimpidefline_analyze(char *buf)
 	{
 		int ch;
 		buf++;
-		ch = getvalue(&buf, FALSE);
+		ch = getvalue(&buf, 0);
 		if ((ch < 1) || (ch > 16))
 			return;
 		ch--;
@@ -709,23 +709,23 @@ static void mimpidefline_analyze(char *buf)
 	}
 	else {
 		int	mod, num, bank, tone;
-		mod = getvalue(&buf, FALSE);
+		mod = getvalue(&buf, 0);
 		if ((mod < 0) || (mod >= MIMPI_RHYTHM)) {
 			return;
 		}
-		num = getvalue(&buf, TRUE);
+		num = getvalue(&buf, 1);
 		if ((num < 1) || (num > 128)) {
 			return;
 		}
 		num--;
-		tone = getvalue(&buf, TRUE);
+		tone = getvalue(&buf, 1);
 		if ((tone < 1) || (tone > 128)) {
 			return;
 		}
 		if (*buf == ':') {
 			buf++;
 			bank = tone - 1;
-			tone = getvalue(&buf, TRUE);
+			tone = getvalue(&buf, 1);
 			if ((tone < 1) || (tone > 128)) {
 				return;
 			}
@@ -754,20 +754,20 @@ int MIDI_SetMimpiMap(char *filename)
 	if ((filename == NULL) || (!filename[0]))
 	{
 		ENABLE_TONEMAP = 0;
-		return(FALSE);
+		return 0;
 	}
 	fh = File_Open(filename);
 	if (fh == (FILEH)-1)
 	{
 		ENABLE_TONEMAP = 0;
-		return(FALSE);
+		return 0;
 	}
 	while(file_readline(fh, buf, sizeof(buf)) >= 0)
 		mimpidefline_analyze(buf);
 	File_Close(fh);
 
 	LOADED_TONEMAP = 1;
-	return(TRUE);
+	return 1;
 }
 
 int MIDI_EnableMimpiDef(int enable)
@@ -776,7 +776,7 @@ int MIDI_EnableMimpiDef(int enable)
 	if ((enable) && (LOADED_TONEMAP))
 	{
 		ENABLE_TONEMAP = 1;
-		return(TRUE);
+		return 1;
 	}
-	return(FALSE);
+	return 0;
 }

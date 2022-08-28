@@ -134,9 +134,10 @@ WinX68k_LoadROMs(void)
 	for (fp = 0, i = 0; fp == 0 && i < NELEMENTS(BIOSFILE); ++i)
 		fp = file_open_c((char *)BIOSFILE[i]);
 
-	if (fp == 0) {
+	if (fp == 0)
+	{
 		Error("BIOS ROM image can't be found.");
-		return FALSE;
+		return 0;
 	}
 
 	File_Read(fp, &IPL[0x20000], 0x20000);
@@ -156,12 +157,12 @@ WinX68k_LoadROMs(void)
 		fp = file_open_c((char *)FONTFILETMP);
 		// font creation XXX - Font ROM image can't be found
 		if (fp == 0)
-			return FALSE;
+			return 0;
 	}
 	File_Read(fp, FONT, 0xc0000);
 	File_Close(fp);
 
-	return TRUE;
+	return 1;
 }
 
 int WinX68k_Reset(void)
@@ -214,7 +215,7 @@ int WinX68k_Reset(void)
 	SRAM_VirusCheck();
 	//CDROM_Init();
 	DSound_Play();
-	return TRUE;
+	return 1;
 }
 
 int WinX68k_Init(void)
@@ -232,9 +233,9 @@ int WinX68k_Init(void)
 	if (MEM && FONT && IPL)
 	{
 	  	m68000_init();
-		return TRUE;
+		return 1;
 	}
-	return FALSE;
+	return 0;
 }
 
 void
@@ -271,12 +272,13 @@ void WinX68k_Exec(void)
 		Memory_WriteD(0xed0008, Config.ram_size);         // Define RAM amount
 	}
 
-	Joystick_Update(FALSE, -1, 0);
-	Joystick_Update(FALSE, -1, 1);
+	Joystick_Update(0, -1, 0);
+	Joystick_Update(0, -1, 1);
 
-	if ( Config.FrameRate != 7 ) {
+	if ( Config.FrameRate != 7 )
 		DispFrame = (DispFrame+1)%Config.FrameRate;
-	} else {				// Auto Frame Skip
+	else
+	{				// Auto Frame Skip
 		if ( FrameSkipQueue ) {
 			if ( FrameSkipCount>15 ) {
 				FrameSkipCount = 0;
@@ -550,7 +552,7 @@ extern "C" int pmain(int argc, char *argv[])
 	MIDI_SetMimpiMap(Config.ToneMapFile);	// ToneMap file usage
 	MIDI_EnableMimpiDef(Config.ToneMap);
 
-	if (!DSound_Init(Config.SampleRate, Config.BufferSize)) { }
+	if (!DSound_Init(Config.SampleRate)) { }
 
 	ADPCM_SetVolume((uint8_t)Config.PCM_VOL);
 	OPM_SetVolume((uint8_t)Config.OPM_VOL);
@@ -791,7 +793,7 @@ extern "C" void exec_app_retro(void)
 		if (Core_Key_State[RETROK_x] || Core_Key_State[RETROK_BACKSPACE])
 			keyb_in |= JOY_TRG2;
 
-		Joystick_Update(TRUE, menu_key_down, 0);
+		Joystick_Update(1, menu_key_down, 0);
 
 		ret       = WinUI_Menu(menu_mode == menu_enter);
 		menu_mode = menu_in;

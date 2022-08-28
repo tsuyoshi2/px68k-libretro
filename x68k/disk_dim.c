@@ -64,13 +64,13 @@ int DIM_SetFD(int drv, char* filename)
 	DIMFile[drv][MAX_PATH-1] = 0;
 
 	DIMImg[drv] = (unsigned char*)malloc(1024*9*170+sizeof(DIM_HEADER));		/* Maximum size */
-	if ( !DIMImg[drv] ) return FALSE;
+	if ( !DIMImg[drv] ) return 0;
 	memset(DIMImg[drv], 0xe5, 1024*9*170+sizeof(DIM_HEADER));
 	fp = File_Open(DIMFile[drv]);
 	if ( !fp ) {
 		memset(DIMFile[drv], 0, MAX_PATH);
 		FDD_SetReadOnly(drv);
-		return FALSE;
+		return 0;
 	}
 
 	File_Seek(fp, 0, FSEEK_SET);
@@ -88,12 +88,12 @@ int DIM_SetFD(int drv, char* filename)
 	}
 	File_Close(fp);
 	if ( !dh->overtrack ) memset(dh->trkflag, 1, 170);
-	return TRUE;
+	return 1;
 
 dim_set_error:
 	File_Close(fp);
 	FDD_SetReadOnly(drv);
-	return FALSE;
+	return 0;
 }
 
 int DIM_Eject(int drv)
@@ -105,7 +105,7 @@ int DIM_Eject(int drv)
 
 	if ( !DIMImg[drv] ) {
 		memset(DIMFile[drv], 0, MAX_PATH);
-		return FALSE;
+		return 0;
 	}
 	dh = (DIM_HEADER*)DIMImg[drv];
 	len = SctLength[dh->type];
@@ -126,13 +126,13 @@ int DIM_Eject(int drv)
 	free(DIMImg[drv]);
 	DIMImg[drv] = 0;
 	memset(DIMFile[drv], 0, MAX_PATH);
-	return TRUE;
+	return 1;
 
 dim_eject_error:
 	free(DIMImg[drv]);
 	DIMImg[drv] = 0;
 	memset(DIMFile[drv], 0, MAX_PATH);
-	return FALSE;
+	return 0;
 }
 
 
@@ -241,92 +241,92 @@ static int CheckTrack(int drv, int trk)
 			if ( ((trk>159)&&(!dh->overtrack))||(!dh->trkflag[trk]) ) return 0;
 			break;
 		default:
-			return FALSE;
+			return 0;
 	}
-	return TRUE;
+	return 1;
 }
 
 
 int DIM_Seek(int drv, int trk, FDCID* id)
 {
-	if ( (drv<0)||(drv>3) ) return FALSE;
-	if ( (trk<0)||(trk>169) ) return FALSE;
-	if ( !DIMImg[drv] ) return FALSE;
+	if ( (drv<0)||(drv>3) ) return 0;
+	if ( (trk<0)||(trk>169) ) return 0;
+	if ( !DIMImg[drv] ) return 0;
 	if ( DIMTrk[drv]!=trk ) DIMCur[drv] = 0;
 	SetID(drv, id, trk>>1, trk&1, DIMCur[drv]+1);
 	DIMTrk[drv] = trk;
-	return TRUE;
+	return 1;
 }
 
 
 int DIM_GetCurrentID(int drv, FDCID* id)
 {
-	if ( (drv<0)||(drv>3) ) return FALSE;
-	if ( (DIMTrk[drv]<0)||(DIMTrk[drv]>169) ) return FALSE;
-	if ( !DIMImg[drv] ) return FALSE;
-	if ( !CheckTrack(drv, DIMTrk[drv]) ) return FALSE;
+	if ( (drv<0)||(drv>3) ) return 0;
+	if ( (DIMTrk[drv]<0)||(DIMTrk[drv]>169) ) return 0;
+	if ( !DIMImg[drv] ) return 0;
+	if ( !CheckTrack(drv, DIMTrk[drv]) ) return 0;
 	SetID(drv, id, DIMTrk[drv]>>1,DIMTrk[drv]&1, DIMCur[drv]+1);
-	return TRUE;
+	return 1;
 }
 
 
 int DIM_ReadID(int drv, FDCID* id)
 {
-	if ( (drv<0)||(drv>3) ) return FALSE;
-	if ( (DIMTrk[drv]<0)||(DIMTrk[drv]>169) ) return FALSE;
-	if ( !DIMImg[drv] ) return FALSE;
-	if ( !CheckTrack(drv, DIMTrk[drv]) ) return FALSE;
+	if ( (drv<0)||(drv>3) ) return 0;
+	if ( (DIMTrk[drv]<0)||(DIMTrk[drv]>169) ) return 0;
+	if ( !DIMImg[drv] ) return 0;
+	if ( !CheckTrack(drv, DIMTrk[drv]) ) return 0;
 	SetID(drv, id, DIMTrk[drv]>>1,DIMTrk[drv]&1, DIMCur[drv]+1);
 	DIMCur[drv] = IncTrk(drv, DIMCur[drv]);
-	return TRUE;
+	return 1;
 }
 
 int DIM_WriteID(int drv, int trk, unsigned char* buf, int num)
 {
-	return FALSE;
+	return 0;
 }
 
 
 int DIM_Read(int drv, FDCID* id, unsigned char* buf)
 {
 	int pos;
-	if ( (drv<0)||(drv>3) ) return FALSE;
-	if ( !DIMImg[drv] ) return FALSE;
-	if ( (((id->c<<1)+(id->h&1))!=DIMTrk[drv]) ) return FALSE;
-	if ( !CheckTrack(drv, (id->c<<1)+(id->h&1)) ) return FALSE;
+	if ( (drv<0)||(drv>3) ) return 0;
+	if ( !DIMImg[drv] ) return 0;
+	if ( (((id->c<<1)+(id->h&1))!=DIMTrk[drv]) ) return 0;
+	if ( !CheckTrack(drv, (id->c<<1)+(id->h&1)) ) return 0;
 	pos = GetPos(drv, id);
-	if ( !pos ) return FALSE;
+	if ( !pos ) return 0;
 	memcpy(buf, DIMImg[drv]+pos, (id->n==2)?512:1024);
 	DIMCur[drv] = IncTrk(drv, id->r-1);
-	return TRUE;
+	return 1;
 }
 
 
 int DIM_ReadDiag(int drv, FDCID* id, FDCID* retid, unsigned char* buf)
 {
 	int pos;
-	if ( (drv<0)||(drv>3) ) return FALSE;
-	if ( !DIMImg[drv] ) return FALSE;
-	if ( !CheckTrack(drv, DIMTrk[drv]) ) return FALSE;
+	if ( (drv<0)||(drv>3) ) return 0;
+	if ( !DIMImg[drv] ) return 0;
+	if ( !CheckTrack(drv, DIMTrk[drv]) ) return 0;
 	SetID(drv, retid, DIMTrk[drv]>>1, DIMTrk[drv]&1, DIMCur[drv]+1);
 	pos = GetPos(drv, retid);
-	if ( !pos ) return FALSE;
+	if ( !pos ) return 0;
 	memcpy(buf, DIMImg[drv]+pos, (retid->n==2)?512:1024);
 	DIMCur[drv] = IncTrk(drv, DIMCur[drv]);
-	return TRUE;
+	return 1;
 }
 
 
 int DIM_Write(int drv, FDCID* id, unsigned char* buf, int del)
 {
 	int pos;
-	if ( (drv<0)||(drv>3) ) return FALSE;
-	if ( !DIMImg[drv] ) return FALSE;
-	if ( (((id->c<<1)+(id->h&1))!=DIMTrk[drv]) ) return FALSE;
-	if ( !CheckTrack(drv, (id->c<<1)+(id->h&1)) ) return FALSE;
+	if ( (drv<0)||(drv>3) ) return 0;
+	if ( !DIMImg[drv] ) return 0;
+	if ( (((id->c<<1)+(id->h&1))!=DIMTrk[drv]) ) return 0;
+	if ( !CheckTrack(drv, (id->c<<1)+(id->h&1)) ) return 0;
 	pos = GetPos(drv, id);
-	if ( !pos ) return FALSE;
+	if ( !pos ) return 0;
 	memcpy(DIMImg[drv]+pos, buf, (id->n==2)?512:1024);
 	DIMCur[drv] = IncTrk(drv, id->r-1);
-	return TRUE;
+	return 1;
 }

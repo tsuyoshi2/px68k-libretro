@@ -58,10 +58,9 @@ static DWORD WindowY = 0;
 
 void WinDraw_InitWindowSize(WORD width, WORD height)
 {
-	static BOOL inited = FALSE;
-
+	static int inited = 0;
 	if (!inited)
-		inited = TRUE;
+		inited = 1;
 
 	winw = width;
 	winh = height;
@@ -156,18 +155,15 @@ void WinDraw_CleanupScreen(void)
 
 int WinDraw_Init(void)
 {
-	int i, j;
-
-	WindowX = 768;
-	WindowY = 512;
+	WindowX        = 768;
+	WindowY        = 512;
 
 	WinDraw_Pal16R = 0xf800;
 	WinDraw_Pal16G = 0x07e0;
 	WinDraw_Pal16B = 0x001f;
 
 	ScrBuf = malloc(800 * 600 * 2);
-
-	return TRUE;
+	return 1;
 }
 
 void
@@ -996,8 +992,7 @@ int WinDraw_MenuInit(void)
 
 	set_mcolor(0xffff);
 	set_mbcolor(0);
-
-	return TRUE;
+	return 1;
 }
 
 #include "menu_str_sjis.txt"

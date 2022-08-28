@@ -44,20 +44,19 @@
 extern "C" {
 #endif
 
-FILEH file_open(LPSTR filename);
-FILEH file_create(LPSTR filename, int ftype);
+FILEH file_open(const char *filename);
+FILEH file_create(const char *filename, int ftype);
 DWORD file_seek(FILEH handle, long pointer, int16_t mode);
 DWORD file_lread(FILEH handle, void *data, DWORD length);
 DWORD file_lwrite(FILEH handle, void *data, DWORD length);
 WORD file_read(FILEH handle, void *data, WORD length);
 WORD file_write(FILEH handle, void *data, WORD length);
 int16_t file_close(FILEH handle);
-void file_setcd(LPSTR exename);
-FILEH file_open_c(LPSTR filename);
-FILEH file_create_c(LPSTR filename, int ftype);
+void file_setcd(const char *exename);
+FILEH file_open_c(const char *filename);
+FILEH file_create_c(const char *filename, int ftype);
 
-LPSTR getFileName(LPSTR filename);
-void plusyen(LPSTR str, int len);
+void plusyen(char *s, size_t len);
 
 #ifdef __cplusplus
 };

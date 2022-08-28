@@ -377,5 +377,5 @@ Keyboard_Int(void)
 
 int Keyboard_IsSwKeyboard(void)
 {
-	return FALSE;
+	return 0;
 }

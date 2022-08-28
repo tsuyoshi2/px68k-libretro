@@ -11,8 +11,6 @@
 #define	FSEEK_CUR	1
 #define	FSEEK_END	2
 
-LPSTR getFileName(LPSTR filename);
-
 FILEH	File_Open(uint8_t *filename);
 FILEH	File_Create(uint8_t *filename);
 DWORD	File_Seek(FILEH handle, long pointer, int16_t mode);

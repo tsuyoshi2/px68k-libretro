@@ -13,7 +13,7 @@ extern "C" {
 #endif
 
 void midi_out_short_msg(DWORD dwMsg);
-void midi_out_long_msg(LPSTR lpData, size_t length);
+void midi_out_long_msg(char *s, size_t len);
 int midi_out_open(LPHMIDIOUT phmo);
 
 #ifdef __cplusplus

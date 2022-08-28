@@ -32,7 +32,7 @@
 #include	"mercury.h"
 #include	"fmg_wrap.h"
 
-int16_t	playing = FALSE;
+int16_t	playing = 0;
 
 #define PCMBUF_SIZE 2*2*48000
 uint8_t pcmbuffer[PCMBUF_SIZE];
@@ -48,26 +48,20 @@ int audio_fd = 1;
 
 void raudio_callback(void *userdata, unsigned char *stream, int len);
 
-int
-DSound_Init(unsigned long rate, unsigned long buflen)
+int DSound_Init(unsigned long rate)
 {
-	DWORD samples;
-
 	if (playing)
-		return FALSE;
+		return 0;
 
 	if (rate == 0)
 	{
 		audio_fd = -1;
-		return TRUE;
+		return 1;
 	}
 
 	ratebase = rate;
-
-	samples = 2048;
-
-	playing = TRUE;
-	return TRUE;
+	playing  = 1;
+	return 1;
 }
 
 void
@@ -91,12 +85,12 @@ DSound_Stop(void)
 int
 DSound_Cleanup(void)
 {
-	playing = FALSE;
+	playing = 0;
 
 	if (audio_fd >= 0)
 		audio_fd = -1;
 
-	return TRUE;
+	return 1;
 }
 
 static void sound_send(int length)
@@ -111,7 +105,7 @@ static void sound_send(int length)
       pbwp = pbsp + (pbwp - pbep);
 }
 
-void FASTCALL DSound_Send0(long clock)
+void DSound_Send0(long clock)
 {
 	int length = 0;
 	int rate;
@@ -122,7 +116,7 @@ void FASTCALL DSound_Send0(long clock)
 	DSound_PreCounter += (ratebase * clock);
 
 	while (DSound_PreCounter >= 10000000L)
-   {
+	{
 		length++;
 		DSound_PreCounter -= 10000000L;
 	}
@@ -133,26 +127,20 @@ void FASTCALL DSound_Send0(long clock)
 	sound_send(length);
 }
 
-static void FASTCALL DSound_Send(int length)
+static void DSound_Send(int length)
 {
-	int rate;
-
-	if (audio_fd < 0)
-		return;
-	sound_send(length);
+	if (audio_fd >= 0)
+		sound_send(length);
 }
 
-int
-audio_samples_avail()
+int audio_samples_avail(void)
 {
    if (pbrp <= pbwp)
       return (pbwp - pbrp) / 4;
-   else
-      return (pbep - pbrp) / 4 + (pbwp - pbsp) / 4;
+   return (pbep - pbrp) / 4 + (pbwp - pbsp) / 4;
 }
 
-void
-audio_samples_discard(int discard)
+void audio_samples_discard(int discard)
 {
    int avail = audio_samples_avail();
    if (discard > avail)
@@ -161,9 +149,11 @@ audio_samples_discard(int discard)
    if (discard <= 0)
       return;
 
-   if (pbrp > pbwp) {
+   if (pbrp > pbwp)
+   {
       int availa = (pbep - pbrp) / 4;
-      if (discard >= availa) {
+      if (discard >= availa)
+      {
          pbrp = pbsp;
          discard -= availa;
       }
@@ -172,8 +162,7 @@ audio_samples_discard(int discard)
    pbrp += 4 * discard;
 }
 
-void
-raudio_callback(void *userdata, unsigned char *stream, int len)
+void raudio_callback(void *userdata, unsigned char *stream, int len)
 {
    int lena, lenb, datalen, rate;
    uint8_t *buf;

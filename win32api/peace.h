@@ -7,30 +7,18 @@
 extern "C" {
 #endif
 
-DWORD	WINAPI FAKE_GetTickCount(void);
+DWORD	FAKE_GetTickCount(void);
 
-BOOL	WINAPI ReadFile(HANDLE, PVOID, DWORD, PDWORD, LPOVERLAPPED);
-BOOL	WINAPI WriteFile(HANDLE, PCVOID, DWORD, PDWORD, LPOVERLAPPED);
-HANDLE	WINAPI CreateFile(LPCSTR, DWORD, DWORD, LPSECURITY_ATTRIBUTES,
+int	ReadFile(HANDLE, PVOID, DWORD, PDWORD, LPOVERLAPPED);
+int	WriteFile(HANDLE, PCVOID, DWORD, PDWORD, LPOVERLAPPED);
+HANDLE	CreateFile(const char*, DWORD, DWORD, LPSECURITY_ATTRIBUTES,
 		DWORD, DWORD, HANDLE);
-DWORD	WINAPI SetFilePointer(HANDLE, LONG, PLONG, DWORD);
-BOOL	WINAPI FAKE_CloseHandle(HANDLE);
-DWORD	WINAPI GetFileAttributes(LPCSTR);
+DWORD	SetFilePointer(HANDLE, LONG, PLONG, DWORD);
+int	FAKE_CloseHandle(HANDLE);
 
-HLOCAL	WINAPI LocalAlloc(UINT, UINT);
-HLOCAL	WINAPI LocalFree(HLOCAL);
-PVOID	WINAPI LocalLock(HLOCAL);
-BOOL	WINAPI LocalUnlock(HLOCAL);
-
-HGLOBAL WINAPI GlobalAlloc(UINT, DWORD);
-HGLOBAL	WINAPI GlobalFree(HGLOBAL);
-LPVOID	WINAPI GlobalLock(HGLOBAL);
-BOOL	WINAPI GlobalUnlock(HGLOBAL);
-HGLOBAL	WINAPI GlobalHandle(PCVOID);
-
-DWORD	WINAPI GetPrivateProfileString(LPCSTR, LPCSTR, LPCSTR, LPSTR,
-		DWORD, LPCSTR);
-UINT	WINAPI GetPrivateProfileInt(LPCSTR, LPCSTR, INT, LPCSTR);
+size_t	GetPrivateProfileString(const char *, const char*, const char*, char*,
+		size_t, const char*);
+UINT	GetPrivateProfileInt(const char*, const char*, INT, const char*);
 
 #ifdef __cplusplus
 };

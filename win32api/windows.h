@@ -27,16 +27,12 @@ typedef	unsigned short	WORD;
 typedef	unsigned int	DWORD;
 #endif
 
-typedef	int		BOOL;
-
 typedef	void		VOID;
 typedef	void		*PVOID;
 typedef	void		*LPVOID;
 typedef	const void	*PCVOID;
 typedef	long		*PLONG;
 typedef	DWORD		*PDWORD;
-typedef char		*LPSTR;
-typedef const char	*LPCSTR;
 
 typedef	void *		LPSECURITY_ATTRIBUTES;
 typedef	void *		LPOVERLAPPED;
@@ -49,14 +45,6 @@ typedef	HANDLE		HGLOBAL;
 #define FASTCALL
 #endif
 
-#ifndef	TRUE
-#define	TRUE	1
-#endif
-
-#ifndef	FALSE
-#define	FALSE	0
-#endif
-
 #ifndef	MAX_PATH
 #define	MAX_PATH	MAXPATHLEN
 #endif
@@ -64,16 +52,6 @@ typedef	HANDLE		HGLOBAL;
 /*
  * DUMMY DEFINITION
  */
-#define	WINAPI
-#define	CALLBACK
-
-#ifdef __GNUC__
-#ifndef UNUSED
-#define UNUSED __attribute ((unused))
-#endif
-#else
-#define	UNUSED(v)	((void)(v))
-#endif
 
 #ifndef	INLINE
 #ifdef _WIN32
@@ -170,9 +148,7 @@ typedef struct {
 #ifdef __cplusplus
 extern "C" {
 #endif
-BOOL	WINAPI WritePrivateProfileString(LPCSTR, LPCSTR, LPCSTR, LPCSTR);
-
-DWORD	WINAPI FAKE_GetLastError(void);
+int WritePrivateProfileString(const char *, const char *, const char *, const char*);
 #ifdef __cplusplus
 };
 #endif
