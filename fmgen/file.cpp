@@ -86,13 +86,13 @@ bool FileIO::Seek(int32_t pos, SeekMethod method)
 	switch (method)
 	{
 	case begin:	
-		wmethod = FILE_BEGIN; 
+		wmethod = 0; 
 		break;
 	case current:	
-		wmethod = FILE_CURRENT; 
+		wmethod = 1;
 		break;
 	case end:		
-		wmethod = FILE_END; 
+		wmethod = 2; 
 		break;
 	default:
 		return false;

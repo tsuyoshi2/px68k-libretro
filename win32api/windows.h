@@ -51,13 +51,8 @@ typedef	unsigned int	DWORD;
 
 #define	OPEN_EXISTING			1
 #define	CREATE_ALWAYS			2
-#define	CREATE_NEW			3
 
 #define	INVALID_HANDLE_VALUE		(void*)-1
-
-#define	FILE_BEGIN			0
-#define	FILE_CURRENT			1
-#define	FILE_END			2
 
 /*
  * replace
