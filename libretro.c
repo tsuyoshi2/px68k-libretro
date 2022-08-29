@@ -63,6 +63,15 @@ static bool opt_analog;
 
 static char CMDFILE[512];
 
+/* Args for experimental_cmdline */
+static char ARGUV[64][1024];
+static unsigned char ARGUC = 0;
+
+/* Args for Core */
+static char XARGV[64][1024];
+static const char* xargv_cmd[64];
+static int PARAMCOUNT = 0;
+
 int retrow = 800;
 int retroh = 600;
 int CHANGEAV = 0;
@@ -81,6 +90,11 @@ static retro_video_refresh_t video_cb;
 static retro_environment_t environ_cb;
 static retro_input_poll_t input_poll_cb;
 static retro_set_rumble_state_t rumble_cb;
+retro_input_state_t input_state_cb;
+retro_audio_sample_t audio_cb;
+retro_audio_sample_batch_t audio_batch_cb;
+retro_log_printf_t log_cb;
+
 static unsigned no_content;
 
 static int opt_rumble_enabled = 1;
@@ -99,21 +113,63 @@ struct disk_control_interface_t
    unsigned dci_version;                        /* disk control interface version, 0 = use old interface */
    unsigned total_images;                       /* total number if disk images */
    unsigned index;                              /* currect disk index */
-   disk_drive cur_drive;                          /* current active drive */
+   disk_drive cur_drive;                        /* current active drive */
    bool inserted[2];                            /* tray state for FDD0/FDD1, 0 = disk ejected, 1 = disk inserted */
 
-   unsigned char path[MAX_DISKS][MAX_PATH];     /* disk image paths */
-   unsigned char label[MAX_DISKS][MAX_PATH];    /* disk image base name w/o extension */
+   char path[MAX_DISKS][MAX_PATH];              /* disk image paths */
+   char label[MAX_DISKS][MAX_PATH];             /* disk image base name w/o extension */
 
    unsigned g_initial_disc;                     /* initial disk index */
-   unsigned char g_initial_disc_path[MAX_PATH]; /* initial disk path */
+   char g_initial_disc_path[MAX_PATH];          /* initial disk path */
 };
 
 static struct disk_control_interface_t disk;
 static struct retro_disk_control_callback dskcb;
 static struct retro_disk_control_ext_callback dskcb_ext;
 
-static void update_variables(void);
+static struct retro_input_descriptor input_descs[64];
+
+static struct retro_input_descriptor input_descs_p1[] = {
+   { 0, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_A, "A" },
+   { 0, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_B, "B" },
+   { 0, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_X, "X" },
+   { 0, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_Y, "Y" },
+   { 0, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_SELECT, "Select" },
+   { 0, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_START, "Start" },
+   { 0, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_RIGHT, "Right" },
+   { 0, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_LEFT, "Left" },
+   { 0, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_UP, "Up" },
+   { 0, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_DOWN, "Down" },
+   { 0, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_R, "R" },
+   { 0, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_L, "L" },
+   { 0, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_R2, "R2" },
+   { 0, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_L2, "L2 - Menu" },
+   { 0, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_R3, "R3" },
+   { 0, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_L3, "L3" },
+};
+static struct retro_input_descriptor input_descs_p2[] = {
+   { 1, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_A, "A" },
+   { 1, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_B, "B" },
+   { 1, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_X, "X" },
+   { 1, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_Y, "Y" },
+   { 1, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_SELECT, "Select" },
+   { 1, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_START, "Start" },
+   { 1, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_RIGHT, "Right" },
+   { 1, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_LEFT, "Left" },
+   { 1, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_UP, "Up" },
+   { 1, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_DOWN, "Down" },
+   { 1, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_R, "R" },
+   { 1, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_L, "L" },
+   { 1, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_R2, "R2" },
+   { 1, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_L2, "L2" },
+   { 1, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_R3, "R3" },
+   { 1, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_L3, "L3" },
+
+};
+
+static struct retro_input_descriptor input_descs_null[] = {
+   { 0, 0, 0, 0, NULL }
+};
 
 static bool is_path_absolute(const char* path)
 {
@@ -122,7 +178,7 @@ static bool is_path_absolute(const char* path)
 
 #ifdef _WIN32
    if ((path[0] >= 'a' && path[0] <= 'z') ||
-      (path[0] >= 'A' && path[0] <= 'Z'))
+      (path[0]  >= 'A' && path[0] <= 'Z'))
    {
       if (path[1] == ':')
          return true;
@@ -313,7 +369,7 @@ static bool add_image_index(void)
 
 static bool replace_image_index(unsigned index, const struct retro_game_info *info)
 {
-   unsigned char image[MAX_PATH];
+   char image[MAX_PATH];
    strcpy(disk.path[index], info->path);
    extract_basename(image, info->path, sizeof(image));
    snprintf(disk.label[index], sizeof(disk.label), "%s", image);
@@ -420,11 +476,6 @@ static void disk_swap_interface_init(void)
 }
 /* end .dsk swap support */
 
-retro_input_state_t input_state_cb;
-retro_audio_sample_t audio_cb;
-retro_audio_sample_batch_t audio_batch_cb;
-retro_log_printf_t log_cb;
-
 void retro_set_video_refresh(retro_video_refresh_t cb) { video_cb = cb; }
 void retro_set_audio_sample(retro_audio_sample_t cb) { audio_cb = cb; }
 void retro_set_audio_sample_batch(retro_audio_sample_batch_t cb) { audio_batch_cb = cb; }
@@ -457,15 +508,6 @@ static size_t handle_extension(char *path, char *ext)
       return 1;
    return 0;
 }
-
-/* Args for experimental_cmdline */
-static char ARGUV[64][1024];
-static unsigned char ARGUC = 0;
-
-/* Args for Core */
-static char XARGV[64][1024];
-static const char* xargv_cmd[64];
-static int PARAMCOUNT = 0;
 
 extern int cmain(int argc, char *argv[]);
 
@@ -708,51 +750,6 @@ static void parse_cmdline(const char *argv)
       }
    }
 }
-
-static struct retro_input_descriptor input_descs[64];
-
-static struct retro_input_descriptor input_descs_p1[] = {
-   { 0, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_A, "A" },
-   { 0, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_B, "B" },
-   { 0, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_X, "X" },
-   { 0, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_Y, "Y" },
-   { 0, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_SELECT, "Select" },
-   { 0, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_START, "Start" },
-   { 0, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_RIGHT, "Right" },
-   { 0, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_LEFT, "Left" },
-   { 0, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_UP, "Up" },
-   { 0, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_DOWN, "Down" },
-   { 0, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_R, "R" },
-   { 0, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_L, "L" },
-   { 0, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_R2, "R2" },
-   { 0, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_L2, "L2 - Menu" },
-   { 0, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_R3, "R3" },
-   { 0, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_L3, "L3" },
-};
-static struct retro_input_descriptor input_descs_p2[] = {
-   { 1, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_A, "A" },
-   { 1, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_B, "B" },
-   { 1, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_X, "X" },
-   { 1, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_Y, "Y" },
-   { 1, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_SELECT, "Select" },
-   { 1, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_START, "Start" },
-   { 1, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_RIGHT, "Right" },
-   { 1, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_LEFT, "Left" },
-   { 1, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_UP, "Up" },
-   { 1, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_DOWN, "Down" },
-   { 1, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_R, "R" },
-   { 1, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_L, "L" },
-   { 1, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_R2, "R2" },
-   { 1, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_L2, "L2" },
-   { 1, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_R3, "R3" },
-   { 1, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_L3, "L3" },
-
-};
-
-static struct retro_input_descriptor input_descs_null[] = {
-   { 0, 0, 0, 0, NULL }
-};
-
 
 static void retro_set_controller_descriptors(void)
 {
@@ -1200,30 +1197,14 @@ void update_timing(void)
    setup_frame_time_cb();
 }
 
-size_t retro_serialize_size(void)
-{
-   return 0;
-}
+/* TODO/FIXME - implement savestates */
+size_t retro_serialize_size(void) { return 0; }
+bool retro_serialize(void *data, size_t size) { return false; }
+bool retro_unserialize(const void *data, size_t size) { return false; }
 
-bool retro_serialize(void *data, size_t size)
-{
-   return false;
-}
-
-bool retro_unserialize(const void *data, size_t size)
-{
-   return false;
-}
-
-void retro_cheat_reset(void)
-{}
-
-void retro_cheat_set(unsigned index, bool enabled, const char *code)
-{
-   (void)index;
-   (void)enabled;
-   (void)code;
-}
+/* TODO/FIXME - implement cheats */
+void retro_cheat_reset(void) { }
+void retro_cheat_set(unsigned index, bool enabled, const char *code) { }
 
 bool retro_load_game(const struct retro_game_info *info)
 {
@@ -1244,13 +1225,8 @@ bool retro_load_game(const struct retro_game_info *info)
    return true;
 }
 
-bool retro_load_game_special(unsigned game_type, const struct retro_game_info *info, size_t num_info)
-{
-   (void)game_type;
-   (void)info;
-   (void)num_info;
-   return false;
-}
+bool retro_load_game_special(unsigned game_type, const struct retro_game_info
+*info, size_t num_info) { return false; }
 
 void retro_unload_game(void)
 {
@@ -1286,7 +1262,10 @@ void retro_init(void)
 {
    struct retro_log_callback log;
    struct retro_rumble_interface rumble;
-   const char *system_dir = NULL;
+   enum retro_pixel_format fmt = RETRO_PIXEL_FORMAT_RGB565;
+   const char *system_dir      = NULL;
+   const char *content_dir     = NULL;
+   const char *save_dir        = NULL;
 
    if (environ_cb(RETRO_ENVIRONMENT_GET_LOG_INTERFACE, &log))
       log_cb = log.log;
@@ -1297,31 +1276,23 @@ void retro_init(void)
    if (environ_cb(RETRO_ENVIRONMENT_GET_SYSTEM_DIRECTORY, &system_dir) && system_dir)
       retro_system_directory = system_dir;
 
-   const char *content_dir = NULL;
-
    /* if defined, use the system directory */
    if (environ_cb(RETRO_ENVIRONMENT_GET_CONTENT_DIRECTORY, &content_dir) && content_dir)
       retro_content_directory = content_dir;
 
-   const char *save_dir = NULL;
-
+   /* If save directory is defined use it, otherwise use system directory */
    if (environ_cb(RETRO_ENVIRONMENT_GET_SAVE_DIRECTORY, &save_dir) && save_dir)
-   {
-      /* If save directory is defined use it, otherwise use system directory */
       retro_save_directory = *save_dir ? save_dir : retro_system_directory;
-   }
    else
-   {
       /* make retro_save_directory the same in case RETRO_ENVIRONMENT_GET_SAVE_DIRECTORY is not implemented by the frontend */
       retro_save_directory = retro_system_directory;
-   }
 
-   if(retro_system_directory == NULL) sprintf(RETRO_DIR, "%s\0",".");
-   else sprintf(RETRO_DIR, "%s\0", retro_system_directory);
+   if (!retro_system_directory)
+      strcpy(RETRO_DIR, ".");
+   else
+      strcpy(RETRO_DIR, retro_system_directory);
 
-   sprintf(retro_system_conf, "%s%ckeropi\0", RETRO_DIR, slash);
-
-   enum retro_pixel_format fmt = RETRO_PIXEL_FORMAT_RGB565;
+   sprintf(retro_system_conf, "%s%ckeropi", RETRO_DIR, slash);
 
    if (!environ_cb(RETRO_ENVIRONMENT_SET_PIXEL_FORMAT, &fmt))
       exit(0);
@@ -1334,10 +1305,10 @@ void retro_init(void)
       libretro_supports_input_bitmasks = 1;
 
    disk_swap_interface_init();
-/*
+#if 0
     struct retro_keyboard_callback cbk = { keyboard_cb };
     environ_cb(RETRO_ENVIRONMENT_SET_KEYBOARD_CALLBACK, &cbk);
-*/
+#endif
 
    midi_interface_init();
 
@@ -1424,10 +1395,10 @@ void retro_run(void)
       if (CHANGEAV)
       {
          struct retro_system_av_info system_av_info;
-	 system_av_info.geometry.base_width = retrow;
-	 system_av_info.geometry.base_height = retroh;
-	 system_av_info.geometry.aspect_ratio = (float)4.0/3.0;
-	 environ_cb(RETRO_ENVIRONMENT_SET_GEOMETRY, &system_av_info);
+         system_av_info.geometry.base_width = retrow;
+         system_av_info.geometry.base_height = retroh;
+         system_av_info.geometry.aspect_ratio = (float)4.0/3.0;
+         environ_cb(RETRO_ENVIRONMENT_SET_GEOMETRY, &system_av_info);
          CHANGEAV = 0;
       }
       soundbuf_size = SNDSZ;
@@ -1449,8 +1420,9 @@ void retro_run(void)
    raudio_callback(soundbuf, NULL, soundbuf_size << 2);
 
    if (libretro_supports_midi_output && midi_cb.output_enabled())
-	   midi_cb.flush();
+      midi_cb.flush();
 
    audio_batch_cb((const int16_t*)soundbuf, soundbuf_size);
-   video_cb(videoBuffer, retrow, retroh, /*retrow*/ 800 << 1/*2*/);
+   /* TODO/FIXME - hardcoded pitch here */
+   video_cb(videoBuffer, retrow, retroh, /*retrow*/ 800 << 1);
 }
