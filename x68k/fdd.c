@@ -38,15 +38,14 @@ static int (*GetCurrentID[4])(int, FDCID*)                     = { 0, XDF_GetCur
 
 int FDD_IsReading                                              = 0;
 
-/*
- *   イメージタイプ判別
- */
-static void ConvertCapital(unsigned char* buf)
+static void ConvertCapital(char* buf)
 {
-	for ( ; *buf; buf++) {
-		if ( ((*buf>=0x80)&&(*buf<=0x9f))||(*buf>=0xe0) ) {
+	for ( ; *buf; buf++)
+   {
+		if ( ((*buf>=0x80)&&(*buf<=0x9f))||(*buf>=0xe0) )
 			buf++;
-		} else if ( (*buf>='a')&&(*buf<='z') ) *buf -= 0x20;
+		else if ( (*buf>='a')&&(*buf<='z') )
+         *buf -= 0x20;
 	}
 }
 
