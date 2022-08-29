@@ -595,7 +595,7 @@ static void Add_Option(const char* option)
       first++;
    }
 
-   sprintf(XARGV[PARAMCOUNT++], "%s\0", option);
+   strcpy(XARGV[PARAMCOUNT++], option);
 }
 
 static int retro_load_game_internal(const char *argv)
