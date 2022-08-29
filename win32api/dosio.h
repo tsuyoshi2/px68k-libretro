@@ -32,7 +32,6 @@
 #define	__NP2_DOSIO_H__
 
 #include "common.h"
-#include "appftype.h"
 
 #define		FSEEK_SET	0
 #define		FSEEK_CUR	1
@@ -43,7 +42,7 @@ extern "C" {
 #endif
 
 void *file_open(const char *filename);
-void *file_create(const char *filename, int ftype);
+void *file_create(const char *filename);
 DWORD file_seek(void *handle, long pointer, int16_t mode);
 size_t file_lread(void *handle, void *data, DWORD length);
 size_t file_lwrite(void *handle, void *data, DWORD length);
@@ -52,7 +51,7 @@ size_t file_write(void *handle, void *data, WORD length);
 int16_t file_close(void *handle);
 void file_setcd(const char *exename);
 void *file_open_c(const char *filename);
-void *file_create_c(const char *filename, int ftype);
+void *file_create_c(const char *filename);
 
 void plusyen(char *s, size_t len);
 

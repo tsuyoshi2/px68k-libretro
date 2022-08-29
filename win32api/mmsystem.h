@@ -3,14 +3,14 @@
 #ifndef	MMSYSTEM_H__
 #define	MMSYSTEM_H__
 
-#include "windows.h"
+#include <stdint.h>
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
 void midi_out_short_msg(size_t dwMsg);
-void midi_out_long_msg(char *s, size_t len);
+void midi_out_long_msg(uint8_t *s, size_t len);
 int midi_out_open(void **phmo);
 
 #ifdef __cplusplus

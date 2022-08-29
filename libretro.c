@@ -184,13 +184,13 @@ void midi_out_short_msg(size_t msg)
    }
 }
 
-void midi_out_long_msg(char *s, size_t len)
+void midi_out_long_msg(uint8_t *s, size_t len)
 {
    if (libretro_supports_midi_output && midi_cb.output_enabled())
    {
       int i;
       for (i = 0; i < len; i++)
-         midi_cb.write((uint8_t)s[i], 0);
+         midi_cb.write(s[i], 0);
    }
 }
 

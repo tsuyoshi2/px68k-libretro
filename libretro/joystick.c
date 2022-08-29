@@ -74,7 +74,7 @@ void FASTCALL Joystick_Write(uint8_t num, uint8_t data)
 
 /* Menu navigation related vars */
 #define RATE   3      /* repeat rate */
-#define DELAY 30      /* delay before 1st repeat */
+#define JOYDELAY 30   /* delay before 1st repeat */
 uint8_t keyb_in, joy_in;
 
 static DWORD get_px68k_input_bitmasks(int port)
@@ -192,10 +192,11 @@ void FASTCALL Joystick_Update(int is_menu, int key, int port)
 		if ((inbuf & (JOY_UP | JOY_DOWN)) == (JOY_UP | JOY_DOWN))
 			inbuf &= ~(JOY_UP | JOY_DOWN);
 
-		if (last_in != inbuf) {
-			last_in = inbuf;
-			repeat_delay = DELAY;
-			repeat_rate = 0;
+		if (last_in != inbuf)
+		{
+			last_in       = inbuf;
+			repeat_delay  = JOYDELAY;
+			repeat_rate   = 0;
 			JoyDownState0 = (inbuf ^ 0xff);
 		} else {
 			if (repeat_delay)

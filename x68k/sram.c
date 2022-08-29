@@ -66,14 +66,14 @@ void SRAM_Cleanup(void)
 
 	for (i=0; i<0x4000; i+=2)
 	{
-		tmp = SRAM[i];
-		SRAM[i] = SRAM[i+1];
+		tmp       = SRAM[i];
+		SRAM[i]   = SRAM[i+1];
 		SRAM[i+1] = tmp;
 	}
 
 	fp = file_open_c(SRAMFILE);
 	if (!fp)
-		fp = file_create_c(SRAMFILE, FTYPE_SRAM);
+		fp = file_create_c(SRAMFILE);
 	if (fp)
 	{
 		file_write(fp, SRAM, 0x4000);

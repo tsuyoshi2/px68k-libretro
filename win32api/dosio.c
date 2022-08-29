@@ -54,7 +54,7 @@ void *file_open(const char *filename)
 	return ret;
 }
 
-void* file_create(const char *filename, int ftype)
+void* file_create(const char *filename)
 {
 	void* ret = create_file(filename, GENERIC_READ | GENERIC_WRITE,
 	    CREATE_ALWAYS);
@@ -109,10 +109,10 @@ void *file_open_c(const char *filename)
 	return file_open(curpath);
 }
 
-void *file_create_c(const char *filename, int ftype)
+void *file_create_c(const char *filename)
 {
 	strncpy(curfilep, filename, MAX_PATH - (curfilep - curpath));
-	return file_create(curpath, ftype);
+	return file_create(curpath);
 }
 
 void plusyen(char *s, size_t len)
