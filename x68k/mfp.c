@@ -43,7 +43,8 @@ DWORD FASTCALL MFP_IntCallback(uint8_t irq)
 	}
 	if (!flag)
 	{
-		Error("MFP Int w/o Request. Default Vector(-1) has been returned.");
+		if (log_cb)
+			log_cb(RETRO_LOG_ERROR, "[PX68K] Error: MFP Int w/o Request. Default Vector(-1) has been returned.\n");
 		return (DWORD)-1;
 	}
 

@@ -11,26 +11,17 @@
 #include "windows.h"
 #endif
 
+#include "libretro.h"
+extern retro_log_printf_t log_cb;
+
 #undef FASTCALL
 #define FASTCALL
-
-#define	__stdcall
 
 #ifdef PSP
 #ifdef MAX_PATH
 #undef MAX_PATH
 #endif
 #define MAX_PATH 256
-#endif
-
-#ifdef __cplusplus
-extern "C" {
-#endif
-
-void Error(const char* s);
-
-#ifdef __cplusplus
-}
 #endif
 
 #endif

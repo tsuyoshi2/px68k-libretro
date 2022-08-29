@@ -133,7 +133,8 @@ int WinX68k_LoadROMs(void)
 
 	if (fp == 0)
 	{
-		Error("BIOS ROM image can't be found.");
+		if (log_cb)
+			log_cb(RETRO_LOG_ERROR, "[PX68K] Error: BIOS ROM image can't be found.\n");
 		return 0;
 	}
 
