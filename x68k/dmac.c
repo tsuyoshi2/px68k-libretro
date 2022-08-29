@@ -27,20 +27,14 @@ static int (*IsReady[4])(void) = { 0, 0, 0, 0 };
                        DMA[ch].CCR &= 0x7f; \
                        DMAINT(ch)
 
-
-static int DMA_DummyIsReady(void)
-{
-	return 0;
-}
+static int ADPCM_IsReady(void)    { return 1; }
+static int DMA_DummyIsReady(void) { return 0; }
 
 void DMA_SetReadyCB(int ch, int (*func)(void))
 {
 	if ( (ch>=0)&&(ch<=3) ) IsReady[ch] = func;
 }
 
-/*
- *   割り込みベクタを返す
- */
 DWORD FASTCALL DMA_Int(uint8_t irq)
 {
 	DWORD ret = 0xffffffff;
@@ -66,10 +60,6 @@ DWORD FASTCALL DMA_Int(uint8_t irq)
 	return ret;
 }
 
-
-/*
- *   I/O Read
- */
 uint8_t FASTCALL DMA_Read(DWORD adr)
 {
 	unsigned char* p;
@@ -104,10 +94,6 @@ uint8_t FASTCALL DMA_Read(DWORD adr)
 	return *p;
 }
 
-
-/*
- *   I/O Write
- */
 void FASTCALL DMA_Write(DWORD adr, uint8_t data)
 {
 	unsigned char* p;
@@ -371,7 +357,6 @@ int FASTCALL DMA_Exec(int ch)
 	}
 	return 0;
 }
-
 
 /*
  *   初期化

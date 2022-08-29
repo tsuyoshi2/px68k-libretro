@@ -744,7 +744,8 @@ int MIDI_SetMimpiMap(char *filename)
 	LOADED_TONEMAP = 0;
 	memset(TONE_CH, 0, sizeof(TONE_CH));
 	memset(TONEBANK[0], 0, sizeof(TONEBANK));
-	for (b=0; b<128; b++) {
+	for (b=0; b<128; b++)
+   {
 		TONEMAP[0][b] = b;
 		TONEMAP[1][b] = b;
 		TONEMAP[2][b] = b;

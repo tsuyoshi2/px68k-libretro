@@ -1,6 +1,5 @@
 /*
  *  TVRAM.C - Text VRAM
- *  ToDo : 透明色処理とか色々
  */
 
 #include	"common.h"
@@ -35,7 +34,8 @@ void TVRAM_Init(void)
 	{
 		for (j=0, bit=0x80; j<8; j++, bit>>=1)
 		{
-			if (i&bit) {
+			if (i&bit)
+         {
 				TextDrawPattern[i*8+j     ] = 1;
 				TextDrawPattern[i*8+j+2048] = 2;
 				TextDrawPattern[i*8+j+4096] = 4;
@@ -76,7 +76,7 @@ void FASTCALL TVRAM_Write(DWORD adr, uint8_t data)
 {
 	adr &= 0x7ffff;
 	adr ^= 1;
-	if (CRTC_Regs[0x2a]&1)			/* 同時アクセス */
+	if (CRTC_Regs[0x2a]&1)
 	{
 		adr &= 0x1ffff;
 		if (CRTC_Regs[0x2a]&2)		/* Text Mask */
@@ -94,7 +94,7 @@ void FASTCALL TVRAM_Write(DWORD adr, uint8_t data)
 			if (CRTC_Regs[0x2b]&0x80) TVRAM_WriteByte(adr+0x60000, data);
 		}
 	}
-	else					/* シングルアクセス */
+	else
 	{
 		if (CRTC_Regs[0x2a]&2)		/* Text Mask */
 			TVRAM_WriteByteMask(adr, data);
@@ -105,14 +105,11 @@ void FASTCALL TVRAM_Write(DWORD adr, uint8_t data)
 		DWORD *ptr = (DWORD *)TextDrawPattern;
 		DWORD tvram_addr = adr & 0x1ffff;
 		DWORD workadr = ((adr & 0x1ff80) + ((adr ^ 1) & 0x7f)) << 3;
-		DWORD t0, t1;
-		uint8_t pat;
+		uint8_t pat = TVRAM[tvram_addr + 0x60000];
+		DWORD t0    = ptr[(pat * 2) + 1536];
+		DWORD t1    = ptr[(pat * 2 + 1) + 1536];
 
-		pat = TVRAM[tvram_addr + 0x60000];
-		t0 = ptr[(pat * 2) + 1536];
-		t1 = ptr[(pat * 2 + 1) + 1536];
-
-		pat = TVRAM[tvram_addr + 0x40000];
+		pat         = TVRAM[tvram_addr + 0x40000];
 		t0 |= ptr[(pat * 2) + 1024];
 		t1 |= ptr[(pat * 2 + 1) + 1024];
 
@@ -141,7 +138,8 @@ void FASTCALL TVRAM_RCUpdate(void)
 	uint8_t pat;
 	int i;
 
-	for (i = 0; i < 512; i++, adr++) {
+	for (i = 0; i < 512; i++, adr++)
+   {
 		tadr = adr ^ 1;
 
 		pat = TVRAM[tadr + 0x60000];

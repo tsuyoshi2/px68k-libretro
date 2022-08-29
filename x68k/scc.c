@@ -13,42 +13,32 @@ int8_t MouseY = 0;
 uint8_t MouseSt = 0;
 
 static uint8_t SCC_RegsA[16] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
-static uint8_t SCC_RegNumA = 0;
-static uint8_t SCC_RegSetA = 0;
+static uint8_t SCC_RegNumA   = 0;
+static uint8_t SCC_RegSetA   = 0;
 static uint8_t SCC_RegsB[16] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
-static uint8_t SCC_RegNumB = 0;
-static uint8_t SCC_RegSetB = 0;
-static uint8_t SCC_Vector = 0;
-static uint8_t SCC_Dat[3] = {0, 0, 0};
-static uint8_t SCC_DatNum = 0;
+static uint8_t SCC_RegNumB   = 0;
+static uint8_t SCC_RegSetB   = 0;
+static uint8_t SCC_Vector    = 0;
+static uint8_t SCC_Dat[3]    = {0, 0, 0};
+static uint8_t SCC_DatNum    = 0;
 
-/*
- *   わりこみ
- */
 DWORD FASTCALL SCC_Int(uint8_t irq)
 {
-	DWORD ret = (DWORD)(-1);
 	IRQH_IRQCallBack(irq);
 	if ( (irq==5)&&(!(SCC_RegsB[9]&2)) )
 	{
 		if (SCC_RegsB[9]&1)
 		{
 			if (SCC_RegsB[9]&0x10)
-				ret = ((DWORD)(SCC_Vector&0x8f)+0x20);
-			else
-				ret = ((DWORD)(SCC_Vector&0xf1)+4);
+				return ((DWORD)(SCC_Vector&0x8f)+0x20);
+         return ((DWORD)(SCC_Vector&0xf1)+4);
 		}
-		else
-			ret = ((DWORD)SCC_Vector);
+      return ((DWORD)SCC_Vector);
 	}
 
-	return ret;
+	return (DWORD)(-1);
 }
 
-
-/*
- *   割り込みのチェック
- */
 void SCC_IntCheck(void)
 {
 	if ( (SCC_DatNum) && ((SCC_RegsB[1]&0x18)==0x10) && (SCC_RegsB[9]&0x08) )
@@ -62,9 +52,6 @@ void SCC_IntCheck(void)
 }
 
 
-/*
- *   初期化
- */
 void SCC_Init(void)
 {
 	MouseX = 0;
@@ -78,13 +65,13 @@ void SCC_Init(void)
 	SCC_DatNum = 0;
 }
 
-
 /*
  *   I/O Write
  */
 void FASTCALL SCC_Write(DWORD adr, uint8_t data)
 {
-	if (adr>=0xe98008) return;
+	if (adr>=0xe98008)
+      return;
 
 	if ((adr&7) == 1)
 	{
@@ -92,8 +79,9 @@ void FASTCALL SCC_Write(DWORD adr, uint8_t data)
 		{
 			if (SCC_RegNumB == 5)
 			{
-				if ( (!(SCC_RegsB[5]&2))&&(data&2)&&(SCC_RegsB[3]&1)&&(!SCC_DatNum) )	/* データが無い時だけにしやう（闇の血族） */
-				{			/* マウスデータ生成 */
+				if ( (!(SCC_RegsB[5]&2))&&(data&2)&&(SCC_RegsB[3]&1)
+                  &&(!SCC_DatNum) )	
+				{
 					Mouse_SetData();
 					SCC_DatNum = 3;
 					SCC_Dat[2] = MouseSt;
@@ -160,9 +148,10 @@ void FASTCALL SCC_Write(DWORD adr, uint8_t data)
  */
 uint8_t FASTCALL SCC_Read(DWORD adr)
 {
-	uint8_t ret=0;
+	uint8_t ret = 0;
 
-	if (adr>=0xe98008) return ret;
+	if (adr >= 0xe98008)
+      return 0;
 
 	if ((adr&7) == 1)
 	{

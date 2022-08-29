@@ -1,5 +1,5 @@
 /*
- *  SRAM.C - SRAM (16kb) 領域
+ *  SRAM.C - SRAM (16kb)
  */
 
 #include	"common.h"
@@ -12,23 +12,16 @@
 
 uint8_t	SRAM[0x4000];
 
-/*
- *   役に立たないうぃるすチェック
- */
 void SRAM_VirusCheck(void)
 {
 	if ( (cpu_readmem24_dword(0xed3f60)==0x60000002)
-	   &&(cpu_readmem24_dword(0xed0010)==0x00ed3f60) ) /* 特定うぃるすにしか効かないよ~ */
+	   &&(cpu_readmem24_dword(0xed0010)==0x00ed3f60) )
 	{
 		SRAM_Cleanup();
-		SRAM_Init(); /* Virusクリーンアップ後のデータを書き込んでおく */
+		SRAM_Init();
 	}
 }
 
-
-/*
- *   初期化
- */
 void SRAM_Init(void)
 {
 	int i;
@@ -38,8 +31,7 @@ void SRAM_Init(void)
 	for (i=0; i<0x4000; i++)
 		SRAM[i] = 0xFF;
 
-	fp = file_open_c("sram.dat");
-	if (fp)
+	if ((fp = file_open_c("sram.dat")))
 	{
 		file_lread(fp, SRAM, 0x4000);
 		file_close(fp);
@@ -52,37 +44,27 @@ void SRAM_Init(void)
 	}
 }
 
-
-/*
- *  撤収~
- */
 void SRAM_Cleanup(void)
 {
-	int i;
-	uint8_t tmp;
-	void *fp;
+   int i;
+   uint8_t tmp;
+   void *fp;
 
-	for (i=0; i<0x4000; i+=2)
-	{
-		tmp       = SRAM[i];
-		SRAM[i]   = SRAM[i+1];
-		SRAM[i+1] = tmp;
-	}
+   for (i=0; i<0x4000; i+=2)
+   {
+      tmp       = SRAM[i];
+      SRAM[i]   = SRAM[i+1];
+      SRAM[i+1] = tmp;
+   }
 
-	fp = file_open_c("sram.dat");
-	if (!fp)
-		fp = file_create_c("sram.dat");
-	if (fp)
-	{
-		file_write(fp, SRAM, 0x4000);
-		file_close(fp);
-	}
+   if (!(fp = file_open_c("sram.dat")))
+      if (!(fp = file_create_c("sram.dat")))
+         return;
+
+   file_write(fp, SRAM, 0x4000);
+   file_close(fp);
 }
 
-
-/*
- *   りーど
- */
 uint8_t FASTCALL SRAM_Read(DWORD adr)
 {
 	adr &= 0xffff;
@@ -93,15 +75,12 @@ uint8_t FASTCALL SRAM_Read(DWORD adr)
 }
 
 
-/*
- *   らいと
- */
 void FASTCALL SRAM_Write(DWORD adr, uint8_t data)
 {
 	if ( (SysPort[5]==0x31)&&(adr<0xed4000) )
 	{
-		adr &= 0xffff;
-		adr ^= 1;
-		SRAM[adr] = data;
+		adr       &= 0xffff;
+		adr       ^= 1;
+		SRAM[adr]  = data;
 	}
 }

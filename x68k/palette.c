@@ -15,24 +15,25 @@ uint8_t	Pal_Regs[1024];
 WORD	TextPal[256];
 WORD	GrphPal[256];
 WORD	Pal16[65536];
-WORD	Ibit;				/* 半透明処理とかで使うかも〜 */
+WORD	Ibit;
 
 WORD	Pal_HalfMask, Pal_Ix2;
-WORD	Pal_R, Pal_G, Pal_B;		/* 画面輝度変更時用 */
+WORD	Pal_R, Pal_G, Pal_B;
 
 void Pal_SetColor(void)
 {
-	WORD TempMask, bit;
-	WORD R[5] = {0, 0, 0, 0, 0};
-	WORD G[5] = {0, 0, 0, 0, 0};
-	WORD B[5] = {0, 0, 0, 0, 0};
-	int r, g, b, i;
-
-	r = g = b = 5;
-	Pal_R = Pal_G = Pal_B = 0;
-	TempMask = 0;				/* 使われているビットをチェック（Iビット用） */
+	int i;
+	WORD bit;
+	WORD R[5]     = {0, 0, 0, 0, 0};
+	WORD G[5]     = {0, 0, 0, 0, 0};
+	WORD B[5]     = {0, 0, 0, 0, 0};
+	int r         = 5;
+	int g         = 5;
+	int b         = 5;
+	Pal_R         = Pal_G = Pal_B = 0;
+	WORD TempMask = 0;
 	for (bit=0x8000; bit; bit>>=1)
-	{					/* 各色毎に左（上位）から5ビットずつ拾う */
+	{
 		if ( (WinDraw_Pal16R&bit)&&(r) )
 		{
 			R[--r] = bit;
@@ -55,9 +56,9 @@ void Pal_SetColor(void)
 
 	Ibit = 1;
 	for (bit=1; bit; bit<<=1)
-	{ /* 使われていないビット（通常は6ビット以上ある色の */
-		if (!(TempMask&bit)) /* 最下位ビット）をIビットとして扱う */
-		{ /* 0のビットが複数だったときを考えて、Ibit=~TempMask; にはしてないです */
+	{
+		if (!(TempMask&bit))
+		{
 			Ibit = bit;
 			break;
 		}
@@ -66,8 +67,6 @@ void Pal_SetColor(void)
 	Pal_HalfMask = ~(B[0] | R[0] | G[0] | Ibit);
 	Pal_Ix2 = Ibit << 1;
 
-	/* X68kのビット配置に合わせてテーブル作成 */
-	/* すっげ〜手際が悪いね（汗 */
 	for (i=0; i<65536; i++)
 	{
 		bit = 0;
@@ -99,9 +98,6 @@ void Pal_Init(void)
 	Pal_SetColor();
 }
 
-/*
- *   I/O Read
- */
 uint8_t FASTCALL Pal_Read(DWORD adr)
 {
 	if (adr<0xe82400)
@@ -109,10 +105,6 @@ uint8_t FASTCALL Pal_Read(DWORD adr)
 	else return 0xff;
 }
 
-
-/*
- *   I/O Write
- */
 void FASTCALL Pal_Write(DWORD adr, uint8_t data)
 {
 	WORD pal;
@@ -133,7 +125,7 @@ void FASTCALL Pal_Write(DWORD adr, uint8_t data)
 	else if (adr<0x400)
 	{
 		if (MemByteAccess)
-			return; /* TextPalはバイトアクセスは出来ないらしい（神戸恋愛物語） */
+			return;
 		Pal_Regs[adr] = data;
 		TVRAM_SetAllDirty();
 		pal = Pal_Regs[adr&0xfffe];
@@ -142,9 +134,6 @@ void FASTCALL Pal_Write(DWORD adr, uint8_t data)
 	}
 }
 
-/*
- *   こんとらすと変更（パレットに対するWin側の表示色で実現してます ^^;）
- */
 void Pal_ChangeContrast(int num)
 {
 	WORD bit;
@@ -161,7 +150,6 @@ void Pal_ChangeContrast(int num)
 
 	for (bit=0x8000; bit; bit>>=1)
 	{
-		/* 各色毎に左（上位）から5ビットずつ拾う */
 		if ( (WinDraw_Pal16R&bit)&&(r) ) R[--r] = bit;
 		if ( (WinDraw_Pal16G&bit)&&(g) ) G[--g] = bit;
 		if ( (WinDraw_Pal16B&bit)&&(b) ) B[--b] = bit;
@@ -186,9 +174,9 @@ void Pal_ChangeContrast(int num)
 		if (i&0x0004) palb |= B[1];
 		if (i&0x0002) palb |= B[0];
 		pal = palr | palb | palg;
-		palg = (WORD)((palg*num)/15)&Pal_G;
-		palr = (WORD)((palr*num)/15)&Pal_R;
-		palb = (WORD)((palb*num)/15)&Pal_B;
+		palg = (WORD)((palg * num)/15)&Pal_G;
+		palr = (WORD)((palr * num)/15)&Pal_R;
+		palb = (WORD)((palb * num)/15)&Pal_B;
 		Pal16[i] = palr | palb | palg;
 		if ((pal)&&(!Pal16[i])) Pal16[i] = B[0];
 		if (i&0x0001) Pal16[i] |= Ibit;
@@ -196,12 +184,12 @@ void Pal_ChangeContrast(int num)
 
 	for (i=0; i<256; i++)
 	{
-		pal = Pal_Regs[i*2];
-		pal = (pal<<8)+Pal_Regs[i*2+1];
+		pal = Pal_Regs[i * 2];
+		pal = (pal<<8)+Pal_Regs[i * 2+1];
 		GrphPal[i] = Pal16[pal];
 
-		pal = Pal_Regs[i*2+512];
-		pal = (pal<<8)+Pal_Regs[i*2+513];
+		pal = Pal_Regs[i * 2+512];
+		pal = (pal<<8)+Pal_Regs[i * 2+513];
 		TextPal[i] = Pal16[pal];
 	}
 }

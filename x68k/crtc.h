@@ -22,10 +22,10 @@ extern	uint8_t	CRTC_DispScan;
 extern	uint32_t CRTC_FastClrLine;
 extern	uint16_t CRTC_FastClrMask;
 extern	uint8_t	CRTC_VStep;
-extern  int		HSYNC_CLK;
+extern  int	HSYNC_CLK;
 
-extern	uint32_t	GrphScrollX[4];
-extern	uint32_t	GrphScrollY[4];
+extern	uint32_t GrphScrollX[4];
+extern	uint32_t GrphScrollY[4];
 
 void CRTC_Init(void);
 

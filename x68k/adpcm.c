@@ -17,8 +17,6 @@
 #define ADPCMMIN          -2048
 #define FM_IPSCALE         256L
 
-#define OVERSAMPLEMUL      2
-
 #define INTERPOLATE(y, x)	\
 	(((((((-y[0]+3*y[1]-3*y[2]+y[3]) * x + FM_IPSCALE/2) / FM_IPSCALE \
 	+ 3 * (y[0]-2*y[1]+y[2])) * x + FM_IPSCALE/2) / FM_IPSCALE \
@@ -46,7 +44,6 @@ static uint8_t ADPCM_Clock = 0;
 static int ADPCM_PreCounter = 0;
 static int ADPCM_DifBuf = 0;
 
-
 static int ADPCM_Pan = 0x00;
 static int OldR = 0, OldL = 0;
 static int Outs[8];
@@ -54,16 +51,9 @@ static int OutsIp[4];
 static int OutsIpR[4];
 static int OutsIpL[4];
 
-int ADPCM_IsReady(void)
-{
-	return 1;
-}
-
-
 static void ADPCM_InitTable(void)
 {
 	int step, n;
-	double val;
 	static int bit[16][4] =
 	{
 		{ 1, 0, 0, 0}, { 1, 0, 0, 1}, { 1, 0, 1, 0}, { 1, 0, 1, 1},
@@ -72,9 +62,11 @@ static void ADPCM_InitTable(void)
 		{-1, 1, 0, 0}, {-1, 1, 0, 1}, {-1, 1, 1, 0}, {-1, 1, 1, 1}
 	};
 
-	for (step=0; step<=48; step++) {
-		val = floor(16.0 * pow ((double)1.1, (double)step));
-		for (n=0; n<16; n++) {
+	for (step=0; step<=48; step++)
+   {
+		double val = floor(16.0 * pow ((double)1.1, (double)step));
+		for (n=0; n<16; n++)
+      {
 			dif_table[step*16+n] = bit[n][0] *
 			   (int)(val   * bit[n][1] +
 				 val/2 * bit[n][2] +
@@ -84,22 +76,14 @@ static void ADPCM_InitTable(void)
 	}
 }
 
-
-#define LimitMix(val) { \
-	if ( val > 0x7fff )      val = 0x7fff; \
-	else if ( val < -0x8000 ) val = -0x8000; \
-}
-
-/*
- *   MPUクロック経過分だけバッファにデータを溜めておく
- */
 void FASTCALL ADPCM_PreUpdate(DWORD clock)
 {
-	/*if (!ADPCM_Playing) return;*/
 	ADPCM_PreCounter += ((ADPCM_ClockRate/24)*clock);
-	while ( ADPCM_PreCounter>=10000000L ) {		/* ↓ データの送りすぎ防止（A-JAX）。200サンプリングくらいまでは許そう…。 */
+	while ( ADPCM_PreCounter>=10000000L )
+   {
 		ADPCM_DifBuf -= ( (ADPCM_SampleRate*400)/ADPCM_ClockRate );
-		if ( ADPCM_DifBuf<=0 ) {
+		if ( ADPCM_DifBuf<=0 )
+      {
 			ADPCM_DifBuf = 0;
 			DMA_Exec(3);
 		}
@@ -107,10 +91,6 @@ void FASTCALL ADPCM_PreUpdate(DWORD clock)
 	}
 }
 
-
-/*
- *   DSoundが指定してくる分だけバッファにデータを書き出す
- */
 void ADPCM_Update(int16_t *buffer, DWORD length, uint8_t *pbsp, uint8_t *pbep)
 {
 	int outs;
@@ -179,7 +159,6 @@ void ADPCM_Update(int16_t *buffer, DWORD length, uint8_t *pbsp, uint8_t *pbep)
 	if ( ADPCM_DifBuf<0 ) ADPCM_DifBuf += ADPCM_BufSize;
 }
 
-
 /*
  *   1nibble（4bit）をデコード
  */
@@ -222,10 +201,6 @@ static INLINE void ADPCM_WriteOne(int val)
 	ADPCM_Count -= ADPCM_SampleRate;
 }
 
-
-/*
- *   I/O Write
- */
 void FASTCALL ADPCM_Write(DWORD adr, uint8_t data)
 {
 	if ( adr==0xe92001 ) {
@@ -248,17 +223,12 @@ void FASTCALL ADPCM_Write(DWORD adr, uint8_t data)
 	}
 }
 
-
-/*
- *   I/O Read（ステータスチェック）
- */
 uint8_t FASTCALL ADPCM_Read(DWORD adr)
 {
 	if ( adr==0xe92001 )
 		return ((ADPCM_Playing)?0xc0:0x40);
 	return 0x00;
 }
-
 
 void ADPCM_SetVolume(uint8_t vol)
 {
@@ -270,15 +240,15 @@ void ADPCM_SetVolume(uint8_t vol)
 		ADPCM_VolumeShift = 0; /* Mute */
 }
 
-
 /*
  *   Panning
  */
 void ADPCM_SetPan(int n)
 {
-	if ( (ADPCM_Pan&0x0c)!=(n&0x0c) ) {
-		ADPCM_Count = 0;
-		ADPCM_Clock = (ADPCM_Clock&4)|((n>>2)&3);
+	if ( (ADPCM_Pan&0x0c)!=(n&0x0c) )
+   {
+		ADPCM_Count     = 0;
+		ADPCM_Clock     = (ADPCM_Clock&4)|((n>>2)&3);
 		ADPCM_ClockRate = ADPCM_Clocks[ADPCM_Clock];
 	}
 	ADPCM_Pan = n;
@@ -290,28 +260,25 @@ void ADPCM_SetPan(int n)
  */
 void ADPCM_SetClock(int n)
 {
-	if ( (ADPCM_Clock&4)!=n ) {
-		ADPCM_Count = 0;
-		ADPCM_Clock = n|((ADPCM_Pan>>2)&3);
+	if ( (ADPCM_Clock&4)!=n )
+   {
+		ADPCM_Count     = 0;
+		ADPCM_Clock     = n | ((ADPCM_Pan>>2)&3);
 		ADPCM_ClockRate = ADPCM_Clocks[ADPCM_Clock];
 	}
 }
 
-
-/*
- *
- */
 void ADPCM_Init(DWORD samplerate)
 {
-	ADPCM_WrPtr = 0;
-	ADPCM_RdPtr = 0;
-	ADPCM_Out = 0;
-	ADPCM_Step = 0;
-	ADPCM_Playing = 0;
-	ADPCM_SampleRate = (samplerate*12);
+	ADPCM_WrPtr      = 0;
+	ADPCM_RdPtr      = 0;
+	ADPCM_Out        = 0;
+	ADPCM_Step       = 0;
+	ADPCM_Playing    = 0;
+	ADPCM_SampleRate = (samplerate * 12);
 	ADPCM_PreCounter = 0;
 	memset(Outs, 0, sizeof(Outs));
-	OutsIp[0] = OutsIp[1] = OutsIp[2] = OutsIp[3] = -1;
+	OutsIp[0]  = OutsIp[1]  = OutsIp[2]  = OutsIp[3]  = -1;
 	OutsIpR[0] = OutsIpR[1] = OutsIpR[2] = OutsIpR[3] = 0;
 	OutsIpL[0] = OutsIpL[1] = OutsIpL[2] = OutsIpL[3] = 0;
 	OldL = OldR = 0;

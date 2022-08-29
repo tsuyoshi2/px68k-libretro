@@ -13,8 +13,8 @@ typedef signed int  FASTCALL C68K_INT_CALLBACK(signed int level);
 typedef signed int  FASTCALL C68K_INT_CALLBACK(signed int level);
 #endif /* HAVE_CYCLONE */ /* HAVE_MUSASHI */
 
-	uint8_t	IRQH_IRQ[8];
-	void	*IRQH_CallBack[8];
+uint8_t	IRQH_IRQ[8];
+void	*IRQH_CallBack[8];
 
 void IRQH_Init(void)
 {
@@ -84,24 +84,24 @@ void IRQH_Int(uint8_t irq, void* handler)
 
 signed int my_irqh_callback(signed int  level)
 {
-	int i;
-	C68K_INT_CALLBACK *func = IRQH_CallBack[level&7];
-	int vect = (func)(level&7);
+   int i;
+   C68K_INT_CALLBACK *func = IRQH_CallBack[level&7];
+   int vect = (func)(level&7);
 
-	for (i=7; i>0; i--)
-	{
-		if (IRQH_IRQ[i])
-		{
+   for (i=7; i>0; i--)
+   {
+      if (IRQH_IRQ[i])
+      {
 #if defined (HAVE_CYCLONE)
-			m68k.irq = i;
+         m68k.irq = i;
 #elif defined (HAVE_C68K)
-			C68k_Set_IRQ(&C68K, i);
+         C68k_Set_IRQ(&C68K, i);
 #elif defined (HAVE_MUSASHI)
-			m68k_set_irq(i);
+         m68k_set_irq(i);
 #endif /* HAVE_C68K */ /* HAVE_MUSASHI */
-			break;
-		}
-	}
+         break;
+      }
+   }
 
-	return (signed int )vect;
+   return (signed int )vect;
 }
