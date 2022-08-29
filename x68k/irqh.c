@@ -13,8 +13,8 @@ typedef signed int  FASTCALL C68K_INT_CALLBACK(signed int level);
 typedef signed int  FASTCALL C68K_INT_CALLBACK(signed int level);
 #endif /* HAVE_CYCLONE */ /* HAVE_MUSASHI */
 
-uint8_t	IRQH_IRQ[8];
-void	*IRQH_CallBack[8];
+static uint8_t	IRQH_IRQ[8];
+static void	*IRQH_CallBack[8];
 
 void IRQH_Init(void)
 {

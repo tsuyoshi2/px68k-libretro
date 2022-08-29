@@ -25,9 +25,6 @@ void PIA_Init(void)
 	pia.Ctrl = 0;
 }
 
-/*
- *   I/O Write
- */
 void FASTCALL PIA_Write(DWORD adr, uint8_t data)
 {
 	uint8_t mask, bit, portc = pia.PortC;
@@ -61,9 +58,6 @@ void FASTCALL PIA_Write(DWORD adr, uint8_t data)
 		Joystick_Write(1, data);
 }
 
-/*
- *   I/O Read
- */
 uint8_t FASTCALL PIA_Read(DWORD adr)
 {
 	if ( adr==0xe9a001 )
