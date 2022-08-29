@@ -169,7 +169,7 @@ static void extract_directory(char *buf, const char *path, size_t size)
 
 /* BEGIN MIDI INTERFACE */
 #include "x68k/midi.h"
-#include "win32api/mmsystem.h"
+#include "libretro/mmsystem.h"
 static int libretro_supports_midi_output = 0;
 static struct retro_midi_interface midi_cb = { 0 };
 

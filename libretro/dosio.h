@@ -33,9 +33,9 @@
 
 #include "common.h"
 
-#define		FSEEK_SET	0
-#define		FSEEK_CUR	1
-#define		FSEEK_END	2
+#define	FSEEK_SET 0
+#define	FSEEK_CUR 1
+#define	FSEEK_END 2
 
 #ifdef __cplusplus
 extern "C" {

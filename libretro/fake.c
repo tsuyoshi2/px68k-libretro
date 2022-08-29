@@ -37,9 +37,6 @@
 #include <stdlib.h>
 #include <unistd.h>
 
-#include "windows.h"
-#include "mmsystem.h"
-
 static int
 _WritePrivateProfileString_subr(FILE **fp, long pos, long nowpos,
 		const char *buf, const char *file)

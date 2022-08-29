@@ -41,7 +41,6 @@
 
 #include "windows.h"
 
-
 /*-----
  *
  * From PEACE - http://chiharu.hauN.org/peace/ja/

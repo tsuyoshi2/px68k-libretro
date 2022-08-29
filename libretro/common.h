@@ -9,7 +9,7 @@
 #include <string.h>
 
 #ifndef _WIN32
-#include "../win32api/windows.h"
+#include "windows.h"
 #endif
 
 #ifdef __APPLE__

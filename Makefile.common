@@ -3,7 +3,9 @@ SOURCES_C 		:=
 SOURCES_CXX 	:=
 
 INCFLAGS		:= -I$(CORE_DIR) -I$(CORE_DIR)/libretro-common/include -I$(CORE_DIR)/libretro
-INCFLAGS 		+= -I$(CORE_DIR)/x68k -I$(CORE_DIR)/fmgen -I$(CORE_DIR)/win32api
+INCFLAGS 		+= -I$(CORE_DIR)/x68k \
+			   -I$(CORE_DIR)/fmgen \
+			   -I$(CORE_DIR)/libretro
 
 SOURCES_C 		+= \
 				$(CORE_DIR)/m68000/m68000.c
@@ -62,9 +64,9 @@ SOURCES_C 		+= \
 				$(CORE_DIR)/libretro/windraw.c \
 				$(CORE_DIR)/libretro/winui.c \
 				$(CORE_DIR)/libretro/common.c \
-				$(CORE_DIR)/win32api/dosio.c \
-				$(CORE_DIR)/win32api/fake.c \
-				$(CORE_DIR)/win32api/peace.c \
+				$(CORE_DIR)/libretro/dosio.c \
+				$(CORE_DIR)/libretro/fake.c \
+				$(CORE_DIR)/libretro/peace.c \
 				$(CORE_DIR)/libretro.c
 
 SOURCES_CXX 	+= \
