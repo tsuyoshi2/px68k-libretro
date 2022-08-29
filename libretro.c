@@ -128,6 +128,14 @@ static int soundbuf_size;
 
 uint16_t *videoBuffer;
 
+enum {
+   menu_out,
+   menu_enter,
+   menu_in
+};
+
+static int menu_mode = menu_out;
+
 static retro_video_refresh_t video_cb;
 static retro_environment_t environ_cb;
 static retro_input_poll_t input_poll_cb;
@@ -737,8 +745,6 @@ static int retro_load_game_internal(const char *argv)
 
    return 1;
 }
-
-int menu_mode = menu_out;
 
 #define MEM_SIZE 0xc00000
 
