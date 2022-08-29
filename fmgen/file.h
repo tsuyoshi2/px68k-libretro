@@ -15,11 +15,6 @@ public:
 		create		= 0x000004,
 	};
 
-	enum SeekMethod
-	{
-		begin = 0, current = 1, end = 2,
-	};
-
 	enum Error
 	{
 		success = 0,
@@ -37,7 +32,7 @@ public:
 	void Close();
 
 	void Read(void* dest, int32_t len);
-	bool Seek(int32_t fpos, SeekMethod method);
+	bool Seek(int32_t fpos, int method);
 
 	uint32_t GetFlags() { return flags; }
 

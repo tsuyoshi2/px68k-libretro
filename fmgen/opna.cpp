@@ -104,7 +104,6 @@ void OPNBase::SetPrescaler(uint32_t p)
 	if (prescale != p)
 	{
 		prescale = p;
-		//assert(0 <= prescale && prescale < 3);
 		
 		uint32_t fmclock = clock / table[p][0] / 12;
 		
@@ -115,7 +114,6 @@ void OPNBase::SetPrescaler(uint32_t p)
 		uint32_t ratio = ((fmclock << FM_RATIOBITS) + rate/2) / rate;
 
 		SetTimerBase(fmclock);
-//		MakeTimeTable(ratio);
 		chip.SetRatio(ratio);
 		psg.SetClock(clock / table[p][1], psgrate);
 
@@ -217,8 +215,7 @@ uint32_t OPN::GetReg(uint32_t addr)
 {
 	if (addr < 0x10)
 		return psg.GetReg(addr);
-	else
-		return 0;
+	return 0;
 }
 
 
@@ -1241,14 +1238,14 @@ bool OPNA::LoadRhythmSample(const char* path)
 			uint16_t size;
 		} whdr;
 
-		file.Seek(0x10, FileIO::begin);
+		file.Seek(0x10, 0);
 		file.Read(&whdr, sizeof(whdr));
 		
 		uint8_t subchunkname[4];
 		fsize = 4 + whdr.chunksize - sizeof(whdr);
 		do 
 		{
-			file.Seek(fsize, FileIO::current);
+			file.Seek(fsize, 1);
 			file.Read(&subchunkname, 4);
 			file.Read(&fsize, 4);
 		} while (memcmp("data", subchunkname, 4));
@@ -1549,14 +1546,14 @@ bool Y288::LoadRhythmSample(const char* path)
 			uint16_t size;
 		} whdr;
 
-		file.Seek(0x10, FileIO::begin);
+		file.Seek(0x10, 0);
 		file.Read(&whdr, sizeof(whdr));
 		
 		uint8_t subchunkname[4];
 		fsize = 4 + whdr.chunksize - sizeof(whdr);
 		do 
 		{
-			file.Seek(fsize, FileIO::current);
+			file.Seek(fsize, 1);
 			file.Read(&subchunkname, 4);
 			file.Read(&fsize, 4);
 		} while (memcmp("data", subchunkname, 4));

@@ -184,29 +184,24 @@ YMF288::YMF288()
 
 void YMF288::WriteIO(DWORD adr, uint8_t data)
 {
-	if( adr&1 ) {
+	if( adr&1 )
 		SetReg(((adr&2)?(CurReg[1]+0x100):CurReg[0]), (int)data);
-	} else {
+   else
 		CurReg[(adr>>1)&1] = (int)data;
-	}
 }
 
 
 uint8_t YMF288::ReadIO(DWORD adr)
 {
-	uint8_t ret = 0;
-	if ( adr&1 ) {
-		ret = GetReg(((adr&2)?(CurReg[1]+0x100):CurReg[0]));
-	} else {
-		ret = ((adr)?(ReadStatusEx()):(ReadStatus()));
-	}
-	return ret;
+	if ( adr&1 )
+		return GetReg(((adr&2)?(CurReg[1]+0x100):CurReg[0]));
+   return ((adr)?(ReadStatusEx()):(ReadStatus()));
 }
-
 
 void YMF288::Intr(bool f)
 {
-	if ( (f)&&(IntrFlag) ) ::Mcry_Int();
+   if ( (f)&&(IntrFlag) )
+      ::Mcry_Int();
 }
 
 
@@ -217,26 +212,24 @@ void YMF288::Count2(DWORD clock)
 	CurCount %= 10;
 }
 
-
 static YMF288* ymf288a = NULL;
 static YMF288* ymf288b = NULL;
-
 
 int M288_Init(int clock, int rate, const char* path)
 {
 	ymf288a = new YMF288();
 	ymf288b = new YMF288();
-	if ( (!ymf288a)||(!ymf288b) ) {
-		M288_Cleanup();
-		return 0;
-	}
-	if ( (!ymf288a->Init(clock, rate, 1, path))||(!ymf288b->Init(clock, rate, 1, path)) ) {
-		M288_Cleanup();
-		return 0;
-	}
+	if ( (!ymf288a)||(!ymf288b) )
+      goto error;
+   if ( (!ymf288a->Init(clock, rate, 1, path))||(!ymf288b->Init(clock, rate, 1, path)) )
+      goto error;
 	ymf288a->SetInt(1);
 	ymf288b->SetInt(0);
 	return 1;
+
+error:
+   M288_Cleanup();
+   return 0;
 }
 
 
@@ -264,26 +257,31 @@ void M288_Reset(void)
 
 uint8_t FASTCALL M288_Read(WORD adr)
 {
-	if ( adr<=3 ) {
+	if ( adr<=3 )
+   {
 		if ( ymf288a )
 			return ymf288a->ReadIO(adr);
-		else
-			return 0;
-	} else {
+	}
+   else
+   {
 		if ( ymf288b )
 			return ymf288b->ReadIO(adr&3);
-		else
-			return 0;
 	}
+   return 0;
 }
 
 
 void FASTCALL M288_Write(DWORD adr, uint8_t data)
 {
-	if ( adr<=3 ) {
-		if ( ymf288a ) ymf288a->WriteIO(adr, data);
-	} else {
-		if ( ymf288b ) ymf288b->WriteIO(adr&3, data);
+	if ( adr<=3 )
+   {
+      if ( ymf288a )
+         ymf288a->WriteIO(adr, data);
+	}
+   else
+   {
+		if ( ymf288b )
+         ymf288b->WriteIO(adr&3, data);
 	}
 }
 

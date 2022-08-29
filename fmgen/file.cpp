@@ -5,10 +5,6 @@
 #include "file.h"
 #include "../libretro/dosio.h"
 
-// ---------------------------------------------------------------------------
-//	構築/消滅
-// ---------------------------------------------------------------------------
-
 FileIO::FileIO()
 {
 	flags = 0;
@@ -25,10 +21,6 @@ FileIO::~FileIO()
 	Close();
 }
 
-// ---------------------------------------------------------------------------
-//	ファイルを開く
-// ---------------------------------------------------------------------------
-
 bool FileIO::Open(const char* filename, uint32_t flg)
 {
 	Close();
@@ -42,10 +34,6 @@ bool FileIO::Open(const char* filename, uint32_t flg)
 	return !!(flags & open);
 }
 
-// ---------------------------------------------------------------------------
-//	ファイルを閉じる
-// ---------------------------------------------------------------------------
-
 void FileIO::Close()
 {
 	uint32_t flags = GetFlags();
@@ -56,10 +44,6 @@ void FileIO::Close()
 	}
 }
 
-// ---------------------------------------------------------------------------
-//	ファイル殻の読み出し
-// ---------------------------------------------------------------------------
-
 void FileIO::Read(void* dest, int32_t size)
 {
 	size_t readsize;
@@ -68,35 +52,20 @@ void FileIO::Read(void* dest, int32_t size)
 		read_file(hfile, dest, size, &readsize);
 }
 
-// ---------------------------------------------------------------------------
-//	ファイルへの書き出し
-// ---------------------------------------------------------------------------
-
-// ---------------------------------------------------------------------------
-//	ファイルをシーク
-// ---------------------------------------------------------------------------
-
-bool FileIO::Seek(int32_t pos, SeekMethod method)
+bool FileIO::Seek(int32_t pos, int method)
 {
-        uint32_t flags = GetFlags();
+   uint32_t flags = GetFlags();
 	if (!(flags & open))
 		return false;
 	
-	DWORD wmethod;
 	switch (method)
 	{
-	case begin:	
-		wmethod = 0; 
-		break;
-	case current:	
-		wmethod = 1;
-		break;
-	case end:		
-		wmethod = 2; 
-		break;
-	default:
-		return false;
+		case 0:	
+		case 1:	
+		case 2:		
+			return 0xffffffff != file_seek(hfile, pos, method);
+		default:
+         break;
 	}
-
-	return 0xffffffff != file_seek(hfile, pos, wmethod);
+   return false;
 }
