@@ -1,5 +1,5 @@
 /*
- *  MFP.C - MFP (Multi-Function Periferal)
+ *  MFP.C - MFP (Multi-Function Peripheral)
  */
 
 #include "mfp.h"
@@ -129,15 +129,14 @@ void MFP_Init(void)
 
 uint8_t FASTCALL MFP_Read(DWORD adr)
 {
-   uint8_t reg;
-   uint8_t ret = 0;
-   int hpos;
-
-   if (adr>0xe8802f) return ret; /* ばすえらー？ */
+   if (adr > 0xe8802f)
+      return 0;
 
    if (adr&1)
    {
-      reg=(uint8_t)((adr&0x3f)>>1);
+      int hpos;
+      uint8_t ret = 0;
+      uint8_t reg = (uint8_t)((adr&0x3f)>>1);
       switch(reg)
       {
          case MFP_GPIP:
@@ -159,26 +158,25 @@ uint8_t FASTCALL MFP_Read(DWORD adr)
             break;
          case MFP_RSR:
             if (KeyBufRP!=KeyBufWP)
-               ret = MFP[reg] & 0x7f;
-            else
-               ret = MFP[reg] | 0x80;
+               return MFP[reg] & 0x7f;
+            return MFP[reg] | 0x80;
             break;
          default:
-            ret = MFP[reg];
+            return MFP[reg];
       }
       return ret;
    }
-   else
-      return 0xff;
+   return 0xff;
 }
 
 void FASTCALL MFP_Write(DWORD adr, uint8_t data)
 {
-   uint8_t reg;
-   if (adr>0xe8802f) return;
+   if (adr>0xe8802f)
+      return;
+
    if (adr&1)
    {
-      reg=(uint8_t)((adr&0x3f)>>1);
+      uint8_t reg = (uint8_t)((adr&0x3f)>>1);
 
       switch(reg)
       {
@@ -235,31 +233,37 @@ void FASTCALL MFP_Write(DWORD adr, uint8_t data)
 
 void FASTCALL MFP_Timer(long clock)
 {
-	if ( (!(MFP[MFP_TACR]&8))&&(MFP[MFP_TACR]&7) ) {
-		int t = Timer_Prescaler[MFP[MFP_TACR]&7];
-		Timer_Tick[0] += clock;
-		while ( Timer_Tick[0]>=t ) {
-			Timer_Tick[0] -= t;
-			MFP[MFP_TADR]--;
-			if ( !MFP[MFP_TADR] ) {
-				MFP[MFP_TADR] = Timer_Reload[0];
-				MFP_Int(2);
-			}
-		}
-	}
+	if ( (!(MFP[MFP_TACR]&8))&&(MFP[MFP_TACR]&7) )
+   {
+      int t          = Timer_Prescaler[MFP[MFP_TACR]&7];
+      Timer_Tick[0] += clock;
+      while ( Timer_Tick[0]>=t )
+      {
+         Timer_Tick[0] -= t;
+         MFP[MFP_TADR]--;
+         if ( !MFP[MFP_TADR] )
+         {
+            MFP[MFP_TADR] = Timer_Reload[0];
+            MFP_Int(2);
+         }
+      }
+   }
 
-	if ( MFP[MFP_TBCR]&7 ) {
-		int t = Timer_Prescaler[MFP[MFP_TBCR]&7];
-		Timer_Tick[1] += clock;
-		while ( Timer_Tick[1]>=t ) {
-			Timer_Tick[1] -= t;
-			MFP[MFP_TBDR]--;
-			if ( !MFP[MFP_TBDR] ) {
-				MFP[MFP_TBDR] = Timer_Reload[1];
-				MFP_Int(7);
-			}
-		}
-	}
+	if ( MFP[MFP_TBCR]&7 )
+   {
+      int t          = Timer_Prescaler[MFP[MFP_TBCR]&7];
+      Timer_Tick[1] += clock;
+      while ( Timer_Tick[1]>=t )
+      {
+         Timer_Tick[1] -= t;
+         MFP[MFP_TBDR]--;
+         if ( !MFP[MFP_TBDR] )
+         {
+            MFP[MFP_TBDR] = Timer_Reload[1];
+            MFP_Int(7);
+         }
+      }
+   }
 
 	if ( MFP[MFP_TCDCR]&0x70 ) {
 		int t = Timer_Prescaler[(MFP[MFP_TCDCR]&0x70)>>4];

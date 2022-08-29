@@ -22,46 +22,41 @@ void RTC_Init(void)
 
 uint8_t FASTCALL RTC_Read(DWORD adr)
 {
-	uint8_t ret   = 0;
-	time_t t      = time(NULL);
-	struct tm *tm = localtime(&t);
+   time_t t      = time(NULL);
+   struct tm *tm = localtime(&t);
 
-	adr          &= 0x1f;
-	if (!(adr&1))
+   adr          &= 0x1f;
+   if (!(adr & 1))
       return 0;
 
-	if (RTC_Bank == 0)
-	{
-		switch(adr)
+   if (RTC_Bank == 0)
+   {
+      switch(adr)
       {
-         case 0x01: ret=(tm->tm_sec)%10; break;
-         case 0x03: ret=(tm->tm_sec)/10; break;
-         case 0x05: ret=(tm->tm_min)%10; break;
-         case 0x07: ret=(tm->tm_min)/10; break;
-         case 0x09: ret=(tm->tm_hour)%10; break;
-         case 0x0b: ret=(tm->tm_hour)/10; break;
-         case 0x0d: ret=(uint8_t)(tm->tm_wday); break;
-         case 0x0f: ret=(tm->tm_mday)%10; break;
-         case 0x11: ret=(tm->tm_mday)/10; break;
-         case 0x13: ret=(tm->tm_mon+1)%10; break;
-         case 0x15: ret=(tm->tm_mon+1)/10; break;
-         case 0x17: ret=((tm->tm_year)-80)%10; break;
-         case 0x19: ret=(((tm->tm_year)-80)/10)&0xf; break;
-         case 0x1b: ret=RTC_Regs[0][13]; break;
-         case 0x1d: ret=RTC_Regs[0][14]; break;
-         case 0x1f: ret=RTC_Regs[0][15]; break;
+         case 0x01: return (tm->tm_sec)  % 10;
+         case 0x03: return (tm->tm_sec)  / 10;
+         case 0x05: return (tm->tm_min)  % 10;
+         case 0x07: return (tm->tm_min)  / 10;
+         case 0x09: return (tm->tm_hour) % 10;
+         case 0x0b: return (tm->tm_hour) / 10;
+         case 0x0d: return (uint8_t)(tm->tm_wday);
+         case 0x0f: return (tm->tm_mday)%10;
+         case 0x11: return (tm->tm_mday)/10;
+         case 0x13: return (tm->tm_mon+1)%10;
+         case 0x15: return (tm->tm_mon+1)/10;
+         case 0x17: return ((tm->tm_year)-80)%10;
+         case 0x19: return (((tm->tm_year)-80)/10)&0xf;
+         case 0x1b: return RTC_Regs[0][13];
+         case 0x1d: return RTC_Regs[0][14];
+         case 0x1f: return RTC_Regs[0][15];
       }
-	}
-	else
-	{
-		if (adr == 0x1b)
-			ret = (RTC_Regs[1][13]|1);
-		else if (adr == 0x17)
-			ret = ((tm->tm_year)-80)%4;
-		else
-			ret = RTC_Regs[1][adr>>1];
-	}
-	return ret;
+      return 0;
+   }
+   if (adr == 0x1b)
+      return (RTC_Regs[1][13]|1);
+   else if (adr == 0x17)
+      return ((tm->tm_year)-80)%4;
+   return RTC_Regs[1][adr>>1];
 }
 
 void FASTCALL RTC_Write(DWORD adr, uint8_t data)

@@ -14,24 +14,24 @@
 #define MCRY_IRQ 4
 #define Mcry_BufSize		48000*2
 
-static long	Mcry_WrPtr = 0;
-static long	Mcry_RdPtr = 0;
-static long	Mcry_SampleRate = 44100;
-static long	Mcry_ClockRate = 44100;
-static long	Mcry_Count = 0;
-static uint8_t	Mcry_Status = 0;
+static long	Mcry_WrPtr         = 0;
+static long	Mcry_RdPtr         = 0;
+static long	Mcry_SampleRate    = 44100;
+static long	Mcry_ClockRate     = 44100;
+static long	Mcry_Count         = 0;
+static uint8_t	Mcry_Status     = 0;
 uint8_t	Mcry_LRTiming         = 0;
-static int16_t	Mcry_OutDataL = 0;
-static int16_t	Mcry_OutDataR = 0;
+static int16_t	Mcry_OutDataL   = 0;
+static int16_t	Mcry_OutDataR   = 0;
 static int16_t	Mcry_BufL[Mcry_BufSize];
 static int16_t	Mcry_BufR[Mcry_BufSize];
-static long	Mcry_PreCounter = 0;
+static long	Mcry_PreCounter    = 0;
 
 static int16_t	Mcry_OldR, Mcry_OldL;
-static int	Mcry_DMABytes = 0;
+static int	Mcry_DMABytes      = 0;
 static double Mcry_VolumeShift = 65536;
-static int Mcry_SampleCnt = 0;
-static uint8_t Mcry_Vector = 255;
+static int Mcry_SampleCnt      = 0;
+static uint8_t Mcry_Vector     = 255;
 
 extern uint32_t BusErrFlag;
 extern	m68k_regs regs;
@@ -50,12 +50,10 @@ void FASTCALL Mcry_Int(void)
 	IRQH_Int(MCRY_IRQ, &Mcry_IntCB);
 }
 
-
 int Mcry_IsReady(void)
 {
-	return (Mcry_SampleCnt>0);
+	return (Mcry_SampleCnt > 0);
 }
-
 
 /*
  *   MPU経過クロック時間分だけデータをバッファに溜める
@@ -70,7 +68,6 @@ void FASTCALL Mcry_PreUpdate(DWORD clock)
 	}
 	M288_Timer(clock);
 }
-
 
 /*
  *   DSoundからの要求分だけバッファを埋める
@@ -139,35 +136,40 @@ void FASTCALL Mcry_Write(DWORD adr, uint8_t data)
 	if ((adr == 0xecc080)||(adr == 0xecc081)||(adr == 0xecc000)||(adr == 0xecc001))	/* Data Port */
 	{
 		if ( Mcry_SampleCnt<=0 ) return;
-		if ( Mcry_Status&2 ) {		/* Stereo */
-			if (Mcry_LRTiming)		/* 右 */
-			{
-				if (!(Mcry_Status&8)) data=0;	/* R Mute */
-				if (adr&1)			/* Low Byte */
-				{
-					Mcry_OutDataR = (Mcry_OutDataR&0xff00)|data;
-					Mcry_LRTiming ^= 1;
-					Mcry_WriteOne();
-				}
-				else /* High Byte */
-					Mcry_OutDataR = (Mcry_OutDataR&0x00ff)|((WORD)data<<8);
-			}
-			else				/* 左 */
-			{
-				if (!(Mcry_Status&4)) data=0;	/* L Mute */
-				if (adr&1)			/* Low Byte */
-				{
-					Mcry_OutDataL = (Mcry_OutDataL&0xff00)|data;
-					Mcry_LRTiming ^= 1;
-				}
-				else				/* High Byte */
-					Mcry_OutDataL = (Mcry_OutDataL&0x00ff)|((WORD)data<<8);
-			}
-		} else { /* Mono */
+		if ( Mcry_Status&2 )
+      {
+         /* Stereo */
+         if (Mcry_LRTiming)		/* 右 */
+         {
+            if (!(Mcry_Status&8)) data=0;	/* R Mute */
+            if (adr&1)			/* Low Byte */
+            {
+               Mcry_OutDataR = (Mcry_OutDataR&0xff00)|data;
+               Mcry_LRTiming ^= 1;
+               Mcry_WriteOne();
+            }
+            else /* High Byte */
+               Mcry_OutDataR = (Mcry_OutDataR&0x00ff)|((WORD)data<<8);
+         }
+         else				/* 左 */
+         {
+            if (!(Mcry_Status&4)) data=0;	/* L Mute */
+            if (adr&1)			/* Low Byte */
+            {
+               Mcry_OutDataL = (Mcry_OutDataL&0xff00)|data;
+               Mcry_LRTiming ^= 1;
+            }
+            else				/* High Byte */
+               Mcry_OutDataL = (Mcry_OutDataL&0x00ff)|((WORD)data<<8);
+         }
+      }
+      else
+      {
+         /* Mono */
 			if (adr&1) /* Low Byte */
 			{
-				Mcry_OutDataR = ((Mcry_Status&8)?((Mcry_OutDataR&0xff00)|data):0);
-				Mcry_OutDataL = ((Mcry_Status&4)?((Mcry_OutDataL&0xff00)|data):0);
+				Mcry_OutDataR  = ((Mcry_Status&8)?((Mcry_OutDataR&0xff00)|data):0);
+				Mcry_OutDataL  = ((Mcry_Status&4)?((Mcry_OutDataL&0xff00)|data):0);
 				Mcry_LRTiming ^= 1;
 				Mcry_WriteOne();
 			}
@@ -187,13 +189,9 @@ void FASTCALL Mcry_Write(DWORD adr, uint8_t data)
 		}
 	}
 	else if ( adr== 0xecc0b1 ) /* Int Vector */
-	{
 		Mcry_Vector = data;
-	}
 	else if ( (adr>=0xecc0c0)&&(adr<=0xecc0c7)&&(adr&1) ) /* 満開版まーきゅりー OPN */
-	{
 		M288_Write((uint8_t)((adr>>1)&3), data);
-	}
 }
 
 
@@ -226,12 +224,11 @@ uint8_t FASTCALL Mcry_Read(DWORD adr)
  */
 void Mcry_SetClock(void)
 {
-	static long Mcry_Clocks[8] = {
-		22050, 16000, 22050, 24000
-	};
+	static long Mcry_Clocks[8] = { 22050, 16000, 22050, 24000 };
 	Mcry_ClockRate = Mcry_Clocks[(Mcry_Status>>4)&3];
-	if (Mcry_Status&0x80) Mcry_ClockRate *= 2;
-	Mcry_Count = 0;
+	if (Mcry_Status&0x80)
+      Mcry_ClockRate *= 2;
+	Mcry_Count      = 0;
 	Mcry_PreCounter = 0;
 }
 
@@ -240,7 +237,8 @@ void Mcry_SetClock(void)
  */
 void Mcry_SetVolume(uint8_t vol)
 {
-	if (vol>16) vol=16;
+	if (vol>16)
+      vol=16;
 
 	if (vol)
 		Mcry_VolumeShift = pow(1.189207115, (16-vol));
