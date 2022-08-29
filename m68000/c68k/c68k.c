@@ -38,10 +38,6 @@
 
 c68k_struc C68K;
 
-/* include macro file */
-
-#include "c68kmac.inc"
-
 /* prototype */
 
 u32 FASTCALL C68k_Read_Dummy(const u32 adr);
@@ -251,7 +247,12 @@ u32 C68k_Get_PC(c68k_struc *cpu)
 u32 C68k_Get_SR(c68k_struc *cpu)
 {
     c68k_struc *CPU = cpu;
-    return GET_SR;
+    return ((CPU->flag_S << 0) | (CPU->flag_I << 8) |
+    (((CPU->flag_C >> (C68K_SR_C_SFT - 0)) & 1) |
+     ((CPU->flag_V >> (C68K_SR_V_SFT - 1)) & 2) |
+     (((!CPU->flag_notZ) & 1) << 2) |
+     ((CPU->flag_N >> (C68K_SR_N_SFT - 3)) & 8) | 
+     ((CPU->flag_X >> (C68K_SR_X_SFT - 4)) & 0x10)));
 }
 
 u32 C68k_Get_USP(c68k_struc *cpu)
@@ -285,7 +286,13 @@ void C68k_Set_PC(c68k_struc *cpu, u32 val)
 void C68k_Set_SR(c68k_struc *cpu, u32 val)
 {
     c68k_struc *CPU = cpu;
-    SET_SR(val);
+    CPU->flag_C = (val) << (C68K_SR_C_SFT - 0);
+    CPU->flag_V = (val) << (C68K_SR_V_SFT - 1);
+    CPU->flag_notZ = ~(val) & 4;
+    CPU->flag_N = (val) << (C68K_SR_N_SFT - 3);
+    CPU->flag_X = (val) << (C68K_SR_X_SFT - 4);
+    CPU->flag_I = ((val) >> 8) & 7;
+    CPU->flag_S = (val) & C68K_SR_S;
 }
 
 void C68k_Set_USP(c68k_struc *cpu, u32 val)
