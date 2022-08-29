@@ -486,7 +486,6 @@ extern "C" int pmain(int argc, char *argv[])
 	WinDraw_ChangeSize();
 
 	WinUI_Init();
-	WinDraw_StartupScreen();
 
 	if (!WinX68k_Init()) {
 		WinX68k_Cleanup();
@@ -502,21 +501,18 @@ extern "C" int pmain(int argc, char *argv[])
 
 	//before moving to WinDraw_Init()
 	Keyboard_Init(); 
+	WinDraw_Init();
 
-	if (!WinDraw_Init())
+	if ( SoundSampleRate )
 	{
-		WinDraw_Cleanup();
-		Error("Error: Can't init screen.\n");
-		return 1;
-	}
-
-	if ( SoundSampleRate ) {
 		ADPCM_Init(SoundSampleRate);
 		OPM_Init(4000000/*3579545*/, SoundSampleRate);
 #ifndef	NO_MERCURY
 		Mcry_Init(SoundSampleRate, winx68k_dir);
 #endif
-	} else {
+	}
+	else
+	{
 		ADPCM_Init(100);
 		OPM_Init(4000000/*3579545*/, 100);
 #ifndef	NO_MERCURY
@@ -810,7 +806,6 @@ extern "C" void end_loop_retro(void)
    DSound_Cleanup();
    WinX68k_Cleanup();
    WinDraw_Cleanup();
-   WinDraw_CleanupScreen();
 
    SaveConfig();
 }

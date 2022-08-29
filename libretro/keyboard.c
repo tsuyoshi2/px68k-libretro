@@ -37,15 +37,12 @@ uint8_t	KeyBufRP;
 uint8_t	KeyBuf[KeyBufSize];
 uint8_t	KeyIntFlag = 0;
 
-void
-Keyboard_Init(void)
+void Keyboard_Init(void)
 {
-
 	KeyBufWP = 0;
 	KeyBufRP = 0;
 	memset(KeyBuf, 0, KeyBufSize);
 	KeyIntFlag = 0;
-
 }
 
 /*
