@@ -75,5 +75,4 @@ SOURCES_CXX 	+= \
 				$(CORE_DIR)/fmgen/fmtimer.cpp \
 				$(CORE_DIR)/fmgen/opm.cpp \
 				$(CORE_DIR)/fmgen/opna.cpp \
-				$(CORE_DIR)/fmgen/psg.cpp \
-				$(CORE_DIR)/libretro/winx68k.cpp
+				$(CORE_DIR)/fmgen/psg.cpp

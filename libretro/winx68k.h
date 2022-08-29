@@ -9,6 +9,12 @@
 #define TOSTR(s) #s
 #define PX68KVERSTR TOSTR(PX68K_VERSION)
 
+enum {
+   menu_out,
+   menu_enter,
+   menu_in
+};
+
 extern	uint8_t*	FONT;
 
 extern	WORD	VLINE_TOTAL;
@@ -18,10 +24,8 @@ extern	DWORD	vline;
 extern	char	winx68k_dir[MAX_PATH];
 extern	char	winx68k_ini[MAX_PATH];
 extern	int	BIOS030Flag;
+extern   int menu_mode;
 
-int WinX68k_Reset(void);
-int pmain(int argc, char *argv[]);
-void end_loop_retro(void);
-void exec_app_retro(void);
+void WinX68k_Reset(void);
 
 #endif /* _WINX68K_WINCORE_H */
