@@ -5,15 +5,10 @@
 #include "windows.h"
 #endif
 
-#include <stdio.h>
 #include <string.h>
 
 #ifndef _WIN32
 #include "windows.h"
-#endif
-
-#ifdef __APPLE__
-#include "TargetConditionals.h"
 #endif
 
 #undef FASTCALL

@@ -4,11 +4,11 @@
  *    内蔵SCSI（のダミー）IPLは winx68k.c 内で定義してます
  */
 
-#include	"common.h"
-#include	"fileio.h"
-#include	"winx68k.h"
-#include	"m68000.h"
-#include	"scsi.h"
+#include "common.h"
+#include "../libretro/dosio.h"
+#include "winx68k.h"
+#include "m68000.h"
+#include "scsi.h"
 
 uint8_t	SCSIIPL[0x2000];
 

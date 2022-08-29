@@ -3,7 +3,7 @@
 #include "common.h"
 
 #include "file.h"
-#include "../libretro/fileio.h"
+#include "../libretro/dosio.h"
 
 // ---------------------------------------------------------------------------
 //	πΩ√€/æ√Ã«

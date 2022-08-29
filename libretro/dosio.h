@@ -31,6 +31,7 @@
 #ifndef	__NP2_DOSIO_H__
 #define	__NP2_DOSIO_H__
 
+#include <stdint.h>
 #include "common.h"
 
 #define	FSEEK_SET 0

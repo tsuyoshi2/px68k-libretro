@@ -2,8 +2,10 @@
  *  FDD.C - 内蔵FDD Unit（イメージファイルの管理とFD挿抜割り込みの発生）
  */
 
+#include <string.h>
+
 #include "common.h"
-#include "fileio.h"
+#include "../libretro/dosio.h"
 #include "status.h"
 #include "irqh.h"
 #include "ioc.h"
@@ -12,7 +14,6 @@
 #include "disk_d88.h"
 #include "disk_xdf.h"
 #include "disk_dim.h"
-#include <string.h>
 
 
 typedef struct {

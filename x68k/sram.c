@@ -3,7 +3,7 @@
  */
 
 #include	"common.h"
-#include	"fileio.h"
+#include	"../libretro/dosio.h"
 #include	"prop.h"
 #include	"winx68k.h"
 #include	"sysport.h"
@@ -11,8 +11,6 @@
 #include	"sram.h"
 
 uint8_t	SRAM[0x4000];
-
-#define SRAMFILE "sram.dat"
 
 /*
  *   役に立たないうぃるすチェック
@@ -40,7 +38,7 @@ void SRAM_Init(void)
 	for (i=0; i<0x4000; i++)
 		SRAM[i] = 0xFF;
 
-	fp = file_open_c(SRAMFILE);
+	fp = file_open_c("sram.dat");
 	if (fp)
 	{
 		file_lread(fp, SRAM, 0x4000);
@@ -71,9 +69,9 @@ void SRAM_Cleanup(void)
 		SRAM[i+1] = tmp;
 	}
 
-	fp = file_open_c(SRAMFILE);
+	fp = file_open_c("sram.dat");
 	if (!fp)
-		fp = file_create_c(SRAMFILE);
+		fp = file_create_c("sram.dat");
 	if (fp)
 	{
 		file_write(fp, SRAM, 0x4000);

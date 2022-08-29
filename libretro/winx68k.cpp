@@ -5,7 +5,7 @@ extern "C" {
 #include <stdint.h>
 
 #include "common.h"
-#include "fileio.h"
+#include "dosio.h"
 #include "timer.h"
 #include "keyboard.h"
 #include "prop.h"

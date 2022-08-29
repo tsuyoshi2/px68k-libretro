@@ -32,7 +32,7 @@
 #include "common.h"
 #include "winx68k.h"
 #include "keyboard.h"
-#include "fileio.h"
+#include "dosio.h"
 #include "prop.h"
 
 static uint8_t initialized = 0;

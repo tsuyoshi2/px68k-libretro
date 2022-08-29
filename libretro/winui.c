@@ -35,7 +35,7 @@
 #include "keyboard.h"
 #include "windraw.h"
 #include "dswin.h"
-#include "fileio.h"
+#include "dosio.h"
 #include "prop.h"
 #include "status.h"
 #include "joystick.h"
