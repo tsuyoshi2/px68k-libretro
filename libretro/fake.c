@@ -32,10 +32,14 @@
 #include <sys/time.h>
 #include <sys/types.h>
 
-#include <fcntl.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
+#ifdef _WIN32
+#include <io.h>
+#else
 #include <unistd.h>
+#endif
 
 static int
 _WritePrivateProfileString_subr(FILE **fp, long pos, long nowpos,
