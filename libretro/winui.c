@@ -122,15 +122,10 @@ char menu_items[][15][30] = {
 };
 
 static void menu_system(int v);
-static void menu_joy_or_mouse(int v);
 static void menu_create_flist(int v);
 static void menu_frame_skip(int v);
 static void menu_sound_rate(int v);
-static void menu_vkey_size(int v);
-static void menu_vbtn_swap(int v);
-static void menu_hwjoy_setting(int v);
 static void menu_nowait(int v);
-static void menu_joykey(int v);
 
 struct _menu_func {
 	void (*func)(int v);
@@ -149,29 +144,11 @@ int WinUI_get_drv_num(int key)
 {
 	char *s = menu_item_key[key];
 
-	if (!strncmp("FDD", s, 3)) {
+	if (!strncmp("FDD", s, 3))
 		return strcmp("FDD0", s)?
 			(strcmp("FDD1", s)? -1 : 1) : 0;
-	} else {
-		return strcmp("HDD0", s)?
-			(strcmp("HDD1", s)? -1: 3) : 2;
-	}
-}
-
-static void menu_hwjoy_print(int v)
-{
-	/*if (v <= 1) {
-		sprintf(menu_items[M_HJS][v], "Axis%d(%s): %d",
-			v,
-			(v == 0)? "Left/Right" : "Up/Down",
-			Config.HwJoyAxis[v]);
-	} else if (v == 2) {
-		sprintf(menu_items[M_HJS][v], "Hat: %d", Config.HwJoyHat);
-	} else {
-		sprintf(menu_items[M_HJS][v], "Button%d: %d",
-			v - 3,
-			Config.HwJoyBtn[v - 3]);
-	}*/
+	return strcmp("HDD0", s)?
+		(strcmp("HDD1", s)? -1: 3) : 2;
 }
 
 /******************************************************************************
@@ -181,10 +158,6 @@ void
 WinUI_Init(void)
 {
 	int i;
-
-	for (i = 0; i < 11; i++)
-		menu_hwjoy_print(i);
-
 #if defined(ANDROID)
 #define CUR_DIR_STR winx68k_dir
 #elif TARGET_OS_IPHONE && TARGET_IPHONE_SIMULATOR == 0
@@ -213,17 +186,6 @@ else	strcpy(cur_dir_str, CUR_DIR_STR);
 		strcpy(mfl.dir[i], cur_dir_str);
 }
 
-float VKey_scale[] = {3.0, 2.5, 2.0, 1.5, 1.25, 1.0};
-
-float WinUI_get_vkscale(void)
-{
-	int n = Config.VkeyScale;
-	/* failsafe against invalid values */
-	if (n < 0 || n >= sizeof(VKey_scale)/sizeof(float))
-		return 1.0;
-	return VKey_scale[n];
-}
-
 int menu_state = ms_key;
 int mkey_y = 0;
 int mkey_pos = 0;
@@ -239,13 +201,6 @@ static void menu_system(int v)
 		break;
 	}
 }
-
-static void menu_joy_or_mouse(int v)
-{
-	Config.JoyOrMouse = v;
-	Mouse_StartCapture(v == 1);
-}
-
 
 static void upper(char *s)
 {
@@ -421,29 +376,9 @@ static void menu_sound_rate(int v)
 	}
 }
 
-static void menu_vkey_size(int v)
-{
-	Config.VkeyScale = v;
-}
-
-static void menu_vbtn_swap(int v)
-{
-	Config.VbtnSwap = v;
-}
-
-static void menu_hwjoy_setting(int v)
-{
-	menu_state = ms_hwjoy_set;
-}
-
 static void menu_nowait(int v)
 {
 	Config.NoWaitMode = v;
-}
-
-static void menu_joykey(int v)
-{
-	Config.JoyKey = v;
 }
 
 /* ex. ./hoge/.. -> ./

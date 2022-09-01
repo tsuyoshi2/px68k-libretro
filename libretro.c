@@ -948,8 +948,6 @@ static int pmain(int argc, char *argv[])
    SoundSampleRate = Config.SampleRate;
 
    StatBar_Show(Config.WindowFDDStat);
-   WinDraw_ChangeSize();
-
    WinUI_Init();
 
    if (!WinX68k_Init())

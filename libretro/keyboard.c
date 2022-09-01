@@ -281,17 +281,11 @@ Keyboard_KeyDown(DWORD wp)
 		break;
 
 	case RETROK_z:
-		if (Config.JoyKeyReverse)
-			JoyKeyState |= JOY_TRG2;
-		else
-			JoyKeyState |= JOY_TRG1;
+		JoyKeyState |= JOY_TRG1;
 		break;
 
 	case RETROK_x:
-		if (Config.JoyKeyReverse)
-			JoyKeyState |= JOY_TRG1;
-		else
-			JoyKeyState |= JOY_TRG2;
+		JoyKeyState |= JOY_TRG2;
 		break;
 	}
 }
@@ -334,17 +328,11 @@ Keyboard_KeyUp(DWORD wp)
 		break;
 
 	case RETROK_z:
-		if (Config.JoyKeyReverse)
-			JoyKeyState &= ~JOY_TRG2;
-		else
-			JoyKeyState &= ~JOY_TRG1;
+		JoyKeyState &= ~JOY_TRG1;
 		break;
 
 	case RETROK_x:
-		if (Config.JoyKeyReverse)
-			JoyKeyState &= ~JOY_TRG1;
-		else
-			JoyKeyState &= ~JOY_TRG2;
+		JoyKeyState &= ~JOY_TRG2;
 		break;
 	}
 

@@ -12,8 +12,6 @@ extern int speedup_joy[0xff];
 
 void WinUI_Init(void);
 int WinUI_Menu(int first);
-float WinUI_get_vkscale(void);
-void send_key(void);
 
 #define WUM_MENU_END 1
 #define WUM_EMU_QUIT 2

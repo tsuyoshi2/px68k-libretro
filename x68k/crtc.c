@@ -157,13 +157,11 @@ void FASTCALL CRTC_Write(DWORD adr, uint8_t data)
             CRTC_HSTART = (((WORD)CRTC_Regs[0x4]<<8)+CRTC_Regs[0x5]);
             TextDotX = (CRTC_HEND-CRTC_HSTART)*8;
             BG_HAdjust = ((long)BG_Regs[0x0d]-(CRTC_HSTART+4))*8;				/* 水平方向は解像度による1/2はいらない？（Tetris） */
-            WinDraw_ChangeSize();
             break;
          case 0x06:
          case 0x07:
             CRTC_HEND = (((WORD)CRTC_Regs[0x6]<<8)+CRTC_Regs[0x7]);
             TextDotX = (CRTC_HEND-CRTC_HSTART)*8;
-            WinDraw_ChangeSize();
             break;
          case 0x08:
          case 0x09:
@@ -187,7 +185,6 @@ void FASTCALL CRTC_Write(DWORD adr, uint8_t data)
             }
             else
                CRTC_VStep = 2;
-            WinDraw_ChangeSize();
             break;
          case 0x0e:
          case 0x0f:
@@ -205,7 +202,6 @@ void FASTCALL CRTC_Write(DWORD adr, uint8_t data)
             }
             else
                CRTC_VStep = 2;
-            WinDraw_ChangeSize();
             break;
          case 0x28:
             TVRAM_SetAllDirty();
@@ -231,7 +227,6 @@ void FASTCALL CRTC_Write(DWORD adr, uint8_t data)
                old_vidmode = VID_MODE;
                CHANGEAV_TIMING=1;
             }
-            WinDraw_ChangeSize();
             break;
          case 0x12:
          case 0x13:

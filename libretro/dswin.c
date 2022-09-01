@@ -100,7 +100,6 @@ static void sound_send(int length)
 void DSound_Send0(long clock)
 {
 	int length = 0;
-	int rate;
 
 	if (audio_fd < 0)
 		return;
@@ -113,10 +112,8 @@ void DSound_Send0(long clock)
 		snd_precounter -= 10000000L;
 	}
 
-	if (length == 0)
-		return;
-
-	sound_send(length);
+	if (length != 0)
+		sound_send(length);
 }
 
 int audio_samples_avail(void)

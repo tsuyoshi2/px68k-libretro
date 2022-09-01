@@ -45,25 +45,15 @@ void Joystick_Cleanup(void)
 
 uint8_t FASTCALL Joystick_Read(uint8_t num)
 {
-	uint8_t joynum = num;
-	uint8_t ret0 = 0xff, ret1 = 0xff, ret;
+	uint8_t ret0 = 0xff, ret1 = 0xff;
 
-	if (joy[num]) {
+	if (joy[num])
+	{
 		ret0 = JoyState0[num];
 		ret1 = JoyState1[num];
 	}
 
-	if (Config.JoyKey)
-	{
-		if ((Config.JoyKeyJoy2)&&(num==1))
-			ret0 ^= JoyKeyState;
-		else if ((!Config.JoyKeyJoy2)&&(num==0))
-			ret0 ^= JoyKeyState;
-	}
-
-	ret = ((~JoyPortData[num])&ret0)|(JoyPortData[num]&ret1);
-
-	return ret;
+	return ((~JoyPortData[num])&ret0)|(JoyPortData[num]&ret1);
 }
 
 

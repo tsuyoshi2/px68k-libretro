@@ -11,15 +11,10 @@ typedef struct
 	int OPM_VOL;
 	int PCM_VOL;
 	int MCR_VOL;
-	int MouseSpeed;
 	int WindowFDDStat;
-	int FullScrFDDStat;
 	int MIDI_SW;
 	int MIDI_Type;
 	int MIDI_Reset;
-	int JoyKey;
-	int JoyKeyReverse;
-	int JoyKeyJoy2;
 	char HDImage[16][MAX_PATH];
 	int ToneMap;
 	char ToneMapFile[MAX_PATH];
@@ -31,10 +26,8 @@ typedef struct
 	int MIDIDelay;
 	int MIDIAutoDelay;
 	char FDDImage[2][MAX_PATH];
-	int VkeyScale;
 	int VbtnSwap;
 	int JoyOrMouse;
-	int HwJoyBtn[8];
 	int NoWaitMode;
 	uint8_t FrameRate;
 	int AdjustFrameRates;

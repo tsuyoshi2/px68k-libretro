@@ -47,113 +47,12 @@ WORD menu_buffer[800*600];
 
 extern uint8_t Debug_Text, Debug_Grp, Debug_Sp;
 
-
 static WORD *ScrBuf = 0;
-
-int winx = 0, winy = 0;
-static uint32_t winh = 0, winw = 0;
-static uint32_t root_width, root_height;
 
 WORD WinDraw_Pal16B, WinDraw_Pal16R, WinDraw_Pal16G;
 
-static DWORD WindowX = 0;
-static DWORD WindowY = 0;
-
-static void WinDraw_InitWindowSize(WORD width, WORD height)
-{
-	static int inited = 0;
-	if (!inited)
-		inited = 1;
-
-	winw = width;
-	winh = height;
-
-	if (root_width < winw)
-		winx = (root_width - winw) / 2;
-	else if (winx < 0)
-		winx = 0;
-	else if ((winx + winw) > root_width)
-		winx = root_width - winw;
-	if (root_height < winh)
-		winy = (root_height - winh) / 2;
-	else if (winy < 0)
-		winy = 0;
-	else if ((winy + winh) > root_height)
-		winy = root_height - winh;
-}
-
-void WinDraw_ChangeSize(void)
-{
-	DWORD oldx = WindowX, oldy = WindowY;
-	int dif;
-
-	Mouse_ChangePos();
-
-	switch (Config.WinStretch)
-	{
-		case 0:
-			WindowX = TextDotX;
-			WindowY = TextDotY;
-			break;
-
-		case 1:
-			WindowX = 768;
-			WindowY = 512;
-			break;
-
-		case 2:
-			if (TextDotX <= 384)
-				WindowX = TextDotX * 2;
-			else
-				WindowX = TextDotX;
-			if (TextDotY <= 256)
-				WindowY = TextDotY * 2;
-			else
-				WindowY = TextDotY;
-			break;
-
-		case 3:
-			if (TextDotX <= 384)
-				WindowX = TextDotX * 2;
-			else
-				WindowX = TextDotX;
-			if (TextDotY <= 256)
-				WindowY = TextDotY * 2;
-			else
-				WindowY = TextDotY;
-			dif = WindowX - WindowY;
-			/* 正方形に近い画面なら、としておこう */
-			if ((dif > -32) && (dif < 32))
-				WindowX = (int)(WindowX * 1.25);
-			break;
-	}
-
-	if ((WindowX > 768) || (WindowX <= 0)) {
-		if (oldx)
-			WindowX = oldx;
-		else
-			WindowX = oldx = 768;
-	}
-	if ((WindowY > 512) || (WindowY <= 0)) {
-		if (oldy)
-			WindowY = oldy;
-		else
-			WindowY = oldy = 512;
-	}
-
-	if ((oldx == WindowX) && (oldy == WindowY))
-		return;
-
-	WinDraw_InitWindowSize((WORD)WindowX, (WORD)WindowY);
-	StatBar_Show(Config.WindowFDDStat);
-	Mouse_ChangePos();
-}
-
 void WinDraw_Init(void)
 {
-	WindowX        = 768;
-	WindowY        = 512;
-
 	WinDraw_Pal16R = 0xf800;
 	WinDraw_Pal16G = 0x07e0;
 	WinDraw_Pal16B = 0x001f;
@@ -215,7 +114,7 @@ static INLINE void WinDraw_DrawGrpLine(int opaq)
 {
 #define _DGL_SUB(SUFFIX) WD_SUB(SUFFIX, Grp_LineBuf[i])
 
-	DWORD adr = VLINE*FULLSCREEN_WIDTH;
+	DWORD adr = VLINE * FULLSCREEN_WIDTH;
 	WORD w;
 	int i;
 

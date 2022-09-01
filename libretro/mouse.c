@@ -125,5 +125,3 @@ void Mouse_StartCapture(int flag)
 	else if (!flag && MouseSW)
 		MouseSW = 0;
 }
-
-void Mouse_ChangePos(void) { }

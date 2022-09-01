@@ -41,7 +41,6 @@ Win68Conf Config;
 
 extern char filepath[MAX_PATH];
 extern char winx68k_ini[MAX_PATH];
-extern int winx, winy;
 
 extern char retro_system_conf[512];
 extern char slash;
@@ -58,8 +57,6 @@ static void LoadDefaults(void)
 	int i;
 
 	Config.MenuFontSize = 0; /* start with default normal menu size */
-	winx = 0;
-	winy = 0;
 	Config.FrameRate = 1;
 	filepath[0] = 0;
 	Config.OPM_VOL = 12;
@@ -67,17 +64,12 @@ static void LoadDefaults(void)
 	Config.MCR_VOL = 13;
 	Config.SampleRate = 44100;
 	Config.BufferSize = 50;
-	Config.MouseSpeed = 10;
 	Config.WindowFDDStat = 1;
-	Config.FullScrFDDStat = 1;
 	Config.Sound_LPF = 1;
 	Config.SoundROMEO = 1;
 	Config.MIDI_SW = 1;
 	Config.MIDI_Reset = 1;
 	Config.MIDI_Type = 1;
-	Config.JoyKey = 0;
-	Config.JoyKeyReverse = 0;
-	Config.JoyKeyJoy2 = 0;
 	Config.WinDrvFD = 1;
 	Config.WinStretch = 1;
 	Config.XVIMode = 0;
@@ -85,12 +77,8 @@ static void LoadDefaults(void)
 	Config.ToneMapFile[0] = 0;
 	Config.MIDIDelay = Config.BufferSize*5;
 	Config.MIDIAutoDelay = 1;
-	Config.VkeyScale = 4;
 	Config.VbtnSwap = 0;
 	Config.JoyOrMouse = 1;
-
-	for (i = 0; i < 8; i++)
-		Config.HwJoyBtn[i] = i;
 
 	Config.NoWaitMode = 0;
 	Config.AdjustFrameRates = 1;
