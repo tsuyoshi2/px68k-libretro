@@ -19,21 +19,7 @@ extern "C" {
 
 #include "opm.h"
 #include "opna.h"
-
-
-#define RMBUFSIZE (256*1024)
-
-typedef struct {
-	unsigned int time;
-	int reg;
-	uint8_t data;
-} RMDATA;
-
 };
-
-static RMDATA RMData[RMBUFSIZE];
-static int RMPtrW;
-static int RMPtrR;
 
 class MyOPM : public FM::OPM
 {
@@ -86,9 +72,6 @@ static MyOPM* opm = NULL;
 
 int OPM_Init(int clock)
 {
-	RMPtrW = RMPtrR = 0;
-	memset(RMData, 0, sizeof(RMData));
-
 	opm = new MyOPM();
 	if ( !opm ) return 0;
 	if ( !opm->Init(clock, 44100, 1) ) {
@@ -108,9 +91,6 @@ void OPM_Cleanup(void)
 
 void OPM_Reset(void)
 {
-	RMPtrW = RMPtrR = 0;
-	memset(RMData, 0, sizeof(RMData));
-
 	if ( opm ) opm->Reset();
 }
 
