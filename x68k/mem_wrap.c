@@ -91,7 +91,7 @@ static uint8_t rm_nop(DWORD addr) { return 0; }
 static uint8_t rm_opm(DWORD addr)
 {
 	if ((addr & 3) == 3)
-		return OPM_Read(0);
+		return OPM_Read();
 	return 0;
 }
 

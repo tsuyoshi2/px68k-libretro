@@ -25,16 +25,14 @@ public:
 
 public:
 	FileIO();
-	FileIO(const char* filename, uint32_t flg = 0);
+	FileIO(const char* filename, uint32_t flg);
 	virtual ~FileIO();
 
-	bool Open(const char* filename, uint32_t flg = 0);
+	bool Open(const char* filename, uint32_t flg);
 	void Close();
 
 	void Read(void* dest, int32_t len);
 	bool Seek(int32_t fpos, int method);
-
-	uint32_t GetFlags() { return flags; }
 
 private:
 	void *hfile;

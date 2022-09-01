@@ -8,7 +8,7 @@ void OPM_Cleanup(void);
 void OPM_Reset(void);
 void OPM_Update(int16_t *buffer, int length, uint8_t *pbsp, uint8_t *pbep);
 void FASTCALL OPM_Write(DWORD r, uint8_t v);
-uint8_t FASTCALL OPM_Read(WORD a);
+uint8_t FASTCALL OPM_Read(void);
 void FASTCALL OPM_Timer(DWORD step);
 void OPM_SetVolume(uint8_t vol);
 

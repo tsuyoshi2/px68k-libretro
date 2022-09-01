@@ -29,14 +29,12 @@ bool FileIO::Open(const char* filename, uint32_t flg)
 	DWORD creation = (flg & create)   ? CREATE_ALWAYS : OPEN_EXISTING;
 
 	hfile          = create_file(filename, access, creation);
-	
-	flags = (flg & readonly) | (hfile  ? open : 0);
+	flags          = (flg & readonly) | (hfile  ? open : 0);
 	return !!(flags & open);
 }
 
 void FileIO::Close()
 {
-	uint32_t flags = GetFlags();
 	if (flags & open)
 	{
 		file_close(hfile);
@@ -47,14 +45,12 @@ void FileIO::Close()
 void FileIO::Read(void* dest, int32_t size)
 {
 	size_t readsize;
-	uint32_t flags = GetFlags();
 	if ((flags & open))
 		read_file(hfile, dest, size, &readsize);
 }
 
 bool FileIO::Seek(int32_t pos, int method)
 {
-   uint32_t flags = GetFlags();
 	if (!(flags & open))
 		return false;
 	

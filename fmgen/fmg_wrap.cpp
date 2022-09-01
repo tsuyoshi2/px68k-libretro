@@ -95,7 +95,7 @@ void OPM_Reset(void)
 }
 
 
-uint8_t FASTCALL OPM_Read(WORD adr)
+uint8_t FASTCALL OPM_Read(void)
 {
 	if ( opm ) return opm->ReadStatus();
 	return 0;
