@@ -23,7 +23,6 @@ namespace FM
 
 		bool	Init(uint32_t c, uint32_t r);
 		bool	SetRate(uint32_t c, uint32_t r);
-		void	SetLPFCutoff(uint32_t freq);
 		void	Reset();
 		
 		void 	SetReg(uint32_t addr, uint32_t data);
