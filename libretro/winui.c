@@ -123,9 +123,6 @@ char menu_items[][15][30] = {
 
 static void menu_system(int v);
 static void menu_create_flist(int v);
-static void menu_frame_skip(int v);
-static void menu_sound_rate(int v);
-static void menu_nowait(int v);
 
 struct _menu_func {
 	void (*func)(int v);
@@ -205,9 +202,8 @@ static void menu_system(int v)
 static void upper(char *s)
 {
 	while (*s != '\0') {
-		if (*s >= 'a' && *s <= 'z') {
+		if (*s >= 'a' && *s <= 'z')
 			*s = 'A' + *s - 'a';
-		}
 		s++;
 	}
 }
@@ -344,43 +340,6 @@ static void menu_create_flist(int v)
 	}
 }
 
-static void menu_frame_skip(int v)
-{
-	if (v == 0) {
-		Config.FrameRate = 7;
-	} else if (v == 7) {
-		Config.FrameRate = 8;
-	} else if (v == 8) {
-		Config.FrameRate = 16;
-	} else if (v == 9) {
-		Config.FrameRate = 32;
-	} else if (v == 10) {
-		Config.FrameRate = 60;
-	} else {
-		Config.FrameRate = v;
-	}
-}
-
-static void menu_sound_rate(int v)
-{
-	if (v == 0) {
-		Config.SampleRate = 0;
-	} else if (v == 1) {
-		Config.SampleRate = 11025;
-	} else if (v == 2) {
-		Config.SampleRate = 22050;
-	} else if (v == 3) {
-		Config.SampleRate = 44100;
-	} else if (v == 4) {
-		Config.SampleRate = 48000;
-	}
-}
-
-static void menu_nowait(int v)
-{
-	Config.NoWaitMode = v;
-}
-
 /* ex. ./hoge/.. -> ./
  * ( ./ ---down hoge dir--> ./hoge ---up hoge dir--> ./hoge/.. ) */
 static void shortcut_dir(int drv)
@@ -450,12 +409,10 @@ int WinUI_Menu(int first)
 	if (!(joy & JOY_UP)) {
 		switch (menu_state) {
 		case ms_key:
-			if (mkey_y > 0) {
+			if (mkey_y > 0)
 				mkey_y--;
-			}
-			if (mkey_pos > mkey_y) {
+			if (mkey_pos > mkey_y)
 				mkey_pos--;
-			}
 			break;
 		case ms_value:
 			if (mval_y[mkey_y] > 0) {

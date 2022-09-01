@@ -268,14 +268,14 @@ void ADPCM_SetClock(int n)
 	}
 }
 
-void ADPCM_Init(DWORD samplerate)
+void ADPCM_Init(void)
 {
 	ADPCM_WrPtr      = 0;
 	ADPCM_RdPtr      = 0;
 	ADPCM_Out        = 0;
 	ADPCM_Step       = 0;
 	ADPCM_Playing    = 0;
-	ADPCM_SampleRate = (samplerate * 12);
+	ADPCM_SampleRate = (44100 * 12);
 	ADPCM_PreCounter = 0;
 	memset(Outs, 0, sizeof(Outs));
 	OutsIp[0]  = OutsIp[1]  = OutsIp[2]  = OutsIp[3]  = -1;

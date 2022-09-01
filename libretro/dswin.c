@@ -36,55 +36,22 @@
 
 static uint8_t pcmbuffer[PCMBUF_SIZE];
 static uint8_t rsndbuf  [PCMBUF_SIZE];
-static int16_t playing     = 0;
-static DWORD ratebase      = 22050;
 static long snd_precounter = 0;
-static int audio_fd        = 1;
 
 uint8_t *pbsp = pcmbuffer;
 uint8_t *pbrp = pcmbuffer, *pbwp = pcmbuffer;
 uint8_t *pbep = &pcmbuffer[PCMBUF_SIZE];
 
-int DSound_Init(unsigned long rate)
-{
-	if (playing)
-		return 0;
-
-	if (rate == 0)
-	{
-		audio_fd = -1;
-		return 1;
-	}
-
-	ratebase = rate;
-	playing  = 1;
-	return 1;
-}
-
 void DSound_Play(void)
 {
-   	if (audio_fd >= 0) {
-		ADPCM_SetVolume((uint8_t)Config.PCM_VOL);
-		OPM_SetVolume((uint8_t)Config.OPM_VOL);	
-	}
+	ADPCM_SetVolume((uint8_t)Config.PCM_VOL);
+	OPM_SetVolume((uint8_t)Config.OPM_VOL);	
 }
 
 void DSound_Stop(void)
 {
-   	if (audio_fd >= 0) {
-		ADPCM_SetVolume(0);
-		OPM_SetVolume(0);	
-	}
-}
-
-int DSound_Cleanup(void)
-{
-	playing = 0;
-
-	if (audio_fd >= 0)
-		audio_fd = -1;
-
-	return 1;
+	ADPCM_SetVolume(0);
+	OPM_SetVolume(0);	
 }
 
 static void sound_send(int length)
@@ -101,10 +68,7 @@ void DSound_Send0(long clock)
 {
 	int length = 0;
 
-	if (audio_fd < 0)
-		return;
-
-	snd_precounter += (ratebase * clock);
+	snd_precounter += (44100 * clock);
 
 	while (snd_precounter >= 10000000L)
 	{
@@ -168,8 +132,7 @@ cb_start:
       if (datalen < len)
       {
 	      int length = (len - datalen) / 4;
-	      if (audio_fd >= 0)
-		      sound_send(length);
+	      sound_send(length);
       }
 
       /* change to TYPEC or TYPED */
@@ -204,8 +167,7 @@ cb_start:
          if (pbwp - pbsp < lenb)
 	 {
 		 int length = (lenb - (pbwp - pbsp)) / 4;
-		 if (audio_fd >= 0)
-			 sound_send(length);
+		 sound_send(length);
 	 }
 
          memcpy(rsndbuf, pbrp, lena);

@@ -250,7 +250,7 @@ void Mcry_SetVolume(uint8_t vol)
 /*
  *   ½é´ü²½¡Á
  */
-void Mcry_Init(DWORD samplerate, const char* path)
+void Mcry_Init(const char* path)
 {
 	memset(Mcry_BufL, 0, Mcry_BufSize*2);
 	memset(Mcry_BufR, 0, Mcry_BufSize*2);
@@ -260,13 +260,13 @@ void Mcry_Init(DWORD samplerate, const char* path)
 	Mcry_OutDataL = 0;
 	Mcry_OutDataR = 0;
 	Mcry_Status = 0;
-	Mcry_SampleRate = (long)samplerate;
+	Mcry_SampleRate = (long)44100;
 	Mcry_LRTiming = 0;
 	Mcry_PreCounter = 0;
 
 	Mcry_SetClock();
 
-	M288_Init(8000000, samplerate, path);
+	M288_Init(8000000, path);
 }
 
 void Mcry_Cleanup(void)

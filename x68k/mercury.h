@@ -14,7 +14,7 @@ uint8_t FASTCALL Mcry_Read(DWORD adr);
 void Mcry_SetClock(void);
 void Mcry_SetVolume(uint8_t vol);
 
-void Mcry_Init(DWORD samplerate, const char* path);
+void Mcry_Init(const char* path);
 void Mcry_Cleanup(void);
 int Mcry_IsReady(void);
 

@@ -3,9 +3,6 @@
 
 #include "common.h"
 
-int DSound_Init(unsigned long rate);
-int DSound_Cleanup(void);
-
 void DSound_Play(void);
 void DSound_Stop(void);
 void DSound_Send0(long clock);

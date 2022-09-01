@@ -84,14 +84,14 @@ void MyOPM::Count2(DWORD clock)
 
 static MyOPM* opm = NULL;
 
-int OPM_Init(int clock, int rate)
+int OPM_Init(int clock)
 {
 	RMPtrW = RMPtrR = 0;
 	memset(RMData, 0, sizeof(RMData));
 
 	opm = new MyOPM();
 	if ( !opm ) return 0;
-	if ( !opm->Init(clock, rate, 1) ) {
+	if ( !opm->Init(clock, 44100, 1) ) {
 		delete opm;
 		opm = NULL;
 		return 0;
@@ -105,13 +105,6 @@ void OPM_Cleanup(void)
 	delete opm;
 	opm = NULL;
 }
-
-
-void OPM_SetRate(int clock, int rate)
-{
-	if ( opm ) opm->SetRate(clock, rate, 1);
-}
-
 
 void OPM_Reset(void)
 {
@@ -215,13 +208,13 @@ void YMF288::Count2(DWORD clock)
 static YMF288* ymf288a = NULL;
 static YMF288* ymf288b = NULL;
 
-int M288_Init(int clock, int rate, const char* path)
+int M288_Init(int clock, const char* path)
 {
 	ymf288a = new YMF288();
 	ymf288b = new YMF288();
 	if ( (!ymf288a)||(!ymf288b) )
       goto error;
-   if ( (!ymf288a->Init(clock, rate, 1, path))||(!ymf288b->Init(clock, rate, 1, path)) )
+   if ( (!ymf288a->Init(clock, 44100, 1, path))||(!ymf288b->Init(clock, 44100, 1, path)) )
       goto error;
 	ymf288a->SetInt(1);
 	ymf288b->SetInt(0);
@@ -239,14 +232,6 @@ void M288_Cleanup(void)
 	delete ymf288b;
 	ymf288a = ymf288b = NULL;
 }
-
-
-void M288_SetRate(int clock, int rate)
-{
-	if ( ymf288a ) ymf288a->SetRate(clock, rate, 1);
-	if ( ymf288b ) ymf288b->SetRate(clock, rate, 1);
-}
-
 
 void M288_Reset(void)
 {

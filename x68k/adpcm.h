@@ -13,6 +13,6 @@ void ADPCM_SetVolume(uint8_t vol);
 void ADPCM_SetPan(int n);
 void ADPCM_SetClock(int n);
 
-void ADPCM_Init(DWORD samplerate);
+void ADPCM_Init(void);
 
 #endif /* _WINX68K_ADPCM_H */

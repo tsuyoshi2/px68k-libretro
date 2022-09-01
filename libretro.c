@@ -81,7 +81,6 @@ static int firstcall          = 1;
 static DWORD old_ram_size     = 0;
 static int old_clkdiv         = 0;
 
-static DWORD SoundSampleRate;
 static int oldrw=0,oldrh      = 0;
 static char RPATH[512];
 static char RETRO_DIR[512];
@@ -945,8 +944,6 @@ static int pmain(int argc, char *argv[])
       return 1;
    }
 
-   SoundSampleRate = Config.SampleRate;
-
    StatBar_Show(Config.WindowFDDStat);
    WinUI_Init();
 
@@ -968,22 +965,11 @@ static int pmain(int argc, char *argv[])
    Keyboard_Init(); 
    WinDraw_Init();
 
-   if ( SoundSampleRate )
-   {
-      ADPCM_Init(SoundSampleRate);
-      OPM_Init(4000000/*3579545*/, SoundSampleRate);
+   ADPCM_Init();
+   OPM_Init(4000000/*3579545*/);
 #ifndef	NO_MERCURY
-      Mcry_Init(SoundSampleRate, winx68k_dir);
+   Mcry_Init(44100, winx68k_dir);
 #endif
-   }
-   else
-   {
-      ADPCM_Init(100);
-      OPM_Init(4000000/*3579545*/, 100);
-#ifndef	NO_MERCURY
-      Mcry_Init(100, winx68k_dir);
-#endif
-   }
 
    FDD_Init();
    SysPort_Init();
@@ -996,8 +982,6 @@ static int pmain(int argc, char *argv[])
    MIDI_Init();
    MIDI_SetMimpiMap(Config.ToneMapFile);	/* ToneMap file usage */
    MIDI_EnableMimpiDef(Config.ToneMap);
-
-   if (!DSound_Init(Config.SampleRate)) { }
 
    ADPCM_SetVolume((uint8_t)Config.PCM_VOL);
    OPM_SetVolume((uint8_t)Config.OPM_VOL);
@@ -1679,7 +1663,6 @@ booting times */
    CDROM_Cleanup();
 #endif
    MIDI_Cleanup();
-   DSound_Cleanup();
    WinX68k_Cleanup();
    WinDraw_Cleanup();
 

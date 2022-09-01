@@ -62,7 +62,6 @@ static void LoadDefaults(void)
 	Config.OPM_VOL = 12;
 	Config.PCM_VOL = 15;
 	Config.MCR_VOL = 13;
-	Config.SampleRate = 44100;
 	Config.BufferSize = 50;
 	Config.WindowFDDStat = 1;
 	Config.Sound_LPF = 1;

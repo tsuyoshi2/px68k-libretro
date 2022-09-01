@@ -6,7 +6,6 @@
 
 typedef struct
 {
-	DWORD SampleRate;
 	DWORD BufferSize;
 	int OPM_VOL;
 	int PCM_VOL;
