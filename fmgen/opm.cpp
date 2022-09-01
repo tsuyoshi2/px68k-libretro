@@ -32,9 +32,9 @@ OPM::OPM()
 // ---------------------------------------------------------------------------
 //	初期化
 //
-bool OPM::Init(uint32_t c, uint32_t rf, bool ip)
+bool OPM::Init(uint32_t c, uint32_t rf)
 {
-	if (!SetRate(c, rf, ip))
+	if (!SetRate(c, rf))
 		return false;
 	
 	Reset();
@@ -47,7 +47,7 @@ bool OPM::Init(uint32_t c, uint32_t rf, bool ip)
 // ---------------------------------------------------------------------------
 //	再設定
 //
-bool OPM::SetRate(uint32_t c, uint32_t r, bool)
+bool OPM::SetRate(uint32_t c, uint32_t r)
 {
 	clock = c;
 	pcmrate = r;

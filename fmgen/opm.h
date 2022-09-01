@@ -21,8 +21,8 @@ namespace FM
 		OPM();
 		virtual ~OPM() {}
 
-		bool	Init(uint32_t c, uint32_t r, bool=false);
-		bool	SetRate(uint32_t c, uint32_t r, bool);
+		bool	Init(uint32_t c, uint32_t r);
+		bool	SetRate(uint32_t c, uint32_t r);
 		void	SetLPFCutoff(uint32_t freq);
 		void	Reset();
 		
