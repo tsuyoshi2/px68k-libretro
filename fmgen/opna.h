@@ -70,8 +70,8 @@ namespace FM
 		void	MakeTable2();
 	
 	protected:
-		bool	Init(uint32_t c, uint32_t r, bool);
-		bool	SetRate(uint32_t c, uint32_t r, bool);
+		bool	Init(uint32_t c, uint32_t r);
+		bool	SetRate(uint32_t c, uint32_t r);
 
 		void	Reset();
 		void 	SetReg(uint32_t addr, uint32_t data);
@@ -162,8 +162,8 @@ namespace FM
 		OPN();
 		virtual ~OPN() {}
 		
-		bool	Init(uint32_t c, uint32_t r, bool=false, const char* =0);
-		bool	SetRate(uint32_t c, uint32_t r, bool=false);
+		bool	Init(uint32_t c, uint32_t r, const char*);
+		bool	SetRate(uint32_t c, uint32_t r);
 		
 		void	Reset();
 		void 	Mix(int16_t* buffer, int nsamples);
@@ -193,10 +193,10 @@ namespace FM
 		OPNA();
 		virtual ~OPNA();
 		
-		bool	Init(uint32_t c, uint32_t r, bool  = false, const char* rhythmpath=0);
+		bool	Init(uint32_t c, uint32_t r, const char* rhythmpath);
 		bool	LoadRhythmSample(const char*);
 	
-		bool	SetRate(uint32_t c, uint32_t r, bool = false);
+		bool	SetRate(uint32_t c, uint32_t r);
 		void 	Mix(int16_t* buffer, int nsamples);
 
 		void	Reset();
@@ -237,10 +237,10 @@ namespace FM
 		Y288();
 		virtual ~Y288();
 		
-		bool	Init(uint32_t c, uint32_t r, bool ipflag = false, const char* =0);
+		bool	Init(uint32_t c, uint32_t r, const char*);
 		bool	LoadRhythmSample(const char*);
 	
-		bool	SetRate(uint32_t c, uint32_t r, bool ipflag = false);
+		bool	SetRate(uint32_t c, uint32_t r);
 		void 	Mix(int16_t* buffer, int nsamples);
 
 		void	SetVolumeRhythmTotal(int db);

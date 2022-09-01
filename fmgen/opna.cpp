@@ -175,9 +175,9 @@ OPN::OPN()
 }
 
 //	初期化
-bool OPN::Init(uint32_t c, uint32_t r, bool ip, const char*)
+bool OPN::Init(uint32_t c, uint32_t r, const char*)
 {
-	if (!SetRate(c, r, ip))
+	if (!SetRate(c, r))
 		return false;
 	
 	Reset();
@@ -189,7 +189,7 @@ bool OPN::Init(uint32_t c, uint32_t r, bool ip, const char*)
 }
 
 //	サンプリングレート変更
-bool OPN::SetRate(uint32_t c, uint32_t r, bool)
+bool OPN::SetRate(uint32_t c, uint32_t r)
 {
 	OPNBase::Init(c, r);
 	RebuildTimeTable();
@@ -391,7 +391,7 @@ OPNABase::~OPNABase()
 // ---------------------------------------------------------------------------
 //	初期化
 //
-bool OPNABase::Init(uint32_t c, uint32_t r, bool)
+bool OPNABase::Init(uint32_t c, uint32_t r)
 {
 	(void)c;
 	(void)r;
@@ -457,7 +457,7 @@ void OPNABase::Reset()
 // ---------------------------------------------------------------------------
 //	サンプリングレート変更
 //
-bool OPNABase::SetRate(uint32_t c, uint32_t r, bool)
+bool OPNABase::SetRate(uint32_t c, uint32_t r)
 {
 	c /= 2;		// 従来版との互換性を重視したけりゃコメントアウトしよう
 	
@@ -1139,7 +1139,7 @@ OPNA::~OPNA()
 // ---------------------------------------------------------------------------
 //	初期化
 //
-bool OPNA::Init(uint32_t c, uint32_t r, bool ipflag, const char* path)
+bool OPNA::Init(uint32_t c, uint32_t r, const char* path)
 {
 	rate = 8000;
 	LoadRhythmSample(path);
@@ -1149,9 +1149,9 @@ bool OPNA::Init(uint32_t c, uint32_t r, bool ipflag, const char* path)
 	if (!adpcmbuf)
 		return false;
 
-	if (!SetRate(c, r, ipflag))
+	if (!SetRate(c, r))
 		return false;
-	if (!OPNABase::Init(c, r, ipflag))
+	if (!OPNABase::Init(c, r))
 		return false;
 	
 	Reset();
@@ -1177,9 +1177,9 @@ void OPNA::Reset()
 // ---------------------------------------------------------------------------
 //	サンプリングレート変更
 //
-bool OPNA::SetRate(uint32_t c, uint32_t r, bool ipflag)
+bool OPNA::SetRate(uint32_t c, uint32_t r)
 {
-	if (!OPNABase::SetRate(c, r, ipflag))
+	if (!OPNABase::SetRate(c, r))
 		return false;
 
 	for (int i=0; i<6; i++)
@@ -1452,14 +1452,14 @@ Y288::~Y288()
 // ---------------------------------------------------------------------------
 //	初期化
 //
-bool Y288::Init(uint32_t c, uint32_t r, bool ipflag, const char* path)
+bool Y288::Init(uint32_t c, uint32_t r, const char* path)
 {
 	rate = 8000;
 	LoadRhythmSample(path);
 
-	if (!SetRate(c, r, ipflag))
+	if (!SetRate(c, r))
 		return false;
-	if (!OPNABase::Init(c, r, ipflag))
+	if (!OPNABase::Init(c, r))
 		return false;
 	
 	Reset();
@@ -1485,9 +1485,9 @@ void Y288::Reset()
 // ---------------------------------------------------------------------------
 //	サンプリングレート変更
 //
-bool Y288::SetRate(uint32_t c, uint32_t r, bool ipflag)
+bool Y288::SetRate(uint32_t c, uint32_t r)
 {
-	if (!OPNABase::SetRate(c, r, ipflag))
+	if (!OPNABase::SetRate(c, r))
 		return false;
 	for (int i=0; i<6; i++)
 	{

@@ -74,7 +74,7 @@ int OPM_Init(int clock)
 {
 	opm = new MyOPM();
 	if ( !opm ) return 0;
-	if ( !opm->Init(clock, 44100, 1) ) {
+	if ( !opm->Init(clock, 44100) ) {
 		delete opm;
 		opm = NULL;
 		return 0;
@@ -194,7 +194,7 @@ int M288_Init(int clock, const char* path)
 	ymf288b = new YMF288();
 	if ( (!ymf288a)||(!ymf288b) )
       goto error;
-   if ( (!ymf288a->Init(clock, 44100, 1, path))||(!ymf288b->Init(clock, 44100, 1, path)) )
+   if ( (!ymf288a->Init(clock, 44100, path))||(!ymf288b->Init(clock, 44100, path)) )
       goto error;
 	ymf288a->SetInt(1);
 	ymf288b->SetInt(0);
