@@ -22,21 +22,21 @@ static uint8_t SCC_Vector    = 0;
 static uint8_t SCC_Dat[3]    = {0, 0, 0};
 static uint8_t SCC_DatNum    = 0;
 
-DWORD FASTCALL SCC_Int(uint8_t irq)
+static DWORD FASTCALL SCC_Int(uint8_t irq)
 {
-	IRQH_IRQCallBack(irq);
-	if ( (irq==5)&&(!(SCC_RegsB[9]&2)) )
-	{
-		if (SCC_RegsB[9]&1)
-		{
-			if (SCC_RegsB[9]&0x10)
-				return ((DWORD)(SCC_Vector&0x8f)+0x20);
+   IRQH_IRQCallBack(irq);
+   if ( (irq==5)&&(!(SCC_RegsB[9]&2)) )
+   {
+      if (SCC_RegsB[9]&1)
+      {
+         if (SCC_RegsB[9]&0x10)
+            return ((DWORD)(SCC_Vector&0x8f)+0x20);
          return ((DWORD)(SCC_Vector&0xf1)+4);
-		}
+      }
       return ((DWORD)SCC_Vector);
-	}
+   }
 
-	return (DWORD)(-1);
+   return (DWORD)(-1);
 }
 
 void SCC_IntCheck(void)
@@ -173,7 +173,7 @@ uint8_t FASTCALL SCC_Read(DWORD adr)
 		switch(SCC_RegNumA)
 		{
 		case 0:
-			ret = 4; /* 送信バッファ空（Xna） */
+			ret = 4;
 			break;
 		case 3:
 			ret = ((SCC_DatNum)?4:0);

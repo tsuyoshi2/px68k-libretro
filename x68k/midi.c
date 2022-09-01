@@ -115,10 +115,7 @@ static uint8_t EXCV_XGRESET[] = { 0xf0, 0x43, 0x10, 0x4C, 0x00, 0x00, 0x7E, 0x00
 
 #define MIDIOUTS(a,b,c) (((size_t)c << 16) | ((size_t)b << 8) | (size_t)a)
 
-/*
- *   割り込み
- */
-DWORD FASTCALL MIDI_Int(uint8_t irq)
+static DWORD FASTCALL MIDI_Int(uint8_t irq)
 {
 	IRQH_IRQCallBack(irq);
 	if ( irq==4 )
@@ -126,10 +123,6 @@ DWORD FASTCALL MIDI_Int(uint8_t irq)
 	return (DWORD)(-1);
 }
 
-
-/*
- *   たいまを進める
- */
 void FASTCALL MIDI_Timer(DWORD clk)
 {
 	if ( !Config.MIDI_SW ) return;	/* MIDI OFF時は帰る */

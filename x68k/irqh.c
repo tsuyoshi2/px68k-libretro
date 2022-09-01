@@ -21,7 +21,7 @@ void IRQH_Init(void)
 	memset(IRQH_IRQ, 0, 8);
 }
 
-DWORD FASTCALL IRQH_DefaultVector(uint8_t irq)
+static DWORD FASTCALL IRQH_DefaultVector(uint8_t irq)
 {
 	IRQH_IRQCallBack(irq);
 	return -1;

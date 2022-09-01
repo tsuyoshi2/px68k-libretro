@@ -40,12 +40,10 @@ typedef struct
 
 extern dmac_ch	DMA[4];
 
-DWORD FASTCALL DMA_Int(uint8_t irq);
 uint8_t FASTCALL DMA_Read(DWORD adr);
 void FASTCALL DMA_Write(DWORD adr, uint8_t data);
 
 int FASTCALL DMA_Exec(int ch);
 void DMA_Init(void);
-void DMA_SetReadyCB(int ch, int (*func)(void));
 
 #endif /* _WINX68K_DMAC_H */

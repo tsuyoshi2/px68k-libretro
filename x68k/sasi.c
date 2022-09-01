@@ -34,7 +34,7 @@ int SASI_IsReady(void)
 	return 0;
 }
 
-DWORD FASTCALL SASI_Int(uint8_t irq)
+static DWORD FASTCALL SASI_Int(uint8_t irq)
 {
 	IRQH_IRQCallBack(irq);
 	if (irq==1)
@@ -57,7 +57,7 @@ void SASI_Init(void)
 	SASI_SenseStatPtr = 0;
 }
 
-int16_t SASI_Seek(void)
+static int16_t SASI_Seek(void)
 {
 	void *fp;
 
@@ -80,7 +80,7 @@ error:
 	return 0;
 }
 
-int16_t SASI_Flush(void)
+static int16_t SASI_Flush(void)
 {
 	void *fp = file_open(Config.HDImage[SASI_Device*2+SASI_Unit]);
 	if (!fp) return -1;
@@ -176,7 +176,7 @@ uint8_t FASTCALL SASI_Read(DWORD adr)
 	return ret;
 }
 
-void SASI_CheckCmd(void)
+static void SASI_CheckCmd(void)
 {
 	int16_t result;
 	SASI_Unit = (SASI_Cmd[1]>>5) & 1;

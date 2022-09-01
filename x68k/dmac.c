@@ -20,6 +20,8 @@ static int DMA_IntCH = 0;
 static int DMA_LastInt = 0;
 static int (*IsReady[4])(void) = { 0, 0, 0, 0 };
 
+static DWORD FASTCALL DMA_Int(uint8_t irq);
+
 #define DMAINT(ch)     if ( DMA[ch].CCR&0x08 )	{ DMA_IntCH |= (1<<ch); IRQH_Int(3, &DMA_Int); }
 #define DMAERR(ch,err) DMA[ch].CER  = err; \
                        DMA[ch].CSR |= 0x10; \
@@ -30,12 +32,12 @@ static int (*IsReady[4])(void) = { 0, 0, 0, 0 };
 static int ADPCM_IsReady(void)    { return 1; }
 static int DMA_DummyIsReady(void) { return 0; }
 
-void DMA_SetReadyCB(int ch, int (*func)(void))
+static void DMA_SetReadyCB(int ch, int (*func)(void))
 {
 	if ( (ch>=0)&&(ch<=3) ) IsReady[ch] = func;
 }
 
-DWORD FASTCALL DMA_Int(uint8_t irq)
+static DWORD FASTCALL DMA_Int(uint8_t irq)
 {
 	DWORD ret = 0xffffffff;
 	int bit = 0;
