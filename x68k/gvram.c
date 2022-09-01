@@ -771,7 +771,6 @@ void FASTCALL Grp_DrawLine8TR_GT(int page, int opaq)
 	if (opaq)
    {
       DWORD x, y;
-      DWORD v, v0;
       DWORD i;
 
       page &= 1;

@@ -150,7 +150,7 @@ void audio_samples_discard(int discard)
 
 void raudio_callback(void *userdata, unsigned char *stream, int len)
 {
-   int lena, lenb, datalen, rate;
+   int lena, lenb, datalen;
    uint8_t *buf;
 
 cb_start:

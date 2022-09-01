@@ -56,7 +56,6 @@ int set_modulepath(char *path, size_t len)
 static void LoadDefaults(void)
 {
 	int i;
-	int j;
 
 	Config.MenuFontSize = 0; /* start with default normal menu size */
 	winx = 0;
@@ -108,9 +107,8 @@ static void LoadDefaults(void)
 
 void LoadConfig(void)
 {
-	int	i, j;
+	int	i;
 	char	buf[MAX_PATH];
-	void *fp;
 
 	/* Because we are not loading defauts for most items from a config file,
 	 * directly set default config at first call
@@ -142,9 +140,8 @@ void LoadConfig(void)
 
 void SaveConfig(void)
 {
-	int	i, j;
-	char	buf[MAX_PATH], buf2[MAX_PATH];
-	void *fp;
+	int	i;
+	char	buf[MAX_PATH];
 
 	WritePrivateProfileString("WinX68k", "StartDir", filepath, winx68k_ini);
 
