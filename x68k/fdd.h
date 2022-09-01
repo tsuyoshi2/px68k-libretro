@@ -18,7 +18,6 @@ enum {
 	FD_DIM
 };
 
-DWORD FASTCALL FDD_Int(uint8_t irq);
 void FDD_SetFD(int drive, char* filename, int readonly);
 void FDD_EjectFD(int drive);
 void FDD_Init(void);

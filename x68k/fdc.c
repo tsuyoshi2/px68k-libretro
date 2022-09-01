@@ -130,7 +130,7 @@ static void FDC_SetInt(void)
 /*
  *   Excution Phase ¤Î½ªÎ»
  */
-void FDC_EPhaseEnd(void)
+static void FDC_EPhaseEnd(void)
 {
 	FDCID id;
 	FDCRSP* rsp = (FDCRSP*)fdc.RspBuf;
