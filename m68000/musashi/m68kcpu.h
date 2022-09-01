@@ -667,10 +667,6 @@ extern jmp_buf m68ki_aerr_trap;
 	#define m68ki_check_address_error_010_less(ADDR, WRITE_MODE, FC)
 #endif /* M68K_ADDRESS_ERROR */
 
-/* Logging */
-#define M68K_DO_LOG(A)
-#define M68K_DO_LOG_EMU(A)
-
 /* -------------------------- EA / Operand Access ------------------------- */
 
 /*
@@ -1008,10 +1004,6 @@ static inline uint m68ki_read_16_fc (uint address, uint fc);
 static inline uint m68ki_read_32_fc (uint address, uint fc);
 static inline uint m68ki_get_ea_ix(uint An);
 static inline void m68ki_check_interrupts(void);            /* ASG: check for interrupts */
-
-/* quick disassembly (used for logging) */
-char* m68ki_disassemble_quick(unsigned int pc, unsigned int cpu_type);
-
 
 /* ======================================================================== */
 /* =========================== UTILITY FUNCTIONS ========================== */
@@ -1937,14 +1929,7 @@ extern int cpu_log_enabled;
 /* Exception for A-Line instructions */
 static inline void m68ki_exception_1010(void)
 {
-	uint sr;
-#if M68K_LOG_1010_1111 == OPT_ON
-	M68K_DO_LOG_EMU((M68K_LOG_FILEHANDLE "%s at %08x: called 1010 instruction %04x (%s)\n",
-					 m68ki_cpu_names[CPU_TYPE], ADDRESS_68K(REG_PPC), REG_IR,
-					 m68ki_disassemble_quick(ADDRESS_68K(REG_PPC))));
-#endif
-
-	sr = m68ki_init_exception();
+	uint sr = m68ki_init_exception();
 	m68ki_stack_frame_0000(REG_PPC, sr, EXCEPTION_1010);
 	m68ki_jump_vector(EXCEPTION_1010);
 
@@ -1955,15 +1940,7 @@ static inline void m68ki_exception_1010(void)
 /* Exception for F-Line instructions */
 static inline void m68ki_exception_1111(void)
 {
-	uint sr;
-
-#if M68K_LOG_1010_1111 == OPT_ON
-	M68K_DO_LOG_EMU((M68K_LOG_FILEHANDLE "%s at %08x: called 1111 instruction %04x (%s)\n",
-					 m68ki_cpu_names[CPU_TYPE], ADDRESS_68K(REG_PPC), REG_IR,
-					 m68ki_disassemble_quick(ADDRESS_68K(REG_PPC))));
-#endif
-
-	sr = m68ki_init_exception();
+	uint sr = m68ki_init_exception();
 	m68ki_stack_frame_0000(REG_PPC, sr, EXCEPTION_1111);
 	m68ki_jump_vector(EXCEPTION_1111);
 
@@ -1979,10 +1956,6 @@ extern int m68ki_illg_callback(int);
 static inline void m68ki_exception_illegal(void)
 {
 	uint sr;
-
-	M68K_DO_LOG((M68K_LOG_FILEHANDLE "%s at %08x: illegal instruction %04x (%s)\n",
-				 m68ki_cpu_names[CPU_TYPE], ADDRESS_68K(REG_PPC), REG_IR,
-				 m68ki_disassemble_quick(ADDRESS_68K(REG_PPC))));
 	if (m68ki_illg_callback(REG_IR))
 	    return;
 
@@ -2077,11 +2050,7 @@ static inline void m68ki_exception_interrupt(uint int_level)
 		/* Called if no devices respond to the interrupt acknowledge */
 		vector = EXCEPTION_SPURIOUS_INTERRUPT;
 	else if(vector > 255)
-	{
-		M68K_DO_LOG_EMU((M68K_LOG_FILEHANDLE "%s at %08x: Interrupt acknowledge returned invalid vector $%x\n",
-				 m68ki_cpu_names[CPU_TYPE], ADDRESS_68K(REG_PC), vector));
 		return;
-	}
 
 	/* Start exception processing */
 	sr = m68ki_init_exception();

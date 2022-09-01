@@ -52,22 +52,6 @@ signed int my_irqh_callback(signed int level);
 #define OPT_ON              1
 #define OPT_SPECIFY_HANDLER 2
 
-
-/* ======================================================================== */
-/* ============================== MAME STUFF ============================== */
-/* ======================================================================== */
-
-/* If you're compiling this for MAME, only change M68K_COMPILE_FOR_MAME
- * to OPT_ON and use m68kmame.h to configure the 68k core.
- */
-#ifndef M68K_COMPILE_FOR_MAME
-#define M68K_COMPILE_FOR_MAME      OPT_OFF
-#endif /* M68K_COMPILE_FOR_MAME */
-
-
-#if M68K_COMPILE_FOR_MAME == OPT_OFF
-
-
 /* ======================================================================== */
 /* ============================= CONFIGURATION ============================ */
 /* ======================================================================== */
@@ -209,8 +193,6 @@ signed int my_irqh_callback(signed int level);
 */
 #define M68K_USE_64_BIT  OPT_ON
 
-
-#endif /* M68K_COMPILE_FOR_MAME */
 
 /* ======================================================================== */
 /* ============================== END OF FILE ============================= */

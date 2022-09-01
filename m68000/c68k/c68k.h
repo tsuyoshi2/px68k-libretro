@@ -36,21 +36,12 @@ extern "C" {
 
 #define C68K_BYTE_SWAP_OPT
 
-#ifdef WORDS_BIGENDIAN
-#define C68K_BIG_ENDIAN
-#endif
-
-#ifdef C68K_BIG_ENDIAN
+#ifdef MSB_FIRST
  #define BYTE_OFF 3
  #define WORD_OFF 1
 #else
  #define BYTE_OFF 0
  #define WORD_OFF 0
-#endif
-
-#if 0
-#define C68K_NO_JUMP_TABLE
-#define C68K_CONST_JUMP_TABLE
 #endif
 
 /* 68K core types definitions */
