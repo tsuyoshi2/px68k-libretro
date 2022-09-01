@@ -44,12 +44,11 @@ void *file_open(const char *filename)
 {
 	void *ret = create_file(filename, GENERIC_READ | GENERIC_WRITE,
 	    OPEN_EXISTING);
-	if (ret == (void*)INVALID_HANDLE_VALUE)
+	if (!ret)
 	{
-		ret = create_file(filename, GENERIC_READ,
-		    OPEN_EXISTING);
-		if (ret == (void*)INVALID_HANDLE_VALUE)
-			return (void*)0;
+		if (!(ret = create_file(filename, GENERIC_READ,
+		    OPEN_EXISTING)))
+			return NULL;
 	}
 	return ret;
 }
@@ -58,8 +57,8 @@ void* file_create(const char *filename)
 {
 	void* ret = create_file(filename, GENERIC_READ | GENERIC_WRITE,
 	    CREATE_ALWAYS);
-	if (ret == (void*)INVALID_HANDLE_VALUE)
-		return (void*)0;
+	if (!ret)
+		return NULL;
 	return ret;
 }
 

@@ -30,7 +30,7 @@ bool FileIO::Open(const char* filename, uint32_t flg)
 
 	hfile          = create_file(filename, access, creation);
 	
-	flags = (flg & readonly) | (hfile == INVALID_HANDLE_VALUE ? 0 : open);
+	flags = (flg & readonly) | (hfile  ? open : 0);
 	return !!(flags & open);
 }
 

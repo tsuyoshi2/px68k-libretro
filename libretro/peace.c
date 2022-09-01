@@ -155,7 +155,7 @@ static void *local_free(void *h)
 int read_file(void* h, void *buf, size_t len, size_t *lp)
 {
 	struct internal_file *fp;
-	if (h == (void*)INVALID_HANDLE_VALUE)
+	if (!h)
 		return 0;
 
 	fp  = local_lock(h);
@@ -169,7 +169,7 @@ int read_file(void* h, void *buf, size_t len, size_t *lp)
 int write_file(void* h, const void *buf, size_t len, size_t *lp)
 {
 	struct internal_file *fp;
-	if (h == (void*)INVALID_HANDLE_VALUE)
+	if (!h)
 		return 0;
 
 	fp  = local_lock(h);
@@ -210,9 +210,8 @@ void* create_file(const char *filename, DWORD rdwr,
 		case OPEN_EXISTING:
 			break;
 	}
-	fd = open(filename, fmode, 0644);
-	if (fd < 0)
-		return (void*)INVALID_HANDLE_VALUE;
+	if ((fd = open(filename, fmode, 0644)) < 0)
+		return NULL;
 
 	h = local_alloc(sizeof(struct internal_file));
 	sethandletype(h, HTYPE_FILE);
