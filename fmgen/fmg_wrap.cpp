@@ -251,7 +251,7 @@ void FASTCALL M288_Write(DWORD adr, uint8_t data)
 }
 
 
-void M288_Update(int16_t *buffer, int length)
+void M288_Update(int16_t *buffer, size_t length)
 {
 	if ( ymf288a ) ymf288a->Mix((int16_t*)buffer, length);
 	if ( ymf288b ) ymf288b->Mix((int16_t*)buffer, length);

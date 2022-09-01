@@ -15,7 +15,7 @@ void OPM_SetVolume(uint8_t vol);
 int M288_Init(int clock, const char* path);
 void M288_Cleanup(void);
 void M288_Reset(void);
-void M288_Update(int16_t *buffer, int length);
+void M288_Update(int16_t *buffer, size_t length);
 void FASTCALL M288_Write(DWORD r, uint8_t v);
 uint8_t FASTCALL M288_Read(WORD a);
 void FASTCALL M288_Timer(DWORD step);

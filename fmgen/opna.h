@@ -78,8 +78,8 @@ namespace FM
 		uint32_t	GetReg(uint32_t addr);	
 	
 	protected:
-		void	FMMix(int16_t* buffer, int nsamples);
-		void 	Mix6(int16_t* buffer, int nsamples, int activech);
+		void	FMMix(int16_t* buffer, size_t nsamples);
+		void 	Mix6(int16_t* buffer, size_t nsamples, int activech);
 		
 		void	MixSubS(int activech, ISample**);
 		void	MixSubSL(int activech, ISample**);
@@ -90,7 +90,7 @@ namespace FM
 		void	LFO();
 
 		void	DecodeADPCMB();
-		void	ADPCMBMix(int16_t* dest, uint32_t count);
+		void	ADPCMBMix(int16_t* dest, size_t count);
 
 		void	WriteRAM(uint32_t data);
 		uint32_t	ReadRAM();
@@ -165,7 +165,7 @@ namespace FM
 		bool	SetRate(uint32_t c, uint32_t r);
 		
 		void	Reset();
-		void 	Mix(int16_t* buffer, int nsamples);
+		void 	Mix(int16_t* buffer, size_t nsamples);
 		void 	SetReg(uint32_t addr, uint32_t data);
 		uint32_t	GetReg(uint32_t addr);
 		uint32_t	ReadStatus() { return status & 0x03; }
@@ -196,7 +196,7 @@ namespace FM
 		bool	LoadRhythmSample(const char*);
 	
 		bool	SetRate(uint32_t c, uint32_t r);
-		void 	Mix(int16_t* buffer, int nsamples);
+		void 	Mix(int16_t* buffer, size_t nsamples);
 
 		void	Reset();
 		void 	SetReg(uint32_t addr, uint32_t data);
@@ -220,7 +220,7 @@ namespace FM
 			uint32_t	rate;		// さんぷるのれーと
 		};
 	
-		void	RhythmMix(int16_t* buffer, uint32_t count);
+		void	RhythmMix(int16_t* buffer, size_t count);
 
 	// リズム音源関係
 		Rhythm	rhythm[6];
@@ -240,7 +240,7 @@ namespace FM
 		bool	LoadRhythmSample(const char*);
 	
 		bool	SetRate(uint32_t c, uint32_t r);
-		void 	Mix(int16_t* buffer, int nsamples);
+		void 	Mix(int16_t* buffer, size_t nsamples);
 
 		void	SetVolumeRhythmTotal(int db);
 		void	SetVolumeRhythm(int index, int db);
@@ -262,7 +262,7 @@ namespace FM
 			uint32_t	rate;		// さんぷるのれーと
 		};
 	
-		void	RhythmMix(int16_t* buffer, uint32_t count);
+		void	RhythmMix(int16_t* buffer, size_t count);
 
 	// リズム音源関係
 		Rhythm	rhythm[6];

@@ -72,7 +72,7 @@ void FASTCALL Mcry_PreUpdate(DWORD clock)
 /*
  *   DSoundからの要求分だけバッファを埋める
  */
-void FASTCALL Mcry_Update(int16_t *buffer, DWORD length)
+void FASTCALL Mcry_Update(int16_t *buffer, size_t length)
 {
 	int data;
 
