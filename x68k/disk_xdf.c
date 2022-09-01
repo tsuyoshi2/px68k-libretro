@@ -60,8 +60,7 @@ int XDF_Eject(int drv)
 		return 0;
 	}
 	if ( !FDD_IsReadOnly(drv) ) {
-		fp = file_open(XDFFile[drv]);
-		if ( !fp ) goto xdf_eject_error;
+		if (!(fp = file_open(XDFFile[drv]))) goto xdf_eject_error;
 		file_seek(fp, 0, FSEEK_SET);
 		if ( file_lwrite(fp, XDFImg[drv], 1261568)!=1261568 ) goto xdf_eject_error;
 		file_close(fp);

@@ -44,11 +44,11 @@ extern "C" {
 
 void *file_open(const char *filename);
 void *file_create(const char *filename);
-DWORD file_seek(void *handle, long pointer, int16_t mode);
-size_t file_lread(void *handle, void *data, DWORD length);
-size_t file_lwrite(void *handle, void *data, DWORD length);
-size_t file_read(void *handle, void *data, WORD length);
-size_t file_write(void *handle, void *data, WORD length);
+size_t file_seek(void *handle, long pointer, int16_t mode);
+size_t file_lread(void *handle, void *data, size_t length);
+size_t file_lwrite(void *handle, void *data, size_t length);
+size_t file_read(void *handle, void *data, size_t length);
+size_t file_write(void *handle, void *data, size_t length);
 int16_t file_close(void *handle);
 void file_setcd(const char *exename);
 void *file_open_c(const char *filename);

@@ -66,8 +66,7 @@ int DIM_SetFD(int drv, char* filename)
 	DIMImg[drv] = (unsigned char*)malloc(1024*9*170+sizeof(DIM_HEADER));		/* Maximum size */
 	if ( !DIMImg[drv] ) return 0;
 	memset(DIMImg[drv], 0xe5, 1024*9*170+sizeof(DIM_HEADER));
-	fp = file_open(DIMFile[drv]);
-	if ( !fp )
+	if (!(fp = file_open(DIMFile[drv])))
 	{
 		memset(DIMFile[drv], 0, MAX_PATH);
 		FDD_SetReadOnly(drv);

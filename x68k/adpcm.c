@@ -91,7 +91,7 @@ void FASTCALL ADPCM_PreUpdate(DWORD clock)
 	}
 }
 
-void ADPCM_Update(int16_t *buffer, DWORD length, uint8_t *pbsp, uint8_t *pbep)
+void ADPCM_Update(int16_t *buffer, size_t length, uint8_t *pbsp, uint8_t *pbep)
 {
 	int outs;
 	signed int outl, outr;
@@ -99,9 +99,9 @@ void ADPCM_Update(int16_t *buffer, DWORD length, uint8_t *pbsp, uint8_t *pbep)
 	if ( length<=0 ) return;
 
 	while ( length ) {
+		int tmpl, tmpr;
 		if (buffer >= (int16_t *)pbep)
 			buffer = (int16_t*)pbsp;
-		int tmpl, tmpr;
 
 		if ( (ADPCM_WrPtr==ADPCM_RdPtr)&&(!(DMA[3].CCR&0x40)) ) DMA_Exec(3);
 		if ( ADPCM_WrPtr!=ADPCM_RdPtr ) {

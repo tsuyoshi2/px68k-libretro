@@ -653,20 +653,20 @@ static int getvalue(char **buf, int cutspace)
 
 static int file_readline(void *fh, char *buf, int len)
 {
-	DWORD	pos;
-	DWORD	readsize;
-	DWORD	i;
+	size_t	pos;
+	size_t	readsize;
+	int	i;
 
 	if (len < 2)
-		return(-1);
+		return -1;
 	pos = file_seek(fh, 0, FSEEK_CUR);
-	if (pos == (DWORD)-1)
-		return(-1);
+	if (pos == -1)
+		return -1;
 	readsize = file_lread(fh, buf, len-1);
-	if (readsize == (DWORD)-1)
-		return(-1);
+	if (readsize == -1)
+		return -1;
 	if (!readsize)
-		return(-1);
+		return -1;
 	for (i=0; i<readsize; i++)
 	{
 		pos++;
