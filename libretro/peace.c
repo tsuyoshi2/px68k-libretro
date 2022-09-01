@@ -296,7 +296,7 @@ nofile:
 	return strlen(buf);
 }
 
-UINT GetPrivateProfileInt(const char *sect, const char *key, INT defvalue, const char *inifile)
+unsigned int GetPrivateProfileInt(const char *sect, const char *key, signed int defvalue, const char *inifile)
 {
 	char lbuf[256];
 	FILE *fp;

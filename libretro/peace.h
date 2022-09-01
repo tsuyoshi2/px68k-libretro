@@ -15,7 +15,7 @@ void *  create_file(const char*, DWORD, DWORD);
 
 size_t	GetPrivateProfileString(const char *, const char*, const char*, char*,
 		size_t, const char*);
-UINT	GetPrivateProfileInt(const char*, const char*, INT, const char*);
+unsigned int	GetPrivateProfileInt(const char*, const char*, signed int, const char*);
 
 #ifdef __cplusplus
 };

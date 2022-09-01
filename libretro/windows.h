@@ -11,11 +11,6 @@
 #include <errno.h>
 #include <assert.h>
 
-typedef	signed int	INT;
-typedef	signed long	LONG;
-
-typedef	unsigned int	UINT;
-
 #ifdef HAVE_C68k
 #include "/m68000/c68k/core.h"
 typedef	u16	WORD;
