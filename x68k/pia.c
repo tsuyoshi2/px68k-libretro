@@ -1,5 +1,5 @@
 /*
- *  PIA.C - uPD8255（必要最低限のみ）
+ *  PIA.C - uPD8255
  */
 
 #include "common.h"
@@ -25,7 +25,7 @@ void PIA_Init(void)
 	pia.Ctrl = 0;
 }
 
-void FASTCALL PIA_Write(DWORD adr, uint8_t data)
+void FASTCALL PIA_Write(uint32_t adr, uint8_t data)
 {
 	uint8_t mask, bit, portc = pia.PortC;
 	if ( adr==0xe9a005 )
@@ -58,7 +58,7 @@ void FASTCALL PIA_Write(DWORD adr, uint8_t data)
 		Joystick_Write(1, data);
 }
 
-uint8_t FASTCALL PIA_Read(DWORD adr)
+uint8_t FASTCALL PIA_Read(uint32_t adr)
 {
 	if ( adr==0xe9a001 )
 		return Joystick_Read(0);

@@ -1,5 +1,5 @@
 /*
- *  FDD.C - 内蔵FDD Unit（イメージファイルの管理とFD挿抜割り込みの発生）
+ *  FDD.C - FDD Unit
  */
 
 #include <string.h>
@@ -14,7 +14,6 @@
 #include "disk_d88.h"
 #include "disk_xdf.h"
 #include "disk_dim.h"
-
 
 typedef struct {
 	int SetDelay[4];
@@ -66,24 +65,14 @@ static int GetDiskType(char* file)
 	return ret;
 }
 
-
-
-/*
- *   挿抜割り込み
- */
-static DWORD FASTCALL FDD_Int(uint8_t irq)
+static uint32_t FASTCALL FDD_Int(uint8_t irq)
 {
 	IRQH_IRQCallBack(irq);
 	if ( irq==1 )
-		return ((DWORD)IOC_IntVect+1);
+		return ((uint32_t)IOC_IntVect+1);
 	return -1;
 }
 
-
-/*
- *   FDせっと
- *     すぐには割り込み上げないです
- */
 void FDD_SetFD(int drive, char* filename, int readonly)
 {
 	int type = GetDiskType(filename);

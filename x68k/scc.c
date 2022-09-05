@@ -1,5 +1,5 @@
 /*
- *  SCC.C - Z8530 SCC（マウスのみ）
+ *  SCC.C - Z8530 SCC
  */
 
 #include "common.h"
@@ -22,7 +22,7 @@ static uint8_t SCC_Vector    = 0;
 static uint8_t SCC_Dat[3]    = {0, 0, 0};
 static uint8_t SCC_DatNum    = 0;
 
-static DWORD FASTCALL SCC_Int(uint8_t irq)
+static uint32_t FASTCALL SCC_Int(uint8_t irq)
 {
    IRQH_IRQCallBack(irq);
    if ( (irq==5)&&(!(SCC_RegsB[9]&2)) )
@@ -30,13 +30,13 @@ static DWORD FASTCALL SCC_Int(uint8_t irq)
       if (SCC_RegsB[9]&1)
       {
          if (SCC_RegsB[9]&0x10)
-            return ((DWORD)(SCC_Vector&0x8f)+0x20);
-         return ((DWORD)(SCC_Vector&0xf1)+4);
+            return ((uint32_t)(SCC_Vector&0x8f)+0x20);
+         return ((uint32_t)(SCC_Vector&0xf1)+4);
       }
-      return ((DWORD)SCC_Vector);
+      return ((uint32_t)SCC_Vector);
    }
 
-   return (DWORD)(-1);
+   return (uint32_t)(-1);
 }
 
 void SCC_IntCheck(void)
@@ -68,7 +68,7 @@ void SCC_Init(void)
 /*
  *   I/O Write
  */
-void FASTCALL SCC_Write(DWORD adr, uint8_t data)
+void FASTCALL SCC_Write(uint32_t adr, uint8_t data)
 {
 	if (adr>=0xe98008)
       return;
@@ -146,7 +146,7 @@ void FASTCALL SCC_Write(DWORD adr, uint8_t data)
 /*
  *   I/O Read
  */
-uint8_t FASTCALL SCC_Read(DWORD adr)
+uint8_t FASTCALL SCC_Read(uint32_t adr)
 {
 	uint8_t ret = 0;
 

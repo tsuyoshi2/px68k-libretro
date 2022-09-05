@@ -1,9 +1,3 @@
-/*
- *  SCSI.C - 外付けSCSIボード (CZ-6BS1) 
- *    SCSI IOCSを乗っ取る形で対応（SPCはエミュレートしない）
- *    内蔵SCSI（のダミー）IPLは winx68k.c 内で定義してます
- */
-
 #include "common.h"
 #include "../libretro/dosio.h"
 #include "winx68k.h"
@@ -14,9 +8,6 @@ uint8_t	SCSIIPL[0x2000];
 
 void SCSI_Init(void)
 {
-	/* オリジナルのSCSI ROM
-	 * 動作：SCSI IOCSが呼ばれると、SCSI IOCS番号を $e9f800 に出力します。
-	 * SCSIデバイスからの起動は不可、初期化ルーチンはSCSI IOCS($F5)のベクタ設定のみを行います。 */
 	static	uint8_t	SCSIIMG[] = {
 		0x00, 0xea, 0x00, 0x34,	/* $ea0020 SCSI起動用のエントリアドレス */
 		0x00, 0xea, 0x00, 0x36,	/* $ea0024 IOCSベクタ設定のエントリアドレス(必ず"Human"の8バイト前) */
@@ -45,9 +36,9 @@ void SCSI_Init(void)
 }
 
 void SCSI_Cleanup(void) { }
-void FASTCALL SCSI_Write(DWORD adr, uint8_t data) { }
+void FASTCALL SCSI_Write(uint32_t adr, uint8_t data) { }
 
-uint8_t FASTCALL SCSI_Read(DWORD adr)
+uint8_t FASTCALL SCSI_Read(uint32_t adr)
 {
 	return SCSIIPL[(adr^1)&0x1fff];
 }

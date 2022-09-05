@@ -6,7 +6,7 @@
 
 typedef struct
 {
-	DWORD BufferSize;
+	uint32_t BufferSize;
 	int OPM_VOL;
 	int PCM_VOL;
 	int MCR_VOL;

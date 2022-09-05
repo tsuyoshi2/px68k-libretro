@@ -17,21 +17,21 @@ extern	uint32_t	MemByteAccess;
 
 void Memory_Init(void);
 
-DWORD cpu_readmem24(DWORD adr);
-DWORD cpu_readmem24_word(DWORD adr);
-DWORD cpu_readmem24_dword(DWORD adr);
+uint32_t cpu_readmem24(uint32_t adr);
+uint32_t cpu_readmem24_word(uint32_t adr);
+uint32_t cpu_readmem24_dword(uint32_t adr);
 
-void cpu_writemem24(DWORD adr, DWORD data);
-void cpu_writemem24_word(DWORD adr, DWORD data);
-void cpu_writemem24_dword(DWORD adr, DWORD data);
+void cpu_writemem24(uint32_t adr, uint32_t data);
+void cpu_writemem24_word(uint32_t adr, uint32_t data);
+void cpu_writemem24_dword(uint32_t adr, uint32_t data);
 
-uint8_t dma_readmem24(DWORD adr);
-WORD dma_readmem24_word(DWORD adr);
-DWORD dma_readmem24_dword(DWORD adr);
+uint8_t dma_readmem24(uint32_t adr);
+uint16_t dma_readmem24_word(uint32_t adr);
+uint32_t dma_readmem24_dword(uint32_t adr);
 
-void dma_writemem24(DWORD adr, uint8_t data);
-void dma_writemem24_word(DWORD adr, WORD data);
-void dma_writemem24_dword(DWORD adr, DWORD data);
+void dma_writemem24(uint32_t adr, uint8_t data);
+void dma_writemem24_word(uint32_t adr, uint16_t data);
+void dma_writemem24_dword(uint32_t adr, uint32_t data);
 
 void Memory_SetSCSIMode(void);
 

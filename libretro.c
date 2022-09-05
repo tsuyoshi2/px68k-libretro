@@ -69,16 +69,16 @@ const float framerates[][MODES] = {
 char	winx68k_dir[MAX_PATH];
 char	winx68k_ini[MAX_PATH];
 
-WORD	VLINE_TOTAL = 567;
-DWORD	VLINE = 0;
-DWORD	vline = 0;
+uint16_t	VLINE_TOTAL = 567;
+uint32_t	VLINE = 0;
+uint32_t	vline = 0;
 
 #define SOUNDRATE 44100.0
 #define SNDSZ round(SOUNDRATE / FRAMERATE)
 
 static int firstcall          = 1;
 
-static DWORD old_ram_size     = 0;
+static uint32_t old_ram_size     = 0;
 static int old_clkdiv         = 0;
 
 static int oldrw=0,oldrh      = 0;
@@ -119,7 +119,7 @@ int CHANGEAV              = 0;
 int CHANGEAV_TIMING       = 0; /* Separate change of geometry from change of refresh rate */
 int VID_MODE              = MODE_NORM; /* what framerate we start in */
 static float FRAMERATE;
-DWORD libretro_supports_input_bitmasks = 0;
+uint32_t libretro_supports_input_bitmasks = 0;
 unsigned int total_usec   = (unsigned int) -1;
 
 static int16_t soundbuf[1024 * 2];
@@ -787,13 +787,13 @@ entry point) */
 		0x4e, 0x75,							/* $fc002c "rts" */
 	};
 
-	WORD *p1, *p2;
+	uint16_t *p1, *p2;
 	int scsi;
 	int i;
 
 	scsi = 0;
 	for (i = 0x30600; i < 0x30c00; i += 2) {
-		p1 = (WORD *)(&IPL[i]);
+		p1 = (uint16_t *)(&IPL[i]);
 		p2 = p1 + 1;
 		/* xxx: works only for little endian guys */
 		if (*p1 == 0xfc00 && *p2 == 0x0000) {
@@ -1848,7 +1848,7 @@ static void WinX68k_Exec(void)
 {
 	int clk_total, clkdiv, usedclk, hsync, clk_next, clk_count, clk_line=0;
 	int KeyIntCnt = 0, MouseIntCnt = 0;
-	DWORD t_start = timeGetTime(), t_end;
+	uint32_t t_start = timeGetTime(), t_end;
 
 	if(!(cpu_readmem24_dword(0xed0008)==Config.ram_size))
    {
@@ -1924,7 +1924,7 @@ static void WinX68k_Exec(void)
 			if ( (vline>=CRTC_VSTART)&&(vline<CRTC_VEND) )
 				VLINE = ((vline-CRTC_VSTART)*CRTC_VStep)/2;
 			else
-				VLINE = (DWORD)-1;
+				VLINE = (uint32_t)-1;
 			if ( (!(MFP[MFP_AER]&0x40))&&(vline==CRTC_IntLine) )
 				MFP_Int(1);
 			if ( MFP[MFP_AER]&0x10 ) {

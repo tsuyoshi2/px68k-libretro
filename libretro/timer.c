@@ -25,14 +25,14 @@ void Timer_Init(void)
 	tick = timeGetUsec();
 }
 
-WORD Timer_GetCount(void)
+uint16_t Timer_GetCount(void)
 {
 	static uint32_t timercnt = 0;
-	DWORD ticknow   = timeGetUsec();
-	DWORD dif       = ticknow-tick;
-	DWORD TIMEBASE  = ((CRTC_Regs[0x29]&0x10)?VSYNC_HIGH:VSYNC_NORM);
-	timercnt       += dif*10;  /* switch from msec to usec */
-	tick            = ticknow;
+	uint32_t ticknow   = timeGetUsec();
+	uint32_t dif       = ticknow-tick;
+	uint32_t TIMEBASE  = ((CRTC_Regs[0x29]&0x10)?VSYNC_HIGH:VSYNC_NORM);
+	timercnt          += dif*10;  /* switch from msec to usec */
+	tick               = ticknow;
 	if (timercnt >= TIMEBASE)
 	{
 		timercnt -= TIMEBASE;

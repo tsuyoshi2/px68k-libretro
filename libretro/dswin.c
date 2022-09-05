@@ -59,7 +59,7 @@ static void sound_send(int length)
    ADPCM_Update((int16_t *)pbwp, length, pbsp, pbep);
    OPM_Update((int16_t *)pbwp, length, pbsp, pbep);
 
-   pbwp += length * sizeof(WORD) * 2;
+   pbwp += length * sizeof(uint16_t) * 2;
    if (pbwp >= pbep)
       pbwp = pbsp + (pbwp - pbep);
 }

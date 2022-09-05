@@ -17,13 +17,13 @@ static uint8_t Timer_Reload[4] = {0, 0, 0, 0};
 static int Timer_Tick[4] = {0, 0, 0, 0};
 static const int Timer_Prescaler[8] = {1, 10, 25, 40, 125, 160, 250, 500};
 
-DWORD FASTCALL MFP_IntCallback(uint8_t irq)
+uint32_t FASTCALL MFP_IntCallback(uint8_t irq)
 {
    uint8_t flag;
-   DWORD vect;
+   uint32_t vect;
    int offset = 0;
    IRQH_IRQCallBack(irq);
-   if (irq!=6) return (DWORD)-1;
+   if (irq!=6) return (uint32_t)-1;
    for (flag=0x80, vect=15; flag; flag>>=1, vect--)
    {
       if ((MFP[MFP_IPRA]&flag)&&(MFP[MFP_IMRA]&flag)&&(!(MFP[MFP_ISRA]&flag)))
@@ -42,7 +42,7 @@ DWORD FASTCALL MFP_IntCallback(uint8_t irq)
    {
       if (log_cb)
          log_cb(RETRO_LOG_ERROR, "[PX68K] Error: MFP Int w/o Request. Default Vector(-1) has been returned.\n");
-      return (DWORD)-1;
+      return (uint32_t)-1;
    }
 
    MFP[MFP_IPRA+offset] &= (~flag);
@@ -127,7 +127,7 @@ void MFP_Init(void)
       Timer_Tick[i] = 0;
 }
 
-uint8_t FASTCALL MFP_Read(DWORD adr)
+uint8_t FASTCALL MFP_Read(uint32_t adr)
 {
    if (adr > 0xe8802f)
       return 0;
@@ -169,7 +169,7 @@ uint8_t FASTCALL MFP_Read(DWORD adr)
    return 0xff;
 }
 
-void FASTCALL MFP_Write(DWORD adr, uint8_t data)
+void FASTCALL MFP_Write(uint32_t adr, uint8_t data)
 {
    if (adr>0xe8802f)
       return;

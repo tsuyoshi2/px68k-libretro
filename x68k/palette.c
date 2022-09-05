@@ -12,26 +12,26 @@
 #include	"palette.h"
 
 uint8_t	Pal_Regs[1024];
-WORD	TextPal[256];
-WORD	GrphPal[256];
-WORD	Pal16[65536];
-WORD	Ibit;
+uint16_t	TextPal[256];
+uint16_t	GrphPal[256];
+uint16_t	Pal16[65536];
+uint16_t	Ibit;
 
-WORD	Pal_HalfMask, Pal_Ix2;
-WORD	Pal_R, Pal_G, Pal_B;
+uint16_t	Pal_HalfMask, Pal_Ix2;
+uint16_t	Pal_R, Pal_G, Pal_B;
 
 void Pal_SetColor(void)
 {
 	int i;
-	WORD bit;
-	WORD R[5]     = {0, 0, 0, 0, 0};
-	WORD G[5]     = {0, 0, 0, 0, 0};
-	WORD B[5]     = {0, 0, 0, 0, 0};
+	uint16_t bit;
+	uint16_t R[5]     = {0, 0, 0, 0, 0};
+	uint16_t G[5]     = {0, 0, 0, 0, 0};
+	uint16_t B[5]     = {0, 0, 0, 0, 0};
 	int r         = 5;
 	int g         = 5;
 	int b         = 5;
 	Pal_R         = Pal_G = Pal_B = 0;
-	WORD TempMask = 0;
+	uint16_t TempMask = 0;
 	for (bit=0x8000; bit; bit>>=1)
 	{
 		if ( (WinDraw_Pal16R&bit)&&(r) )
@@ -98,16 +98,16 @@ void Pal_Init(void)
 	Pal_SetColor();
 }
 
-uint8_t FASTCALL Pal_Read(DWORD adr)
+uint8_t FASTCALL Pal_Read(uint32_t adr)
 {
 	if (adr<0xe82400)
 		return Pal_Regs[adr-0xe82000];
 	else return 0xff;
 }
 
-void FASTCALL Pal_Write(DWORD adr, uint8_t data)
+void FASTCALL Pal_Write(uint32_t adr, uint8_t data)
 {
-	WORD pal;
+	uint16_t pal;
 
 	if (adr>=0xe82400) return;
 
@@ -136,13 +136,13 @@ void FASTCALL Pal_Write(DWORD adr, uint8_t data)
 
 void Pal_ChangeContrast(int num)
 {
-	WORD bit;
-	WORD R[5] = {0, 0, 0, 0, 0};
-	WORD G[5] = {0, 0, 0, 0, 0};
-	WORD B[5] = {0, 0, 0, 0, 0};
+	uint16_t bit;
+	uint16_t R[5] = {0, 0, 0, 0, 0};
+	uint16_t G[5] = {0, 0, 0, 0, 0};
+	uint16_t B[5] = {0, 0, 0, 0, 0};
 	int r, g, b, i;
 	int palr, palg, palb;
-	WORD pal;
+	uint16_t pal;
 
 	TVRAM_SetAllDirty();
 
@@ -174,9 +174,9 @@ void Pal_ChangeContrast(int num)
 		if (i&0x0004) palb |= B[1];
 		if (i&0x0002) palb |= B[0];
 		pal = palr | palb | palg;
-		palg = (WORD)((palg * num)/15)&Pal_G;
-		palr = (WORD)((palr * num)/15)&Pal_R;
-		palb = (WORD)((palb * num)/15)&Pal_B;
+		palg = (uint16_t)((palg * num)/15)&Pal_G;
+		palr = (uint16_t)((palr * num)/15)&Pal_R;
+		palb = (uint16_t)((palb * num)/15)&Pal_B;
 		Pal16[i] = palr | palb | palg;
 		if ((pal)&&(!Pal16[i])) Pal16[i] = B[0];
 		if (i&0x0001) Pal16[i] |= Ibit;

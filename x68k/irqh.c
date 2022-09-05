@@ -1,5 +1,5 @@
 /*
- *  IRQH.C - IRQ Handler (架空のデバイスにょ)
+ *  IRQH.C - IRQ Handler
  */
 
 #include "common.h"
@@ -21,7 +21,7 @@ void IRQH_Init(void)
 	memset(IRQH_IRQ, 0, 8);
 }
 
-static DWORD FASTCALL IRQH_DefaultVector(uint8_t irq)
+static uint32_t FASTCALL IRQH_DefaultVector(uint8_t irq)
 {
 	IRQH_IRQCallBack(irq);
 	return -1;

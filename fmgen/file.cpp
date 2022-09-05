@@ -25,11 +25,11 @@ bool FileIO::Open(const char* filename, uint32_t flg)
 {
 	Close();
 
-	DWORD access   = (flg & readonly  ? 0 : GENERIC_WRITE) | GENERIC_READ;
-	DWORD creation = (flg & create)   ? CREATE_ALWAYS : OPEN_EXISTING;
+	uint32_t access   = (flg & readonly  ? 0 : GENERIC_WRITE) | GENERIC_READ;
+	uint32_t creation = (flg & create)   ? CREATE_ALWAYS : OPEN_EXISTING;
 
-	hfile          = create_file(filename, access, creation);
-	flags          = (flg & readonly) | (hfile  ? open : 0);
+	hfile             = create_file(filename, access, creation);
+	flags             = (flg & readonly) | (hfile  ? open : 0);
 	return !!(flags & open);
 }
 

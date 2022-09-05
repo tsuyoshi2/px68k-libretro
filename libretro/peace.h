@@ -3,15 +3,17 @@
 #ifndef	__NP2_PEACE_H__
 #define	__NP2_PEACE_H__
 
+#include <stdint.h>
+
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-DWORD	FAKE_GetTickCount(void);
+uint32_t FAKE_GetTickCount(void);
 
 int	read_file(void*, void *, size_t, size_t*);
 int	write_file(void*, const void *, size_t, size_t*);
-void *  create_file(const char*, DWORD, DWORD);
+void *  create_file(const char*, uint32_t, uint32_t);
 
 size_t	GetPrivateProfileString(const char *, const char*, const char*, char*,
 		size_t, const char*);

@@ -1,10 +1,3 @@
-// ciscタンノエロガゾウキボンヌを強引にけろぴーに繋ぐための
-// extern "C" の入れ方がきちゃなくてステキ（ぉ
-
-// readme.txtに従って、改変点：
-//  - opna.cppにYMF288用のクラス追加してます。OPNAそのまんまだけどね（ほんとは正しくないがまあいいや）
-//  - 多分他は弄ってないはず……
-
 extern "C" {
 
 #include "common.h"
@@ -26,12 +19,12 @@ class MyOPM : public FM::OPM
 public:
 	MyOPM();
 	virtual ~MyOPM() {}
-	void WriteIO(DWORD adr, uint8_t data);
-	void Count2(DWORD clock);
+	void WriteIO(uint32_t adr, uint8_t data);
+	void Count2(uint32_t clock);
 private:
 	virtual void Intr(bool);
 	int CurReg;
-	DWORD CurCount;
+	uint32_t CurCount;
 };
 
 
@@ -40,7 +33,7 @@ MyOPM::MyOPM()
 	CurReg = 0;
 }
 
-void MyOPM::WriteIO(DWORD adr, uint8_t data)
+void MyOPM::WriteIO(uint32_t adr, uint8_t data)
 {
 	if( adr&1 )
 	{
@@ -60,7 +53,7 @@ void MyOPM::Intr(bool f)
 }
 
 
-void MyOPM::Count2(DWORD clock)
+void MyOPM::Count2(uint32_t clock)
 {
 	CurCount += clock;
 	Count(CurCount/10);
@@ -102,7 +95,7 @@ uint8_t FASTCALL OPM_Read(void)
 }
 
 
-void FASTCALL OPM_Write(DWORD adr, uint8_t data)
+void FASTCALL OPM_Write(uint32_t adr, uint8_t data)
 {
 	if ( opm ) opm->WriteIO(adr, data);
 }
@@ -114,7 +107,7 @@ void OPM_Update(int16_t *buffer, int length, uint8_t *pbsp, uint8_t *pbep)
 }
 
 
-void FASTCALL OPM_Timer(DWORD step)
+void FASTCALL OPM_Timer(uint32_t step)
 {
 	if ( opm ) opm->Count2(step);
 }
@@ -137,14 +130,14 @@ class YMF288 : public FM::Y288
 public:
 	YMF288();
 	virtual ~YMF288() {}
-	void WriteIO(DWORD adr, uint8_t data);
-	uint8_t ReadIO(DWORD adr);
-	void Count2(DWORD clock);
+	void WriteIO(uint32_t adr, uint8_t data);
+	uint8_t ReadIO(uint32_t adr);
+	void Count2(uint32_t clock);
 	void SetInt(int f) { IntrFlag = f; };
 private:
 	virtual void Intr(bool);
 	int CurReg[2];
-	DWORD CurCount;
+	uint32_t CurCount;
 	int IntrFlag;
 };
 
@@ -155,7 +148,7 @@ YMF288::YMF288()
 	IntrFlag = 0;
 }
 
-void YMF288::WriteIO(DWORD adr, uint8_t data)
+void YMF288::WriteIO(uint32_t adr, uint8_t data)
 {
 	if( adr&1 )
 		SetReg(((adr&2)?(CurReg[1]+0x100):CurReg[0]), (int)data);
@@ -164,7 +157,7 @@ void YMF288::WriteIO(DWORD adr, uint8_t data)
 }
 
 
-uint8_t YMF288::ReadIO(DWORD adr)
+uint8_t YMF288::ReadIO(uint32_t adr)
 {
 	if ( adr&1 )
 		return GetReg(((adr&2)?(CurReg[1]+0x100):CurReg[0]));
@@ -178,7 +171,7 @@ void YMF288::Intr(bool f)
 }
 
 
-void YMF288::Count2(DWORD clock)
+void YMF288::Count2(uint32_t clock)
 {
 	CurCount += clock;
 	Count(CurCount/10);
@@ -220,7 +213,7 @@ void M288_Reset(void)
 }
 
 
-uint8_t FASTCALL M288_Read(WORD adr)
+uint8_t FASTCALL M288_Read(uint16_t adr)
 {
 	if ( adr<=3 )
    {
@@ -236,7 +229,7 @@ uint8_t FASTCALL M288_Read(WORD adr)
 }
 
 
-void FASTCALL M288_Write(DWORD adr, uint8_t data)
+void FASTCALL M288_Write(uint32_t adr, uint8_t data)
 {
 	if ( adr<=3 )
    {
@@ -258,7 +251,7 @@ void M288_Update(int16_t *buffer, size_t length)
 }
 
 
-void FASTCALL M288_Timer(DWORD step)
+void FASTCALL M288_Timer(uint32_t step)
 {
 	if ( ymf288a ) ymf288a->Count2(step);
 	if ( ymf288b ) ymf288b->Count2(step);

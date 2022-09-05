@@ -3,7 +3,7 @@
 
 #include <stdint.h>
 
-extern WORD WinDraw_Pal16B, WinDraw_Pal16R, WinDraw_Pal16G;
+extern uint16_t WinDraw_Pal16B, WinDraw_Pal16R, WinDraw_Pal16G;
 
 void WinDraw_Init(void);
 void WinDraw_Cleanup(void);

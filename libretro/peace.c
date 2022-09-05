@@ -87,7 +87,7 @@ struct internal_file
     ((isfixed(h)) ?							\
         ptrtohandle(h)->type : (((struct internal_handle *)(h))->type))
 
-DWORD FAKE_GetTickCount(void)
+uint32_t FAKE_GetTickCount(void)
 {
 	struct timeval tv;
 
@@ -180,8 +180,8 @@ int write_file(void* h, const void *buf, size_t len, size_t *lp)
 	return 1;
 }
 
-void* create_file(const char *filename, DWORD rdwr,
-	    DWORD crmode)
+void* create_file(const char *filename, uint32_t rdwr,
+	    uint32_t crmode)
 {
 	struct internal_file *fp;
 	void* h;

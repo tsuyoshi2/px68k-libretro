@@ -1,6 +1,5 @@
 /*
  *  MIDI.C - MIDI Board (CZ-6BM1) emulator
- *                           Powered by ぷにゅさん〜
  */
 
 #include "common.h"
@@ -48,11 +47,11 @@ uint8_t		MIDI_Vector = 0;
 uint8_t		MIDI_IntEnable = 0;
 uint8_t		MIDI_IntVect = 0;
 uint8_t		MIDI_IntFlag = 0;
-DWORD		MIDI_Buffered = 0;
+uint32_t		MIDI_Buffered = 0;
 long		MIDI_BufTimer = 3333;
 uint8_t		MIDI_R05 = 0;
-DWORD		MIDI_GTimerMax = 0;
-DWORD		MIDI_MTimerMax = 0;
+uint32_t		MIDI_GTimerMax = 0;
+uint32_t		MIDI_MTimerMax = 0;
 long		MIDI_GTimerVal = 0;
 long		MIDI_MTimerVal = 0;
 uint8_t		MIDI_TxFull = 0;
@@ -63,7 +62,7 @@ static uint8_t MIDI_ResetType[5] = {		/* Config.MIDI_Type に合わせて… */
 };
 
 typedef struct {
-	DWORD time;
+	uint32_t time;
 	uint8_t msg;
 } DELAYBUFITEM;
 
@@ -115,15 +114,15 @@ static uint8_t EXCV_XGRESET[] = { 0xf0, 0x43, 0x10, 0x4C, 0x00, 0x00, 0x7E, 0x00
 
 #define MIDIOUTS(a,b,c) (((size_t)c << 16) | ((size_t)b << 8) | (size_t)a)
 
-static DWORD FASTCALL MIDI_Int(uint8_t irq)
+static uint32_t FASTCALL MIDI_Int(uint8_t irq)
 {
 	IRQH_IRQCallBack(irq);
 	if ( irq==4 )
-		return (DWORD)(MIDI_Vector|MIDI_IntVect);
-	return (DWORD)(-1);
+		return (uint32_t)(MIDI_Vector|MIDI_IntVect);
+	return (uint32_t)(-1);
 }
 
-void FASTCALL MIDI_Timer(DWORD clk)
+void FASTCALL MIDI_Timer(uint32_t clk)
 {
 	if ( !Config.MIDI_SW ) return;	/* MIDI OFF時は帰る */
 
@@ -434,7 +433,7 @@ void MIDI_Message(uint8_t mes)
 /*
  *   I/O Read
  */
-uint8_t FASTCALL MIDI_Read(DWORD adr)
+uint8_t FASTCALL MIDI_Read(uint32_t adr)
 {
 	uint8_t ret = 0;
 
@@ -500,7 +499,7 @@ void MIDI_DelayOut(unsigned int delay)
 /*
  *   I/O Write
  */
-void FASTCALL MIDI_Write(DWORD adr, uint8_t data)
+void FASTCALL MIDI_Write(uint32_t adr, uint8_t data)
 {
 	if ( (adr<0xeafa01)||(adr>=0xeafa10)||(!Config.MIDI_SW) )
 	{
@@ -535,7 +534,7 @@ void FASTCALL MIDI_Write(DWORD adr, uint8_t data)
 				case 9:
 					break;
 				case 8:
-					MIDI_GTimerMax = (MIDI_GTimerMax&0xff00)|(DWORD)data;
+					MIDI_GTimerMax = (MIDI_GTimerMax&0xff00)|(uint32_t)data;
 					break;
 			}
 			break;
@@ -555,7 +554,7 @@ void FASTCALL MIDI_Write(DWORD adr, uint8_t data)
 				case 9:
 					break;
 				case 8:
-					MIDI_GTimerMax = (MIDI_GTimerMax&0xff)|(((DWORD)(data&0x3f))*256);
+					MIDI_GTimerMax = (MIDI_GTimerMax&0xff)|(((uint32_t)(data&0x3f))*256);
 					if (data&0x80)
 						MIDI_GTimerVal = MIDI_GTimerMax*80;
 					break;
@@ -574,7 +573,7 @@ void FASTCALL MIDI_Write(DWORD adr, uint8_t data)
 					AddDelayBuf(data);
 					break;
 				case 8:
-					MIDI_MTimerMax = (MIDI_MTimerMax&0xff00)|(DWORD)data;
+					MIDI_MTimerMax = (MIDI_MTimerMax&0xff00)|(uint32_t)data;
 					break;
 				case 1:
 				case 2:
@@ -589,7 +588,7 @@ void FASTCALL MIDI_Write(DWORD adr, uint8_t data)
 		case 0x0f:			/* R07, 17, ... 97 */
 			if (MIDI_RegHigh == 8)
 			{
-				MIDI_MTimerMax = (MIDI_MTimerMax&0xff)|(((DWORD)(data&0x3f))*256);
+				MIDI_MTimerMax = (MIDI_MTimerMax&0xff)|(((uint32_t)(data&0x3f))*256);
 				if (data&0x80)
 					MIDI_MTimerVal = MIDI_MTimerMax*80;
 			}

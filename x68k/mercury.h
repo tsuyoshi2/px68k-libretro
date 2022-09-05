@@ -6,10 +6,10 @@
 extern uint8_t Mcry_LRTiming;
 
 void FASTCALL Mcry_Update(int16_t *buffer, size_t length);
-void FASTCALL Mcry_PreUpdate(DWORD clock);
+void FASTCALL Mcry_PreUpdate(uint32_t clock);
 
-void FASTCALL Mcry_Write(DWORD adr, uint8_t data);
-uint8_t FASTCALL Mcry_Read(DWORD adr);
+void FASTCALL Mcry_Write(uint32_t adr, uint8_t data);
+uint8_t FASTCALL Mcry_Read(uint32_t adr);
 
 void Mcry_SetClock(void);
 void Mcry_SetVolume(uint8_t vol);

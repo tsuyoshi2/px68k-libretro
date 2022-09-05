@@ -1,8 +1,3 @@
-/*
- *  DMAC.C - DMAコントローラ（HD63450）
- *  ToDo : もっと奇麗に ^^;
- */
-
 #include "common.h"
 #include "winx68k.h"
 #include "m68000.h"
@@ -20,7 +15,7 @@ static int DMA_IntCH = 0;
 static int DMA_LastInt = 0;
 static int (*IsReady[4])(void) = { 0, 0, 0, 0 };
 
-static DWORD FASTCALL DMA_Int(uint8_t irq);
+static uint32_t FASTCALL DMA_Int(uint8_t irq);
 
 #define DMAINT(ch)     if ( DMA[ch].CCR&0x08 )	{ DMA_IntCH |= (1<<ch); IRQH_Int(3, &DMA_Int); }
 #define DMAERR(ch,err) DMA[ch].CER  = err; \
@@ -37,9 +32,9 @@ static void DMA_SetReadyCB(int ch, int (*func)(void))
 	if ( (ch>=0)&&(ch<=3) ) IsReady[ch] = func;
 }
 
-static DWORD FASTCALL DMA_Int(uint8_t irq)
+static uint32_t FASTCALL DMA_Int(uint8_t irq)
 {
-	DWORD ret = 0xffffffff;
+	uint32_t ret = 0xffffffff;
 	int bit = 0;
 	int i = DMA_LastInt;
 	IRQH_IRQCallBack(irq);
@@ -48,9 +43,9 @@ static DWORD FASTCALL DMA_Int(uint8_t irq)
 			bit = 1<<i;
 			if ( DMA_IntCH&bit ) {
 				if ( (DMA[i].CSR)&0x10 )
-					ret = ((DWORD)(DMA[i].EIV));
+					ret = ((uint32_t)(DMA[i].EIV));
 				else
-					ret = ((DWORD)(DMA[i].NIV));
+					ret = ((uint32_t)(DMA[i].NIV));
 				DMA_IntCH &= ~bit;
 				break;
 			}
@@ -62,7 +57,7 @@ static DWORD FASTCALL DMA_Int(uint8_t irq)
 	return ret;
 }
 
-uint8_t FASTCALL DMA_Read(DWORD adr)
+uint8_t FASTCALL DMA_Read(uint32_t adr)
 {
 	unsigned char* p;
 	int off = adr&0x3f, ch = ((adr-0xe84000)>>6);
@@ -96,7 +91,7 @@ uint8_t FASTCALL DMA_Read(DWORD adr)
 	return *p;
 }
 
-void FASTCALL DMA_Write(DWORD adr, uint8_t data)
+void FASTCALL DMA_Write(uint32_t adr, uint8_t data)
 {
 	unsigned char* p;
 	int off = adr&0x3f, ch = ((adr-0xe84000)>>6);
@@ -197,13 +192,9 @@ void FASTCALL DMA_Write(DWORD adr, uint8_t data)
 	}
 }
 
-
-/*
- *   DMA実行
- */
 int FASTCALL DMA_Exec(int ch)
 {
-	DWORD *src, *dst;
+	uint32_t *src, *dst;
 
 	if ( DMA[ch].OCR&0x80 ) {		/* Device->Memory */
 		src = &DMA[ch].DAR;
@@ -360,9 +351,6 @@ int FASTCALL DMA_Exec(int ch)
 	return 0;
 }
 
-/*
- *   初期化
- */
 void DMA_Init(void)
 {
 	int i;

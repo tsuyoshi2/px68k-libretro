@@ -2,6 +2,6 @@
 #define _WINXL_TIMER_H
 
 void Timer_Init(void);
-WORD Timer_GetCount(void);
+uint16_t Timer_GetCount(void);
 
 #endif /* _WINXL_TIMER_H */

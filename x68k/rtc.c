@@ -20,7 +20,7 @@ void RTC_Init(void)
 	RTC_Regs[0][15] = 0x0c;
 }
 
-uint8_t FASTCALL RTC_Read(DWORD adr)
+uint8_t FASTCALL RTC_Read(uint32_t adr)
 {
    time_t t      = time(NULL);
    struct tm *tm = localtime(&t);
@@ -59,7 +59,7 @@ uint8_t FASTCALL RTC_Read(DWORD adr)
    return RTC_Regs[1][adr>>1];
 }
 
-void FASTCALL RTC_Write(DWORD adr, uint8_t data)
+void FASTCALL RTC_Write(uint32_t adr, uint8_t data)
 {
 	if ( adr==0xe8a001 )
           return;

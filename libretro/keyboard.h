@@ -12,8 +12,8 @@ extern	uint8_t	KeyBufRP;
 extern	uint8_t	KeyIntFlag;
 
 void Keyboard_Init(void);
-void Keyboard_KeyDown(DWORD vkcode);
-void Keyboard_KeyUp(DWORD vkcode);
+void Keyboard_KeyDown(uint32_t vkcode);
+void Keyboard_KeyUp(uint32_t vkcode);
 void Keyboard_Int(void);
 void send_keycode(uint8_t code, int flag);
 int Keyboard_get_key_ptr(int x, int y);

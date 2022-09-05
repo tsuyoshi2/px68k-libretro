@@ -1,7 +1,5 @@
 /*
  *  ADPCM.C - ADPCM (OKI MSM6258V)
- *    な〜んか、X68Sound.dllに比べてカシャカシャした音になるんだよなぁ……
- *    DSoundのクセってのもあるけど、それだけじゃなさそうな気もする
  */
 
 #include <math.h>
@@ -76,7 +74,7 @@ static void ADPCM_InitTable(void)
 	}
 }
 
-void FASTCALL ADPCM_PreUpdate(DWORD clock)
+void FASTCALL ADPCM_PreUpdate(uint32_t clock)
 {
 	ADPCM_PreCounter += ((ADPCM_ClockRate/24)*clock);
 	while ( ADPCM_PreCounter>=10000000L )
@@ -201,7 +199,7 @@ static INLINE void ADPCM_WriteOne(int val)
 	ADPCM_Count -= ADPCM_SampleRate;
 }
 
-void FASTCALL ADPCM_Write(DWORD adr, uint8_t data)
+void FASTCALL ADPCM_Write(uint32_t adr, uint8_t data)
 {
 	if ( adr==0xe92001 ) {
 		if ( data&1 ) {
@@ -223,7 +221,7 @@ void FASTCALL ADPCM_Write(DWORD adr, uint8_t data)
 	}
 }
 
-uint8_t FASTCALL ADPCM_Read(DWORD adr)
+uint8_t FASTCALL ADPCM_Read(uint32_t adr)
 {
 	if ( adr==0xe92001 )
 		return ((ADPCM_Playing)?0xc0:0x40);

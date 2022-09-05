@@ -3,11 +3,11 @@
 
 #include <stdint.h>
 
-void FASTCALL ADPCM_PreUpdate(DWORD clock);
+void FASTCALL ADPCM_PreUpdate(uint32_t clock);
 void ADPCM_Update(int16_t *buffer, size_t length, uint8_t *pbsp, uint8_t *pbep);
 
-void FASTCALL ADPCM_Write(DWORD adr, uint8_t data);
-uint8_t FASTCALL ADPCM_Read(DWORD adr);
+void FASTCALL ADPCM_Write(uint32_t adr, uint8_t data);
+uint8_t FASTCALL ADPCM_Read(uint32_t adr);
 
 void ADPCM_SetVolume(uint8_t vol);
 void ADPCM_SetPan(int n);

@@ -11,7 +11,8 @@ typedef struct {
 	uint8_t n;
 } FDCID;
 
-enum {
+enum
+{
 	FD_Non = 0,
 	FD_XDF,
 	FD_D88,
