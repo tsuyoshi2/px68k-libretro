@@ -42,7 +42,6 @@ uint8_t		MIDI_BUF[MIDIBUFFERS];
 uint8_t		MIDI_EXCVBUF[MIDIBUFFERS];
 
 uint8_t		MIDI_RegHigh = 0;				/* X68K用 */
-uint8_t		MIDI_Playing = 0;				/* マスタスイッチ */
 uint8_t		MIDI_Vector = 0;
 uint8_t		MIDI_IntEnable = 0;
 uint8_t		MIDI_IntVect = 0;
@@ -54,7 +53,6 @@ uint32_t		MIDI_GTimerMax = 0;
 uint32_t		MIDI_MTimerMax = 0;
 long		MIDI_GTimerVal = 0;
 long		MIDI_MTimerVal = 0;
-uint8_t		MIDI_TxFull = 0;
 uint8_t		MIDI_MODULE = MIDI_NOTUSED;
 
 static uint8_t MIDI_ResetType[5] = {		/* Config.MIDI_Type に合わせて… */

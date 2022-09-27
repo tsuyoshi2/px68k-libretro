@@ -88,7 +88,8 @@ void FASTCALL SCC_Write(uint32_t adr, uint8_t data)
 					SCC_Dat[0] = MouseY;
 				}
 			}
-			else if (SCC_RegNumB == 2) SCC_Vector = data;
+			else if (SCC_RegNumB == 2)
+            SCC_Vector = data;
 			SCC_RegSetB = 0;
 			SCC_RegsB[SCC_RegNumB] = data;
 			SCC_RegNumB = 0;
@@ -111,33 +112,33 @@ void FASTCALL SCC_Write(uint32_t adr, uint8_t data)
 	else if ((adr&7) == 5)
 	{
 		if (SCC_RegSetA)
-		{
-			SCC_RegSetA = 0;
-			switch (SCC_RegNumA)
-			{
-			case 2:
-				SCC_RegsB[2] = data;
-				SCC_Vector = data;
-				break;
-			case 9:
-				SCC_RegsB[9] = data;
-				break;
-			}
-		}
+      {
+         SCC_RegSetA = 0;
+         switch (SCC_RegNumA)
+         {
+            case 2:
+               SCC_RegsB[2] = data;
+               SCC_Vector   = data;
+               break;
+            case 9:
+               SCC_RegsB[9] = data;
+               break;
+         }
+      }
 		else
-		{
-			data &= 15;
-			if (data)
-			{
-				SCC_RegSetA = 1;
-				SCC_RegNumA = data;
-			}
-			else
-			{
-				SCC_RegSetA = 0;
-				SCC_RegNumA = 0;
-			}
-		}
+      {
+         data &= 15;
+         if (data)
+         {
+            SCC_RegSetA = 1;
+            SCC_RegNumA = data;
+         }
+         else
+         {
+            SCC_RegSetA = 0;
+            SCC_RegNumA = 0;
+         }
+      }
 	}
 }
 
