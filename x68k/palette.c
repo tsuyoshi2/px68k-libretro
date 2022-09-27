@@ -11,7 +11,7 @@
 #include	"m68000.h"
 #include	"palette.h"
 
-uint8_t	Pal_Regs[1024];
+uint8_t		Pal_Regs[1024];
 uint16_t	TextPal[256];
 uint16_t	GrphPal[256];
 uint16_t	Pal16[65536];

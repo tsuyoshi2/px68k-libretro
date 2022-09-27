@@ -7,6 +7,7 @@
 #include	"winx68k.h"
 #include	"tvram.h"
 #include	"gvram.h"
+#include "palette.h"
 #include	"bg.h"
 #include	"m68000.h"
 #include	"crtc.h"
@@ -62,50 +63,54 @@ void CRTC_RasterCopy(void)
 	TVRAM_RCUpdate();
 }
 
+/*
+ * $e82000 256.w -- Graphics Palette
+ * $e82200 256.w -- Text Palette, Sprite + BG Palette
+ * $e82400 1.w R0 screen mode
+ * $e82500 1.w R1 priority control
+ * $e82600 1.w R2 ON/OFF control/special priority
+ */
+
 uint8_t FASTCALL VCtrl_Read(uint32_t adr)
 {
-   switch(adr&0x701)
-   {
-      case 0x400:
-      case 0x401:
-         return VCReg0[adr&1];
-      case 0x500:
-      case 0x501:
-         return VCReg1[adr&1];
-      case 0x600:
-      case 0x601:
-         return VCReg2[adr&1];
-   }
+   if (adr < 0x00e82400)
+      return Pal_Read(adr);
+   if (adr < 0x00e82500)
+      return VCReg0[adr&1];
+   if (adr < 0x00e82600)
+      return VCReg1[adr&1];
+   if (adr < 0x00e82700)
+      return VCReg2[adr&1];
    return 0xff;
 }
 
 void FASTCALL VCtrl_Write(uint32_t adr, uint8_t data)
 {
-   switch(adr&0x701)
+   if (adr < 0x00e82400)
+      Pal_Write(adr, data);
+   else if (adr < 0x00e82500)
    {
-      case 0x401:
-         if (VCReg0[adr&1] != data)
-         {
-            VCReg0[adr&1] = data;
-            TVRAM_SetAllDirty();
-         }
-         break;
-      case 0x500:
-      case 0x501:
-         if (VCReg1[adr&1] != data)
-         {
-            VCReg1[adr&1] = data;
-            TVRAM_SetAllDirty();
-         }
-         break;
-      case 0x600:
-      case 0x601:
-         if (VCReg2[adr&1] != data)
-         {
-            VCReg2[adr&1] = data;
-            TVRAM_SetAllDirty();
-         }
-         break;
+      if (VCReg0[adr&1] != data)
+      {
+         VCReg0[adr&1] = data;
+         TVRAM_SetAllDirty();
+      }
+   }
+   else if (adr < 0x00e82600)
+   {
+      if (VCReg1[adr&1] != data)
+      {
+         VCReg1[adr&1] = data;
+         TVRAM_SetAllDirty();
+      }
+   }
+   else if (adr < 0x00e82700)
+   {
+      if (VCReg2[adr&1] != data)
+      {
+         VCReg2[adr&1] = data;
+         TVRAM_SetAllDirty();
+      }
    }
 }
 

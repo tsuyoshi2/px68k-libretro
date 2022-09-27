@@ -15,7 +15,6 @@
 #include "mfp.h"
 #include "midi.h"
 #include "ioc.h"
-#include "palette.h"
 #include "pia.h"
 #include "rtc.h"
 #include "sasi.h"
@@ -37,9 +36,7 @@ uint32_t BusErrHandling   = 0;
 static uint32_t BusErrAdr = 0;
 
 /* forward declarations */
-static void wm_e82(uint32_t addr, uint8_t val);
 static void wm_opm(uint32_t addr, uint8_t val);
-static uint8_t rm_e82(uint32_t addr);
 static void wm_buserr(uint32_t addr, uint8_t val);
 static uint8_t rm_opm(uint32_t addr);
 static uint8_t rm_ipl(uint32_t addr);
@@ -57,7 +54,7 @@ uint8_t (*MemReadTable[])(uint32_t) = {
 	TVRAM_Read, TVRAM_Read, TVRAM_Read, TVRAM_Read, TVRAM_Read, TVRAM_Read, TVRAM_Read, TVRAM_Read,
 	TVRAM_Read, TVRAM_Read, TVRAM_Read, TVRAM_Read, TVRAM_Read, TVRAM_Read, TVRAM_Read, TVRAM_Read,
 	TVRAM_Read, TVRAM_Read, TVRAM_Read, TVRAM_Read, TVRAM_Read, TVRAM_Read, TVRAM_Read, TVRAM_Read,
-	CRTC_Read, rm_e82, DMA_Read, rm_nop, MFP_Read, RTC_Read, rm_nop, SysPort_Read,
+	CRTC_Read, VCtrl_Read, DMA_Read, rm_nop, MFP_Read, RTC_Read, rm_nop, SysPort_Read,
 	rm_opm, ADPCM_Read, FDC_Read, SASI_Read, SCC_Read, PIA_Read, IOC_Read, rm_nop,
 	SCSI_Read, rm_buserr, rm_buserr, rm_buserr, rm_buserr, rm_buserr, rm_buserr, MIDI_Read,
 	BG_Read, BG_Read, BG_Read, BG_Read, BG_Read, BG_Read, BG_Read, BG_Read,
@@ -97,7 +94,7 @@ void (*MemWriteTable[])(uint32_t, uint8_t) = {
 	TVRAM_Write, TVRAM_Write, TVRAM_Write, TVRAM_Write, TVRAM_Write, TVRAM_Write, TVRAM_Write, TVRAM_Write,
 	TVRAM_Write, TVRAM_Write, TVRAM_Write, TVRAM_Write, TVRAM_Write, TVRAM_Write, TVRAM_Write, TVRAM_Write,
 	TVRAM_Write, TVRAM_Write, TVRAM_Write, TVRAM_Write, TVRAM_Write, TVRAM_Write, TVRAM_Write, TVRAM_Write,
-	CRTC_Write, wm_e82, DMA_Write, wm_nop, MFP_Write, RTC_Write, wm_nop, SysPort_Write,
+	CRTC_Write, VCtrl_Write, DMA_Write, wm_nop, MFP_Write, RTC_Write, wm_nop, SysPort_Write,
 	wm_opm, ADPCM_Write, FDC_Write, SASI_Write, SCC_Write, PIA_Write, IOC_Write, wm_nop,
 	SCSI_Write, wm_buserr, wm_buserr, wm_buserr, wm_buserr, wm_buserr, wm_buserr, MIDI_Write,
 	BG_Write, BG_Write, BG_Write, BG_Write, BG_Write, BG_Write, BG_Write, BG_Write,
@@ -162,14 +159,6 @@ static void wm_opm(uint32_t addr, uint8_t val)
 		OPM_Write(1, val);
 }
 
-static void wm_e82(uint32_t addr, uint8_t val)
-{
-	if (addr < 0x00e82400)
-		Pal_Write(addr, val);
-	else if (addr < 0x00e82700)
-		VCtrl_Write(addr, val);
-}
-
 static uint8_t rm_main(uint32_t addr)
 {
 	addr &= 0x00ffffff;
@@ -194,15 +183,6 @@ static uint8_t rm_opm(uint32_t addr)
 {
 	if ((addr & 3) == 3)
 		return OPM_Read();
-	return 0;
-}
-
-static uint8_t rm_e82(uint32_t addr)
-{
-	if (addr < 0x00e82400)
-		return Pal_Read(addr);
-	else if (addr < 0x00e83000)
-		return VCtrl_Read(addr);
 	return 0;
 }
 
