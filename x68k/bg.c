@@ -325,7 +325,7 @@ static INLINE void Sprite_DrawLineMcr(int pri)
 
 static void bg_drawline_loopx8(uint16_t BGTOP, uint32_t BGScrollX, uint32_t BGScrollY, long adjust, int ng)
 {
-       unsigned char dat, bl;
+       uint8_t dat, bl;
        int i, j, d;
        uint16_t si;
        uint8_t *esi;
@@ -364,7 +364,7 @@ static void bg_drawline_loopx8(uint16_t BGTOP, uint32_t BGScrollX, uint32_t BGSc
 static void bg_drawline_loopx16(uint16_t BGTOP, uint32_t BGScrollX, uint32_t BGScrollY, long adjust, int ng)
 {
        uint16_t si;
-       unsigned char dat, bl;
+       uint8_t dat, bl;
        int i, j, d;
        uint8_t *esi;
        uint32_t ebp = ((BGScrollY + VLINEBG - BG_VLINE) & 15) << 4;

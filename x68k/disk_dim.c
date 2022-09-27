@@ -32,7 +32,7 @@ static const int SctLength[10] = {
 static char           DIMFile[4][MAX_PATH];
 static int            DIMCur[4] = {0, 0, 0, 0};
 static int            DIMTrk[4] = {0, 0, 0, 0};
-static unsigned char* DIMImg[4] = {0, 0, 0, 0};
+static uint8_t       *DIMImg[4] = {0, 0, 0, 0};
 
 void DIM_Init(void)
 {
@@ -58,12 +58,12 @@ int DIM_SetFD(int drv, char* filename)
 	void *fp;
 	DIM_HEADER* dh;
 	unsigned int i, len;
-	unsigned char* p;
+	uint8_t * p;
 
 	strncpy(DIMFile[drv], filename, MAX_PATH);
 	DIMFile[drv][MAX_PATH-1] = 0;
 
-	DIMImg[drv] = (unsigned char*)malloc(1024*9*170+sizeof(DIM_HEADER));		/* Maximum size */
+	DIMImg[drv] = (uint8_t*)malloc(1024*9*170+sizeof(DIM_HEADER));		/* Maximum size */
 	if ( !DIMImg[drv] ) return 0;
 	memset(DIMImg[drv], 0xe5, 1024*9*170+sizeof(DIM_HEADER));
 	if (!(fp = file_open(DIMFile[drv])))
@@ -102,9 +102,10 @@ int DIM_Eject(int drv)
 	void *fp;
 	DIM_HEADER* dh;
 	unsigned int i, len;
-	unsigned char* p;
+	uint8_t* p;
 
-	if ( !DIMImg[drv] ) {
+	if ( !DIMImg[drv] )
+   {
 		memset(DIMFile[drv], 0, MAX_PATH);
 		return 0;
 	}
@@ -282,13 +283,13 @@ int DIM_ReadID(int drv, FDCID* id)
 	return 1;
 }
 
-int DIM_WriteID(int drv, int trk, unsigned char* buf, int num)
+int DIM_WriteID(int drv, int trk, uint8_t *buf, int num)
 {
 	return 0;
 }
 
 
-int DIM_Read(int drv, FDCID* id, unsigned char* buf)
+int DIM_Read(int drv, FDCID* id, uint8_t *buf)
 {
 	int pos;
 	if ( (drv<0)||(drv>3) ) return 0;
@@ -303,7 +304,7 @@ int DIM_Read(int drv, FDCID* id, unsigned char* buf)
 }
 
 
-int DIM_ReadDiag(int drv, FDCID* id, FDCID* retid, unsigned char* buf)
+int DIM_ReadDiag(int drv, FDCID* id, FDCID* retid, uint8_t* buf)
 {
 	int pos;
 	if ( (drv<0)||(drv>3) ) return 0;
@@ -318,7 +319,7 @@ int DIM_ReadDiag(int drv, FDCID* id, FDCID* retid, unsigned char* buf)
 }
 
 
-int DIM_Write(int drv, FDCID* id, unsigned char* buf, int del)
+int DIM_Write(int drv, FDCID* id, uint8_t* buf, int del)
 {
 	int pos;
 	if ( (drv<0)||(drv>3) ) return 0;
