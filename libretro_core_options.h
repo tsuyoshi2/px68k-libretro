@@ -76,8 +76,6 @@ struct retro_core_option_definition option_defs_us[] = {
          { "33Mhz (OC)",  NULL },
          { "66Mhz (OC)",  NULL },
          { "100Mhz (OC)", NULL },
-         { "150Mhz (OC)", NULL },
-         { "200Mhz (OC)", NULL },
          { NULL,          NULL },
       },
       "10Mhz"
