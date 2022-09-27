@@ -24,14 +24,6 @@
 #include <stdio.h>
 #include <string.h>
 
-#ifndef ALIGNED
-#ifdef _MSC_VER
-#define ALIGNED(x) __declspec(align(x))
-#else
-#define ALIGNED(x) __attribute__((aligned(x)))
-#endif
-#endif
-
 #ifndef FASTCALL
 #ifdef __MINGW32__
 #define FASTCALL __attribute__((fastcall))
@@ -51,16 +43,5 @@
 #endif
 
 #include <stdint.h>
-
-/* Minimum/maximum values */
-
-#undef MIN
-#undef MAX
-#define MIN(a,b)  ((a) < (b) ? (a) : (b))
-#define MAX(a,b)  ((a) > (b) ? (a) : (b))
-
-#ifdef _MSC_VER
-#define snprintf sprintf_s
-#endif
 
 #endif

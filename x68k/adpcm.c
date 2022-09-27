@@ -102,69 +102,130 @@ void FASTCALL ADPCM_PreUpdate(uint32_t clock)
 void ADPCM_Update(int16_t *buffer, size_t length, uint8_t *pbsp, uint8_t *pbep)
 {
 	int outs;
-	signed int outl, outr;
+	int32_t outl, outr;
 
 	if ( length<=0 ) return;
 
-	while ( length ) {
-		int tmpl, tmpr;
-		if (buffer >= (int16_t *)pbep)
-			buffer = (int16_t*)pbsp;
+   if ( Config.Sound_LPF )
+   {
+      while ( length )
+      {
+         int tmpl, tmpr;
+         if (buffer >= (int16_t *)pbep)
+            buffer = (int16_t*)pbsp;
 
-		if ( (ADPCM_WrPtr==ADPCM_RdPtr)&&(!(DMA[3].CCR&0x40)) ) DMA_Exec(3);
-		if ( ADPCM_WrPtr!=ADPCM_RdPtr ) {
-			OldR = outr = ADPCM_BufL[ADPCM_RdPtr];
-			OldL = outl = ADPCM_BufR[ADPCM_RdPtr];
-			ADPCM_RdPtr++;
-			if ( ADPCM_RdPtr>=ADPCM_BufSize ) ADPCM_RdPtr = 0;
-		} else {
-			outr = OldR;
-			outl = OldL;
-		}
+         if ( (ADPCM_WrPtr==ADPCM_RdPtr)&&(!(DMA[3].CCR&0x40)) )
+            DMA_Exec(3);
+         if ( ADPCM_WrPtr!=ADPCM_RdPtr )
+         {
+            OldR = outr = ADPCM_BufL[ADPCM_RdPtr];
+            OldL = outl = ADPCM_BufR[ADPCM_RdPtr];
+            ADPCM_RdPtr++;
+            if ( ADPCM_RdPtr>=ADPCM_BufSize )
+               ADPCM_RdPtr = 0;
+         }
+         else
+         {
+            outr = OldR;
+            outl = OldL;
+         }
 
-		if ( Config.Sound_LPF ) {
-			outr = (int)(outr*40*ADPCM_VolumeShift);
-			outs = (outr + Outs[3]*2 + Outs[2] + Outs[1]*157 - Outs[0]*61) >> 8;
-			Outs[2] = Outs[3];
-			Outs[3] = outr;
-			Outs[0] = Outs[1];
-			Outs[1] = outs;
-		} else {
-			outs = (int)(outr*ADPCM_VolumeShift);
-		}
+         outr       = (int)(outr*40*ADPCM_VolumeShift);
+         outs       = (outr + Outs[3]*2 + Outs[2] + Outs[1]*157 - Outs[0]*61) >> 8;
+         Outs[2]    = Outs[3];
+         Outs[3]    = outr;
+         Outs[0]    = Outs[1];
+         Outs[1]    = outs;
 
-		OutsIpR[0] = OutsIpR[1];
-		OutsIpR[1] = OutsIpR[2];
-		OutsIpR[2] = OutsIpR[3];
-		OutsIpR[3] = outs;
+         OutsIpR[0] = OutsIpR[1];
+         OutsIpR[1] = OutsIpR[2];
+         OutsIpR[2] = OutsIpR[3];
+         OutsIpR[3] = outs;
 
-		if ( Config.Sound_LPF ) {
-			outl = (int)(outl*40*ADPCM_VolumeShift);
-			outs = (outl + Outs[7]*2 + Outs[6] + Outs[5]*157 - Outs[4]*61) >> 8;
-			Outs[6] = Outs[7];
-			Outs[7] = outl;
-			Outs[4] = Outs[5];
-			Outs[5] = outs;
-		} else {
-			outs = (int)(outl*ADPCM_VolumeShift);
-		}
+         outl       = (int)(outl*40*ADPCM_VolumeShift);
+         outs       = (outl + Outs[7]*2 + Outs[6] + Outs[5]*157 - Outs[4]*61) >> 8;
+         Outs[6]    = Outs[7];
+         Outs[7]    = outl;
+         Outs[4]    = Outs[5];
+         Outs[5]    = outs;
 
-		OutsIpL[0] = OutsIpL[1];
-		OutsIpL[1] = OutsIpL[2];
-		OutsIpL[2] = OutsIpL[3];
-		OutsIpL[3] = outs;
+         OutsIpL[0] = OutsIpL[1];
+         OutsIpL[1] = OutsIpL[2];
+         OutsIpL[2] = OutsIpL[3];
+         OutsIpL[3] = outs;
 
-		tmpr = INTERPOLATE(OutsIpR, 0);
-		if ( tmpr>32767 ) tmpr = 32767; else if ( tmpr<(-32768) ) tmpr = -32768;
-		*(buffer++) = (int16_t)tmpr;
-		tmpl = INTERPOLATE(OutsIpL, 0);
-		if ( tmpl>32767 ) tmpl = 32767; else if ( tmpl<(-32768) ) tmpl = -32768;
-		*(buffer++) = (int16_t)tmpl;
-		length--;
-	}
+         tmpr = INTERPOLATE(OutsIpR, 0);
+         if ( tmpr>32767 )
+            tmpr = 32767;
+         else if ( tmpr<(-32768) )
+            tmpr = -32768;
+         *(buffer++) = (int16_t)tmpr;
+         tmpl = INTERPOLATE(OutsIpL, 0);
+         if ( tmpl>32767 )
+            tmpl = 32767;
+         else if ( tmpl<(-32768) )
+            tmpl = -32768;
+         *(buffer++) = (int16_t)tmpl;
+         length--;
+      }
+   }
+   else
+   {
+      while ( length )
+      {
+         int tmpl, tmpr;
+         if (buffer >= (int16_t *)pbep)
+            buffer = (int16_t*)pbsp;
+
+         if ( (ADPCM_WrPtr==ADPCM_RdPtr)&&(!(DMA[3].CCR&0x40)) )
+            DMA_Exec(3);
+         if ( ADPCM_WrPtr!=ADPCM_RdPtr )
+         {
+            OldR = outr = ADPCM_BufL[ADPCM_RdPtr];
+            OldL = outl = ADPCM_BufR[ADPCM_RdPtr];
+            ADPCM_RdPtr++;
+            if ( ADPCM_RdPtr>=ADPCM_BufSize )
+               ADPCM_RdPtr = 0;
+         }
+         else
+         {
+            outr = OldR;
+            outl = OldL;
+         }
+
+         outs       = (int)(outr*ADPCM_VolumeShift);
+
+         OutsIpR[0] = OutsIpR[1];
+         OutsIpR[1] = OutsIpR[2];
+         OutsIpR[2] = OutsIpR[3];
+         OutsIpR[3] = outs;
+
+         outs       = (int)(outl*ADPCM_VolumeShift);
+
+         OutsIpL[0] = OutsIpL[1];
+         OutsIpL[1] = OutsIpL[2];
+         OutsIpL[2] = OutsIpL[3];
+         OutsIpL[3] = outs;
+
+         tmpr = INTERPOLATE(OutsIpR, 0);
+         if ( tmpr>32767 )
+            tmpr = 32767;
+         else if ( tmpr<(-32768) )
+            tmpr = -32768;
+         *(buffer++) = (int16_t)tmpr;
+         tmpl = INTERPOLATE(OutsIpL, 0);
+         if ( tmpl>32767 )
+            tmpl = 32767;
+         else if ( tmpl<(-32768) )
+            tmpl = -32768;
+         *(buffer++) = (int16_t)tmpl;
+         length--;
+      }
+   }
 
 	ADPCM_DifBuf = ADPCM_WrPtr-ADPCM_RdPtr;
-	if ( ADPCM_DifBuf<0 ) ADPCM_DifBuf += ADPCM_BufSize;
+	if ( ADPCM_DifBuf<0 )
+      ADPCM_DifBuf += ADPCM_BufSize;
 }
 
 /*
