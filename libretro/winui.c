@@ -221,33 +221,33 @@ extern char base_dir[MAX_PATH];
 
 static void menu_create_flist(int v)
 {
-	int a, b;
-	int drv;
 	DIR *dp;
+	int i, len;
+	int a, b;
 	struct dirent *dent;
 	struct stat buf;
-	int i, len;
 	char *n, ext[4], *p;
 	char ent_name[MAX_PATH];
 	/* file extension of FD image */
 	char support[] = "D8888DHDMDUP2HDDIMXDFIMG";
-
-	drv = WinUI_get_drv_num(mkey_y);
+	int drv        = WinUI_get_drv_num(mkey_y);
 
 	if (drv < 0)
 		return;
 
 	/* set current directory when FDD is ejected */
-	if (v == 1) {
-		if (drv < 2) {
-			FDD_EjectFD(drv);
-			Config.FDDImage[drv][0] = '\0';
-		}
-		else
-			Config.HDImage[drv - 2][0] = '\0';
-		strcpy(mfl.dir[drv], cur_dir_str);
-		return;
-	}
+	if (v == 1)
+   {
+      if (drv < 2)
+      {
+         FDD_EjectFD(drv);
+         Config.FDDImage[drv][0] = '\0';
+      }
+      else
+         Config.HDImage[drv - 2][0] = '\0';
+      strcpy(mfl.dir[drv], cur_dir_str);
+      return;
+   }
 
 	if (drv >= 2)
 		strcpy(support, "HDF");
@@ -268,48 +268,55 @@ static void menu_create_flist(int v)
 	}
 
 	/* xxx You can get only MFL_MAX files. */
-	for (i = 0 ; i < MFL_MAX; i++) {
-		dent = readdir(dp);
-		if (dent == NULL) {
-			break;
-		}
-		n = dent->d_name;
-		strcpy(ent_name, mfl.dir[drv]);
-		strcat(ent_name, n);
-		stat(ent_name, &buf);
+	for (i = 0 ; i < MFL_MAX; i++)
+   {
+      dent = readdir(dp);
+      if (!dent)
+         break;
+      n = dent->d_name;
+      strcpy(ent_name, mfl.dir[drv]);
+      strcat(ent_name, n);
+      stat(ent_name, &buf);
 
-		if (!S_ISDIR(buf.st_mode)) {
-			/* Check extension if this is file. */
-			len = strlen(n);
-			if (len < 4 || *(n + len - 4) != '.') {
-				i--;
-				continue;
-			}
-			strcpy(ext, n + len - 3);
-			upper(ext);
-			p = strstr(support, ext);
-			if (p == NULL || (p - support) % 3 != 0) {
-				i--;
-				continue;
-			}
-		} else {
-			if (!strcmp(n, ".")) {
-				i--;
-				continue;
-			}
+      if (!S_ISDIR(buf.st_mode))
+      {
+         /* Check extension if this is file. */
+         len = strlen(n);
+         if (len < 4 || *(n + len - 4) != '.')
+         {
+            i--;
+            continue;
+         }
+         strcpy(ext, n + len - 3);
+         upper(ext);
+         p = strstr(support, ext);
+         if (!p || (p - support) % 3 != 0)
+         {
+            i--;
+            continue;
+         }
+      }
+      else
+      {
+         if (!strcmp(n, "."))
+         {
+            i--;
+            continue;
+         }
 
-			/* You can't go up over current directory. */
-			if (!strcmp(n, "..") &&
-			    !strcmp(mfl.dir[drv], cur_dir_str)) {
-				i--;
-				continue;
-			}
-		}
+         /* You can't go up over current directory. */
+         if (     !strcmp(n, "..")
+               && !strcmp(mfl.dir[drv], cur_dir_str))
+         {
+            i--;
+            continue;
+         }
+      }
 
-		strcpy(mfl.name[i], n);
-		/* set 1 if this is directory */
-		mfl.type[i] = S_ISDIR(buf.st_mode)? 1 : 0;
-	}
+      strcpy(mfl.name[i], n);
+      /* set 1 if this is directory */
+      mfl.type[i] = S_ISDIR(buf.st_mode)? 1 : 0;
+   }
 
 	closedir(dp);
 
@@ -320,14 +327,17 @@ static void menu_create_flist(int v)
 	/* Sorting mfl!
 	 * Folder first, than files
 	 * buble sort glory */
-	for (a=0; a<i-1; a++) {
-		for (b=a+1; b<i; b++) {
-			if (mfl.type[a]<mfl.type[b])
-				switch_mfl(a, b);
-			if ((mfl.type[a]==mfl.type[b]) && (strcasecmp(mfl.name[a], mfl.name[b])>0))
-				switch_mfl(a, b);
-		}
-	}
+	for (a=0; a<i-1; a++)
+   {
+      for (b=a+1; b<i; b++)
+      {
+         if (mfl.type[a]<mfl.type[b])
+            switch_mfl(a, b);
+         if (     (mfl.type[a] == mfl.type[b]) 
+               && (strcasecmp(mfl.name[a], mfl.name[b]) > 0))
+            switch_mfl(a, b);
+      }
+   }
 }
 
 /* ex. ./hoge/.. -> ./
@@ -336,28 +346,29 @@ static void shortcut_dir(int drv)
 {
 	int i, found = 0;
 	/* len is larger than 2 */
-	int len = strlen(mfl.dir[drv]);
-	char *p = mfl.dir[drv] + len - 2;
-	for (i = len - 2; i >= 0; i--) {
-		if (*p == slash/*'/'*/) {
-			found = 1;
-			break;
-		}
-		p--;
-	}
+	size_t len = strlen(mfl.dir[drv]);
+	char *p    = mfl.dir[drv] + len - 2;
+	for (i = len - 2; i >= 0; i--)
+   {
+      if (*p == slash/*'/'*/)
+      {
+         found = 1;
+         break;
+      }
+      p--;
+   }
 #ifdef _WIN32
-	if (found && strcmp(p, "\\..\\")) {
+	if (found && strcmp(p, "\\..\\"))
 #else
-	if (found && strcmp(p, "/../")) {
+   if (found && strcmp(p, "/../"))
 #endif
-		*(p + 1) = '\0';
-	} else {
+         *(p + 1) = '\0';
+   else
 #ifdef _WIN32
-		strcat(mfl.dir[drv], "..\\");
+      strcat(mfl.dir[drv], "..\\");
 #else
-		strcat(mfl.dir[drv], "../");
+      strcat(mfl.dir[drv], "../");
 #endif
-	}
 }
 
 int speedup_joy[0xff] = {0};
@@ -427,245 +438,256 @@ int WinUI_Menu(int first)
 		}
 	}
 
-	if (!(joy & JOY_DOWN)) {
-		switch (menu_state) {
-		case ms_key:
-			if (mkey_y < MENU_NUM - 1)
-				mkey_y++;
-			if (mkey_y > mkey_pos + MENU_WINDOW - 1)
-				mkey_pos++;
-			break;
-		case ms_value:
-			if (menu_items[mkey_y][mval_y[mkey_y] + 1][0] != '\0') {
-				mval_y[mkey_y]++;
+	if (!(joy & JOY_DOWN))
+   {
+      switch (menu_state)
+      {
+         case ms_key:
+            if (mkey_y < MENU_NUM - 1)
+               mkey_y++;
+            if (mkey_y > mkey_pos + MENU_WINDOW - 1)
+               mkey_pos++;
+            break;
+         case ms_value:
+            if (menu_items[mkey_y][mval_y[mkey_y] + 1][0] != '\0') {
+               mval_y[mkey_y]++;
 
-				if (menu_func[mkey_y].imm) {
-					menu_func[mkey_y].func(mval_y[mkey_y]);
-				}
+               if (menu_func[mkey_y].imm) {
+                  menu_func[mkey_y].func(mval_y[mkey_y]);
+               }
 
-				menu_redraw = 1;
-			}
-			break;
-		case ms_file:
-			if (mfl.y == 13) {
-				if (mfl.ptr + 14 < mfl.num
-				    && mfl.ptr < MFL_MAX - 13) {
-					mfl.ptr++;
-				}
-			} else if (mfl.y + 1 < mfl.num) {
-				mfl.y++;
-			}
-			mfile_redraw = 1;
-			break;
-		}
-	}
+               menu_redraw = 1;
+            }
+            break;
+         case ms_file:
+            if (mfl.y == 13) {
+               if (mfl.ptr + 14 < mfl.num
+                     && mfl.ptr < MFL_MAX - 13) {
+                  mfl.ptr++;
+               }
+            } else if (mfl.y + 1 < mfl.num) {
+               mfl.y++;
+            }
+            mfile_redraw = 1;
+            break;
+      }
+   }
 
-	if (!(joy & JOY_LEFT)) {
-		switch (menu_state) {
-		case ms_key:
-			break;
-		case ms_value:
-			if (mval_y[mkey_y] > 0) {
-				mval_y[mkey_y]-=10;
-				if (mval_y[mkey_y]<0)
-					mval_y[mkey_y] = 0;
+	if (!(joy & JOY_LEFT))
+   {
+      switch (menu_state)
+      {
+         case ms_key:
+            break;
+         case ms_value:
+            if (mval_y[mkey_y] > 0)
+            {
+               mval_y[mkey_y]-=10;
+               if (mval_y[mkey_y]<0)
+                  mval_y[mkey_y] = 0;
 
-				/* do something immediately */
-				if (menu_func[mkey_y].imm)
-					menu_func[mkey_y].func(mval_y[mkey_y]);
+               /* do something immediately */
+               if (menu_func[mkey_y].imm)
+                  menu_func[mkey_y].func(mval_y[mkey_y]);
 
-				menu_redraw = 1;
-			}
-			break;
-		case ms_file:
-			if (mfl.y == 0) {
-				if (mfl.ptr > 0) {
-					mfl.ptr-=10;
-					if (mfl.ptr < 0 )
-						mfl.ptr = 0;
-				}
-			} else {
-				mfl.y-=10;
-				if (mfl.y<0) {
-					if (mfl.ptr > 0)
-						mfl.ptr += mfl.y;
-					if (mfl.ptr < 0)
-						mfl.ptr = 0;
-					mfl.y = 0;
-				}
-			}
-			mfile_redraw = 1;
-			break;
-		}
-	}
+               menu_redraw = 1;
+            }
+            break;
+         case ms_file:
+            if (mfl.y == 0) {
+               if (mfl.ptr > 0) {
+                  mfl.ptr-=10;
+                  if (mfl.ptr < 0 )
+                     mfl.ptr = 0;
+               }
+            } else {
+               mfl.y-=10;
+               if (mfl.y<0) {
+                  if (mfl.ptr > 0)
+                     mfl.ptr += mfl.y;
+                  if (mfl.ptr < 0)
+                     mfl.ptr = 0;
+                  mfl.y = 0;
+               }
+            }
+            mfile_redraw = 1;
+            break;
+      }
+   }
 
-	if (!(joy & JOY_RIGHT)) {
-		switch (menu_state) {
-		case ms_key:
-			break;
-		case ms_value:
-			for (ii = 0; ii<10; ii++)
-			{
-				if (menu_items[mkey_y][mval_y[mkey_y] + 1][0] != '\0') {
-					mval_y[mkey_y]++;
+	if (!(joy & JOY_RIGHT))
+   {
+      switch (menu_state)
+      {
+         case ms_key:
+            break;
+         case ms_value:
+            for (ii = 0; ii<10; ii++)
+            {
+               if (menu_items[mkey_y][mval_y[mkey_y] + 1][0] != '\0') {
+                  mval_y[mkey_y]++;
 
-					if (menu_func[mkey_y].imm)
-						menu_func[mkey_y].func(mval_y[mkey_y]);
+                  if (menu_func[mkey_y].imm)
+                     menu_func[mkey_y].func(mval_y[mkey_y]);
 
-					menu_redraw = 1;
-				}
-			}
-			break;
-		case ms_file:
-			for (ii=0; ii<10; ii++) {
-				if (mfl.y == 13) {
-					if (mfl.ptr + 14 < mfl.num
-					    && mfl.ptr < MFL_MAX - 13)
-						mfl.ptr++;
-				} else if (mfl.y + 1 < mfl.num)
-					mfl.y++;
-				mfile_redraw = 1;
-			}
-			break;
-		}
-	}
+                  menu_redraw = 1;
+               }
+            }
+            break;
+         case ms_file:
+            for (ii=0; ii<10; ii++) {
+               if (mfl.y == 13) {
+                  if (mfl.ptr + 14 < mfl.num
+                        && mfl.ptr < MFL_MAX - 13)
+                     mfl.ptr++;
+               } else if (mfl.y + 1 < mfl.num)
+                  mfl.y++;
+               mfile_redraw = 1;
+            }
+            break;
+      }
+   }
 
-	if (!(joy & JOY_TRG1)) {
-		int drv, y;
-		switch (menu_state) {
-		case ms_key:
-			menu_state = ms_value;
-			menu_redraw = 1;
-			break;
-		case ms_value:
-			menu_func[mkey_y].func(mval_y[mkey_y]);
+	if (!(joy & JOY_TRG1))
+   {
+      int drv, y;
+      switch (menu_state)
+      {
+         case ms_key:
+            menu_state = ms_value;
+            menu_redraw = 1;
+            break;
+         case ms_value:
+            menu_func[mkey_y].func(mval_y[mkey_y]);
 
-			if (menu_state == ms_hwjoy_set) {
-				menu_redraw = 1;
-				break;
-			}
+            if (menu_state == ms_hwjoy_set) {
+               menu_redraw = 1;
+               break;
+            }
 
-			/* get back key_mode if value is set.
-			 * go file_mode if value is filename. */
-			menu_state = ms_key;
-			menu_redraw = 1;
+            /* get back key_mode if value is set.
+             * go file_mode if value is filename. */
+            menu_state = ms_key;
+            menu_redraw = 1;
 
-			drv = WinUI_get_drv_num(mkey_y);
-			if (drv >= 0) {
-				if (mval_y[mkey_y] == 0) {
-					/* go file_mode */
-					menu_state = ms_file;
-					menu_redraw = 0; /* reset */
-					mfile_redraw = 1;
-				}
-				else 
-					mval_y[mkey_y] = 0;
-			} else if (!strcmp("SYSTEM", menu_item_key[mkey_y])) {
-				if (mval_y[mkey_y] == 2)
-					return WUM_EMU_QUIT;
-				return WUM_MENU_END;
-			}
-			break;
-		case ms_file:
-			drv = WinUI_get_drv_num(mkey_y);
-			if (drv < 0)
-				break;
-			y = mfl.ptr + mfl.y;
-			/* file loaded */
-			if (mfl.type[y]) {
-				/* directory operation */
-				if (!strcmp(mfl.name[y], "..")) {
-					shortcut_dir(drv);
-					mfl.stack[0][mfl.stackptr] = mfl.stack[1][mfl.stackptr] = 0;
-					mfl.stackptr = (mfl.stackptr - 1) % 256;
-					mfl.ptr = mfl.stack[0][mfl.stackptr];
-					mfl.y = mfl.stack[1][mfl.stackptr];
-				} else {
-					strcat(mfl.dir[drv], mfl.name[y]);
+            drv = WinUI_get_drv_num(mkey_y);
+            if (drv >= 0) {
+               if (mval_y[mkey_y] == 0) {
+                  /* go file_mode */
+                  menu_state = ms_file;
+                  menu_redraw = 0; /* reset */
+                  mfile_redraw = 1;
+               }
+               else 
+                  mval_y[mkey_y] = 0;
+            } else if (!strcmp("SYSTEM", menu_item_key[mkey_y])) {
+               if (mval_y[mkey_y] == 2)
+                  return WUM_EMU_QUIT;
+               return WUM_MENU_END;
+            }
+            break;
+         case ms_file:
+            drv = WinUI_get_drv_num(mkey_y);
+            if (drv < 0)
+               break;
+            y = mfl.ptr + mfl.y;
+            /* file loaded */
+            if (mfl.type[y]) {
+               /* directory operation */
+               if (!strcmp(mfl.name[y], "..")) {
+                  shortcut_dir(drv);
+                  mfl.stack[0][mfl.stackptr] = mfl.stack[1][mfl.stackptr] = 0;
+                  mfl.stackptr = (mfl.stackptr - 1) % 256;
+                  mfl.ptr = mfl.stack[0][mfl.stackptr];
+                  mfl.y = mfl.stack[1][mfl.stackptr];
+               } else {
+                  strcat(mfl.dir[drv], mfl.name[y]);
 #ifdef _WIN32
-					strcat(mfl.dir[drv], "\\");
+                  strcat(mfl.dir[drv], "\\");
 #else
-					strcat(mfl.dir[drv], "/");
+                  strcat(mfl.dir[drv], "/");
 #endif
-					mfl.stack[0][mfl.stackptr] = mfl.ptr;
-					mfl.stack[1][mfl.stackptr] = mfl.y;
-					mfl.stackptr = (mfl.stackptr + 1) % 256;
-					mfl.ptr = 0;
-					mfl.y = 0;
-				}
-				menu_func[mkey_y].func(0);
-				mfile_redraw = 1;
-			} else {
-				/* file operation */
-				if (strlen(mfl.name[y]) != 0) {
-					char tmpstr[MAX_PATH];
-					strcpy(tmpstr, mfl.dir[drv]);
-					strcat(tmpstr, mfl.name[y]);
-					if (drv < 2) {
-						FDD_SetFD(drv, tmpstr, 0);
-						strcpy(Config.FDDImage[drv], tmpstr);
-					} else {
-						strcpy(Config.HDImage[drv - 2], tmpstr);
-					}
-				}
-				menu_state = ms_key;
-				menu_redraw = 1;
-			}
-			mfl.ptr = mfl.stack[0][mfl.stackptr];
-			mfl.y = mfl.stack[1][mfl.stackptr];
-			break;
-		case ms_hwjoy_set:
-			/* Go back keymode
-			 * if TRG1 of v-pad or hw keyboard was pushed. */
-			if (!pad_changed) {
-				menu_state = ms_key;
-				menu_redraw = 1;
-			}
-			break;
-		}
-	}
+                  mfl.stack[0][mfl.stackptr] = mfl.ptr;
+                  mfl.stack[1][mfl.stackptr] = mfl.y;
+                  mfl.stackptr = (mfl.stackptr + 1) % 256;
+                  mfl.ptr = 0;
+                  mfl.y = 0;
+               }
+               menu_func[mkey_y].func(0);
+               mfile_redraw = 1;
+            } else {
+               /* file operation */
+               if (strlen(mfl.name[y]) != 0) {
+                  char tmpstr[MAX_PATH];
+                  strcpy(tmpstr, mfl.dir[drv]);
+                  strcat(tmpstr, mfl.name[y]);
+                  if (drv < 2) {
+                     FDD_SetFD(drv, tmpstr, 0);
+                     strcpy(Config.FDDImage[drv], tmpstr);
+                  } else {
+                     strcpy(Config.HDImage[drv - 2], tmpstr);
+                  }
+               }
+               menu_state = ms_key;
+               menu_redraw = 1;
+            }
+            mfl.ptr = mfl.stack[0][mfl.stackptr];
+            mfl.y = mfl.stack[1][mfl.stackptr];
+            break;
+         case ms_hwjoy_set:
+            /* Go back keymode
+             * if TRG1 of v-pad or hw keyboard was pushed. */
+            if (!pad_changed) {
+               menu_state = ms_key;
+               menu_redraw = 1;
+            }
+            break;
+      }
+   }
 
-	if (!(joy & JOY_TRG2)) {
-		switch (menu_state) {
-		case ms_file:
-			menu_state = ms_value;
-			/* reset position of file cursor */
-			mfl.y = 0;
-			mfl.ptr = 0;
-			menu_redraw = 1;
-			break;
-		case ms_value:
-			menu_state = ms_key;
-			menu_redraw = 1;
-			break;
-		case ms_hwjoy_set:
-			/* Go back keymode
-			 * if TRG2 of v-pad or hw keyboard was pushed. */
-			if (!pad_changed) {
-				menu_state = ms_key;
-				menu_redraw = 1;
-			}
-			break;
-		}
-	}
+	if (!(joy & JOY_TRG2))
+   {
+      switch (menu_state)
+      {
+         case ms_file:
+            menu_state = ms_value;
+            /* reset position of file cursor */
+            mfl.y = 0;
+            mfl.ptr = 0;
+            menu_redraw = 1;
+            break;
+         case ms_value:
+            menu_state = ms_key;
+            menu_redraw = 1;
+            break;
+         case ms_hwjoy_set:
+            /* Go back keymode
+             * if TRG2 of v-pad or hw keyboard was pushed. */
+            if (!pad_changed) {
+               menu_state = ms_key;
+               menu_redraw = 1;
+            }
+            break;
+      }
+   }
 
-	if (pad_changed) {
+	if (pad_changed)
 		menu_redraw = 1;
-	}
 
-	if (cursor0 != mkey_y) {
+	if (cursor0 != mkey_y)
 		menu_redraw = 1;
-	}
 
-	if (mfile_redraw) {
-		WinDraw_DrawMenufile(&mfl);
-		mfile_redraw = 0;
-	}
+	if (mfile_redraw)
+   {
+      WinDraw_DrawMenufile(&mfl);
+      mfile_redraw = 0;
+   }
 
-	if (menu_redraw) {
-		WinDraw_ClearMenuBuffer();
-		WinDraw_DrawMenu(menu_state, mkey_pos, mkey_y, mval_y);
-	}
+	if (menu_redraw)
+   {
+      WinDraw_ClearMenuBuffer();
+      WinDraw_DrawMenu(menu_state, mkey_pos, mkey_y, mval_y);
+   }
 
 	return 0;
 }
