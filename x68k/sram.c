@@ -61,7 +61,7 @@ void SRAM_Cleanup(void)
       if (!(fp = file_create_c("sram.dat")))
          return;
 
-   file_write(fp, SRAM, 0x4000);
+   file_lwrite(fp, SRAM, 0x4000);
    file_close(fp);
 }
 

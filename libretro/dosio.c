@@ -78,14 +78,6 @@ size_t file_lwrite(void *handle, void *data, size_t length)
 	return writesize;
 }
 
-size_t file_write(void *handle, void *data, size_t length)
-{
-	size_t writesize;
-	if (write_file(handle, data, length, &writesize) == 0)
-		return 0;
-	return writesize;
-}
-
 void file_setcd(const char *exename)
 {
 	strncpy(curpath, exename, sizeof(curpath) - 1);
