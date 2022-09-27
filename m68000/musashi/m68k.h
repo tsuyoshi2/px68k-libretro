@@ -232,15 +232,6 @@ void m68k_write_memory_32_pd(uint32_t address, uint32_t value);
 void m68k_set_int_ack_callback(int  (*callback)(int int_level));
 
 
-/* Set the callback for a breakpoint acknowledge (68010+).
- * You must enable M68K_EMULATE_BKPT_ACK in m68kconf.h.
- * The CPU will call the callback with whatever was in the data field of the
- * BKPT instruction for 68020+, or 0 for 68010.
- * Default behavior: do nothing.
- */
-void m68k_set_bkpt_ack_callback(void (*callback)(unsigned int data));
-
-
 /* Set the callback for the RESET instruction.
  * You must enable M68K_EMULATE_RESET in m68kconf.h.
  * The CPU calls this callback every time it encounters a RESET instruction.

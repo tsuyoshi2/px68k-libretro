@@ -481,55 +481,12 @@ typedef uint32 uint64;
 	#define m68ki_int_ack(A) M68K_INT_ACK_AUTOVECTOR
 #endif /* M68K_EMULATE_INT_ACK */
 
-#if M68K_EMULATE_BKPT_ACK
-	#if M68K_EMULATE_BKPT_ACK == OPT_SPECIFY_HANDLER
-		#define m68ki_bkpt_ack(A) M68K_BKPT_ACK_CALLBACK(A)
-	#else
-		#define m68ki_bkpt_ack(A) CALLBACK_BKPT_ACK(A)
-	#endif
-#else
-	#define m68ki_bkpt_ack(A)
-#endif /* M68K_EMULATE_BKPT_ACK */
+#define m68ki_bkpt_ack(A)
 
-#if M68K_EMULATE_RESET
-	#if M68K_EMULATE_RESET == OPT_SPECIFY_HANDLER
-		#define m68ki_output_reset() M68K_RESET_CALLBACK()
-	#else
-		#define m68ki_output_reset() CALLBACK_RESET_INSTR()
-	#endif
-#else
-	#define m68ki_output_reset()
-#endif /* M68K_EMULATE_RESET */
-
-#if M68K_CMPILD_HAS_CALLBACK
-	#if M68K_CMPILD_HAS_CALLBACK == OPT_SPECIFY_HANDLER
-		#define m68ki_cmpild_callback(v,r) M68K_CMPILD_CALLBACK(v,r)
-	#else
-		#define m68ki_cmpild_callback(v,r) CALLBACK_CMPILD_INSTR(v,r)
-	#endif
-#else
-	#define m68ki_cmpild_callback(v,r)
-#endif /* M68K_CMPILD_HAS_CALLBACK */
-
-#if M68K_RTE_HAS_CALLBACK
-	#if M68K_RTE_HAS_CALLBACK == OPT_SPECIFY_HANDLER
-		#define m68ki_rte_callback() M68K_RTE_CALLBACK()
-	#else
-		#define m68ki_rte_callback() CALLBACK_RTE_INSTR()
-	#endif
-#else
-	#define m68ki_rte_callback()
-#endif /* M68K_RTE_HAS_CALLBACK */
-
-#if M68K_TAS_HAS_CALLBACK
-	#if M68K_TAS_HAS_CALLBACK == OPT_SPECIFY_HANDLER
-		#define m68ki_tas_callback() M68K_TAS_CALLBACK()
-	#else
-		#define m68ki_tas_callback() CALLBACK_TAS_INSTR()
-	#endif
-#else
-	#define m68ki_tas_callback() 1
-#endif /* M68K_TAS_HAS_CALLBACK */
+#define m68ki_output_reset()
+#define m68ki_cmpild_callback(v,r)
+#define m68ki_rte_callback()
+#define m68ki_tas_callback() 1
 
 #if M68K_ILLG_HAS_CALLBACK
 	#if M68K_ILLG_HAS_CALLBACK == OPT_SPECIFY_HANDLER
@@ -581,23 +538,10 @@ typedef uint32 uint64;
 
 
 /* Enable or disable trace emulation */
-#if M68K_EMULATE_TRACE
-	/* Initiates trace checking before each instruction (t1) */
-	#define m68ki_trace_t1() m68ki_tracing = FLAG_T1
-	/* adds t0 to trace checking if we encounter change of flow */
-	#define m68ki_trace_t0() m68ki_tracing |= FLAG_T0
-	/* Clear all tracing */
-	#define m68ki_clear_trace() m68ki_tracing = 0
-	/* Cause a trace exception if we are tracing */
-	#define m68ki_exception_if_trace() if(m68ki_tracing) m68ki_exception_trace()
-#else
-	#define m68ki_trace_t1()
-	#define m68ki_trace_t0()
-	#define m68ki_clear_trace()
-	#define m68ki_exception_if_trace()
-#endif /* M68K_EMULATE_TRACE */
-
-
+#define m68ki_trace_t1()
+#define m68ki_trace_t0()
+#define m68ki_clear_trace()
+#define m68ki_exception_if_trace()
 
 /* Address error */
 #if M68K_EMULATE_ADDRESS_ERROR

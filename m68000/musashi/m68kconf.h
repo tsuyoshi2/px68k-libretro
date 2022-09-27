@@ -85,43 +85,10 @@ signed int my_irqh_callback(signed int level);
 #define M68K_EMULATE_INT_ACK        OPT_SPECIFY_HANDLER
 #define M68K_INT_ACK_CALLBACK(A)    my_irqh_callback(A)
 
-
-/* If ON, CPU will call the breakpoint acknowledge callback when it encounters
- * a breakpoint instruction and it is running a 68010+.
- */
-#define M68K_EMULATE_BKPT_ACK       OPT_OFF
-#define M68K_BKPT_ACK_CALLBACK()    your_bkpt_ack_handler_function()
-
-
-/* If ON, the CPU will monitor the trace flags and take trace exceptions
- */
-#define M68K_EMULATE_TRACE          OPT_OFF
-
-
 /* If ON, CPU will call the output reset callback when it encounters a reset
  * instruction.
  */
-#define M68K_EMULATE_RESET          OPT_OFF
 #define M68K_RESET_CALLBACK()       your_reset_handler_function()
-
-/* If ON, CPU will call the callback when it encounters a cmpi.l #v, dn
- * instruction.
- */
-#define M68K_CMPILD_HAS_CALLBACK     OPT_OFF
-#define M68K_CMPILD_CALLBACK(v,r)    your_cmpild_handler_function(v,r)
-
-
-/* If ON, CPU will call the callback when it encounters a rte
- * instruction.
- */
-#define M68K_RTE_HAS_CALLBACK       OPT_OFF
-#define M68K_RTE_CALLBACK()         your_rte_handler_function()
-
-/* If ON, CPU will call the callback when it encounters a tas
- * instruction.
- */
-#define M68K_TAS_HAS_CALLBACK       OPT_OFF
-#define M68K_TAS_CALLBACK()         your_tas_handler_function()
 
 /* If ON, CPU will call the callback when it encounters an illegal instruction
  * passing the opcode as argument. If the callback returns 1, then it's considered
