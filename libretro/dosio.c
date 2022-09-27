@@ -78,14 +78,6 @@ size_t file_lwrite(void *handle, void *data, size_t length)
 	return writesize;
 }
 
-size_t file_read(void *handle, void *data, size_t length)
-{
-	size_t readsize;
-	if (read_file(handle, data, length, &readsize) == 0)
-		return 0;
-	return readsize;
-}
-
 size_t file_write(void *handle, void *data, size_t length)
 {
 	size_t writesize;
