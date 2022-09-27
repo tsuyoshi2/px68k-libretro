@@ -90,12 +90,13 @@ void Mouse_SetData(void)
 		if (x > 127) {
 			MouseSt |= 0x10;
 			MouseX = 127;
-		} else if (x < -128) {
+		} else if (x < -128)
+      {
 			MouseSt |= 0x20;
 			MouseX = -128;
-		} else {
-			MouseX = (signed char)x;
 		}
+      else
+			MouseX = (int8_t)x;
 
 		if (y > 127) {
 			MouseSt |= 0x40;
@@ -103,9 +104,9 @@ void Mouse_SetData(void)
 		} else if (y < -128) {
 			MouseSt |= 0x80;
 			MouseY = -128;
-		} else {
-			MouseY = (signed char)y;
 		}
+      else
+			MouseY = (int8_t)y;
 
 	} else {
 		MouseSt = 0;
