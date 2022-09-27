@@ -65,16 +65,14 @@ case 0xCE07:
 /* ANDaD */
 case 0xC000:
 {
-	u32 res;
-	pointer src;
-	src = (u8)CPU->D[(Opcode >> 0) & 7];
-	res = (u8)CPU->D[(Opcode >> 9) & 7];
+	uintptr_t src = (uint8_t)CPU->D[(Opcode >> 0) & 7];
+	uint32_t res  = (uint8_t)CPU->D[(Opcode >> 9) & 7];
 	res &= src;
 	CPU->flag_C = 0;
 	CPU->flag_V = 0;
 	CPU->flag_notZ = res;
 	CPU->flag_N = res;
-	*(BYTE_OFF + (u8*)(&CPU->D[(Opcode >> 9) & 7])) = res;
+	*(BYTE_OFF + (uint8_t*)(&CPU->D[(Opcode >> 9) & 7])) = res;
 }
 RET(4)
 case 0xC210:
@@ -144,19 +142,19 @@ case 0xCE17:
 /* ANDaD */
 case 0xC010:
 {
-	u32 adr;
-	u32 res;
-	pointer src;
+	uint32_t adr;
+	uint32_t res;
+	uintptr_t src;
 	adr = CPU->A[(Opcode >> 0) & 7];
 	PRE_IO
 	READ_BYTE_F(adr, src)
-	res = (u8)CPU->D[(Opcode >> 9) & 7];
+	res = (uint8_t)CPU->D[(Opcode >> 9) & 7];
 	res &= src;
 	CPU->flag_C = 0;
 	CPU->flag_V = 0;
 	CPU->flag_notZ = res;
 	CPU->flag_N = res;
-	*(BYTE_OFF + (u8*)(&CPU->D[(Opcode >> 9) & 7])) = res;
+	*(BYTE_OFF + (uint8_t*)(&CPU->D[(Opcode >> 9) & 7])) = res;
 	POST_IO
 }
 RET(8)
@@ -219,20 +217,20 @@ case 0xCE1E:
 /* ANDaD */
 case 0xC018:
 {
-	u32 adr;
-	u32 res;
-	pointer src;
+	uint32_t adr;
+	uint32_t res;
+	uintptr_t src;
 	adr = CPU->A[(Opcode >> 0) & 7];
 	CPU->A[(Opcode >> 0) & 7] += 1;
 	PRE_IO
 	READ_BYTE_F(adr, src)
-	res = (u8)CPU->D[(Opcode >> 9) & 7];
+	res = (uint8_t)CPU->D[(Opcode >> 9) & 7];
 	res &= src;
 	CPU->flag_C = 0;
 	CPU->flag_V = 0;
 	CPU->flag_notZ = res;
 	CPU->flag_N = res;
-	*(BYTE_OFF + (u8*)(&CPU->D[(Opcode >> 9) & 7])) = res;
+	*(BYTE_OFF + (uint8_t*)(&CPU->D[(Opcode >> 9) & 7])) = res;
 	POST_IO
 }
 RET(8)
@@ -295,20 +293,20 @@ case 0xCE26:
 /* ANDaD */
 case 0xC020:
 {
-	u32 adr;
-	u32 res;
-	pointer src;
+	uint32_t adr;
+	uint32_t res;
+	uintptr_t src;
 	adr = CPU->A[(Opcode >> 0) & 7] - 1;
 	CPU->A[(Opcode >> 0) & 7] = adr;
 	PRE_IO
 	READ_BYTE_F(adr, src)
-	res = (u8)CPU->D[(Opcode >> 9) & 7];
+	res = (uint8_t)CPU->D[(Opcode >> 9) & 7];
 	res &= src;
 	CPU->flag_C = 0;
 	CPU->flag_V = 0;
 	CPU->flag_notZ = res;
 	CPU->flag_N = res;
-	*(BYTE_OFF + (u8*)(&CPU->D[(Opcode >> 9) & 7])) = res;
+	*(BYTE_OFF + (uint8_t*)(&CPU->D[(Opcode >> 9) & 7])) = res;
 	POST_IO
 }
 RET(10)
@@ -379,20 +377,20 @@ case 0xCE2F:
 /* ANDaD */
 case 0xC028:
 {
-	u32 adr;
-	u32 res;
-	pointer src;
-	adr = CPU->A[(Opcode >> 0) & 7] + (s32)(s16)FETCH_WORD;
+	uint32_t adr;
+	uint32_t res;
+	uintptr_t src;
+	adr = CPU->A[(Opcode >> 0) & 7] + (int32_t)(int16_t)FETCH_WORD;
 	PC += 2;
 	PRE_IO
 	READ_BYTE_F(adr, src)
-	res = (u8)CPU->D[(Opcode >> 9) & 7];
+	res = (uint8_t)CPU->D[(Opcode >> 9) & 7];
 	res &= src;
 	CPU->flag_C = 0;
 	CPU->flag_V = 0;
 	CPU->flag_notZ = res;
 	CPU->flag_N = res;
-	*(BYTE_OFF + (u8*)(&CPU->D[(Opcode >> 9) & 7])) = res;
+	*(BYTE_OFF + (uint8_t*)(&CPU->D[(Opcode >> 9) & 7])) = res;
 	POST_IO
 }
 RET(12)
@@ -463,20 +461,20 @@ case 0xCE37:
 /* ANDaD */
 case 0xC030:
 {
-	u32 adr;
-	u32 res;
-	pointer src;
+	uint32_t adr;
+	uint32_t res;
+	uintptr_t src;
 	adr = CPU->A[(Opcode >> 0) & 7];
 	DECODE_EXT_WORD
 	PRE_IO
 	READ_BYTE_F(adr, src)
-	res = (u8)CPU->D[(Opcode >> 9) & 7];
+	res = (uint8_t)CPU->D[(Opcode >> 9) & 7];
 	res &= src;
 	CPU->flag_C = 0;
 	CPU->flag_V = 0;
 	CPU->flag_notZ = res;
 	CPU->flag_N = res;
-	*(BYTE_OFF + (u8*)(&CPU->D[(Opcode >> 9) & 7])) = res;
+	*(BYTE_OFF + (uint8_t*)(&CPU->D[(Opcode >> 9) & 7])) = res;
 	POST_IO
 }
 RET(14)
@@ -491,20 +489,20 @@ case 0xCE38:
 /* ANDaD */
 case 0xC038:
 {
-	u32 adr;
-	u32 res;
-	pointer src;
-	adr = (s32)(s16)FETCH_WORD;
+	uint32_t adr;
+	uint32_t res;
+	uintptr_t src;
+	adr = (int32_t)(int16_t)FETCH_WORD;
 	PC += 2;
 	PRE_IO
 	READ_BYTE_F(adr, src)
-	res = (u8)CPU->D[(Opcode >> 9) & 7];
+	res = (uint8_t)CPU->D[(Opcode >> 9) & 7];
 	res &= src;
 	CPU->flag_C = 0;
 	CPU->flag_V = 0;
 	CPU->flag_notZ = res;
 	CPU->flag_N = res;
-	*(BYTE_OFF + (u8*)(&CPU->D[(Opcode >> 9) & 7])) = res;
+	*(BYTE_OFF + (uint8_t*)(&CPU->D[(Opcode >> 9) & 7])) = res;
 	POST_IO
 }
 RET(12)
@@ -519,20 +517,20 @@ case 0xCE39:
 /* ANDaD */
 case 0xC039:
 {
-	u32 adr;
-	u32 res;
-	pointer src;
-	adr = (s32)FETCH_LONG;
+	uint32_t adr;
+	uint32_t res;
+	uintptr_t src;
+	adr = (int32_t)FETCH_LONG;
 	PC += 4;
 	PRE_IO
 	READ_BYTE_F(adr, src)
-	res = (u8)CPU->D[(Opcode >> 9) & 7];
+	res = (uint8_t)CPU->D[(Opcode >> 9) & 7];
 	res &= src;
 	CPU->flag_C = 0;
 	CPU->flag_V = 0;
 	CPU->flag_notZ = res;
 	CPU->flag_N = res;
-	*(BYTE_OFF + (u8*)(&CPU->D[(Opcode >> 9) & 7])) = res;
+	*(BYTE_OFF + (uint8_t*)(&CPU->D[(Opcode >> 9) & 7])) = res;
 	POST_IO
 }
 RET(16)
@@ -547,20 +545,20 @@ case 0xCE3A:
 /* ANDaD */
 case 0xC03A:
 {
-	u32 adr;
-	u32 res;
-	pointer src;
-	adr = (u32)(PC - CPU->BasePC) + (s32)(s16)FETCH_WORD;
+	uint32_t adr;
+	uint32_t res;
+	uintptr_t src;
+	adr = (uint32_t)(PC - CPU->BasePC) + (int32_t)(int16_t)FETCH_WORD;
 	PC += 2;
 	PRE_IO
 	READ_BYTE_F(adr, src)
-	res = (u8)CPU->D[(Opcode >> 9) & 7];
+	res = (uint8_t)CPU->D[(Opcode >> 9) & 7];
 	res &= src;
 	CPU->flag_C = 0;
 	CPU->flag_V = 0;
 	CPU->flag_notZ = res;
 	CPU->flag_N = res;
-	*(BYTE_OFF + (u8*)(&CPU->D[(Opcode >> 9) & 7])) = res;
+	*(BYTE_OFF + (uint8_t*)(&CPU->D[(Opcode >> 9) & 7])) = res;
 	POST_IO
 }
 RET(12)
@@ -575,20 +573,20 @@ case 0xCE3B:
 /* ANDaD */
 case 0xC03B:
 {
-	u32 adr;
-	u32 res;
-	pointer src;
-	adr = (u32)(PC - CPU->BasePC);
+	uint32_t adr;
+	uint32_t res;
+	uintptr_t src;
+	adr = (uint32_t)(PC - CPU->BasePC);
 	DECODE_EXT_WORD
 	PRE_IO
 	READ_BYTE_F(adr, src)
-	res = (u8)CPU->D[(Opcode >> 9) & 7];
+	res = (uint8_t)CPU->D[(Opcode >> 9) & 7];
 	res &= src;
 	CPU->flag_C = 0;
 	CPU->flag_V = 0;
 	CPU->flag_notZ = res;
 	CPU->flag_N = res;
-	*(BYTE_OFF + (u8*)(&CPU->D[(Opcode >> 9) & 7])) = res;
+	*(BYTE_OFF + (uint8_t*)(&CPU->D[(Opcode >> 9) & 7])) = res;
 	POST_IO
 }
 RET(14)
@@ -603,17 +601,17 @@ case 0xCE3C:
 /* ANDaD */
 case 0xC03C:
 {
-	u32 res;
-	pointer src;
+	uint32_t res;
+	uintptr_t src;
 	src = FETCH_BYTE;
 	PC += 2;
-	res = (u8)CPU->D[(Opcode >> 9) & 7];
+	res = (uint8_t)CPU->D[(Opcode >> 9) & 7];
 	res &= src;
 	CPU->flag_C = 0;
 	CPU->flag_V = 0;
 	CPU->flag_notZ = res;
 	CPU->flag_N = res;
-	*(BYTE_OFF + (u8*)(&CPU->D[(Opcode >> 9) & 7])) = res;
+	*(BYTE_OFF + (uint8_t*)(&CPU->D[(Opcode >> 9) & 7])) = res;
 }
 RET(8)
 case 0xC21F:
@@ -627,20 +625,20 @@ case 0xCE1F:
 /* ANDaD */
 case 0xC01F:
 {
-	u32 adr;
-	u32 res;
-	pointer src;
+	uint32_t adr;
+	uint32_t res;
+	uintptr_t src;
 	adr = CPU->A[7];
 	CPU->A[7] += 2;
 	PRE_IO
 	READ_BYTE_F(adr, src)
-	res = (u8)CPU->D[(Opcode >> 9) & 7];
+	res = (uint8_t)CPU->D[(Opcode >> 9) & 7];
 	res &= src;
 	CPU->flag_C = 0;
 	CPU->flag_V = 0;
 	CPU->flag_notZ = res;
 	CPU->flag_N = res;
-	*(BYTE_OFF + (u8*)(&CPU->D[(Opcode >> 9) & 7])) = res;
+	*(BYTE_OFF + (uint8_t*)(&CPU->D[(Opcode >> 9) & 7])) = res;
 	POST_IO
 }
 RET(8)
@@ -655,20 +653,20 @@ case 0xCE27:
 /* ANDaD */
 case 0xC027:
 {
-	u32 adr;
-	u32 res;
-	pointer src;
+	uint32_t adr;
+	uint32_t res;
+	uintptr_t src;
 	adr = CPU->A[7] - 2;
 	CPU->A[7] = adr;
 	PRE_IO
 	READ_BYTE_F(adr, src)
-	res = (u8)CPU->D[(Opcode >> 9) & 7];
+	res = (uint8_t)CPU->D[(Opcode >> 9) & 7];
 	res &= src;
 	CPU->flag_C = 0;
 	CPU->flag_V = 0;
 	CPU->flag_notZ = res;
 	CPU->flag_N = res;
-	*(BYTE_OFF + (u8*)(&CPU->D[(Opcode >> 9) & 7])) = res;
+	*(BYTE_OFF + (uint8_t*)(&CPU->D[(Opcode >> 9) & 7])) = res;
 	POST_IO
 }
 RET(10)
@@ -739,16 +737,16 @@ case 0xCE47:
 /* ANDaD */
 case 0xC040:
 {
-	u32 res;
-	pointer src;
-	src = (u16)CPU->D[(Opcode >> 0) & 7];
-	res = (u16)CPU->D[(Opcode >> 9) & 7];
+	uint32_t res;
+	uintptr_t src;
+	src = (uint16_t)CPU->D[(Opcode >> 0) & 7];
+	res = (uint16_t)CPU->D[(Opcode >> 9) & 7];
 	res &= src;
 	CPU->flag_C = 0;
 	CPU->flag_V = 0;
 	CPU->flag_notZ = res;
 	CPU->flag_N = res >> 8;
-	*(WORD_OFF + (u16*)(&CPU->D[(Opcode >> 9) & 7])) = res;
+	*(WORD_OFF + (uint16_t*)(&CPU->D[(Opcode >> 9) & 7])) = res;
 }
 RET(4)
 case 0xC250:
@@ -818,19 +816,19 @@ case 0xCE57:
 /* ANDaD */
 case 0xC050:
 {
-	u32 adr;
-	u32 res;
-	pointer src;
+	uint32_t adr;
+	uint32_t res;
+	uintptr_t src;
 	adr = CPU->A[(Opcode >> 0) & 7];
 	PRE_IO
 	READ_WORD_F(adr, src)
-	res = (u16)CPU->D[(Opcode >> 9) & 7];
+	res = (uint16_t)CPU->D[(Opcode >> 9) & 7];
 	res &= src;
 	CPU->flag_C = 0;
 	CPU->flag_V = 0;
 	CPU->flag_notZ = res;
 	CPU->flag_N = res >> 8;
-	*(WORD_OFF + (u16*)(&CPU->D[(Opcode >> 9) & 7])) = res;
+	*(WORD_OFF + (uint16_t*)(&CPU->D[(Opcode >> 9) & 7])) = res;
 	POST_IO
 }
 RET(8)
@@ -893,20 +891,20 @@ case 0xCE5E:
 /* ANDaD */
 case 0xC058:
 {
-	u32 adr;
-	u32 res;
-	pointer src;
+	uint32_t adr;
+	uint32_t res;
+	uintptr_t src;
 	adr = CPU->A[(Opcode >> 0) & 7];
 	CPU->A[(Opcode >> 0) & 7] += 2;
 	PRE_IO
 	READ_WORD_F(adr, src)
-	res = (u16)CPU->D[(Opcode >> 9) & 7];
+	res = (uint16_t)CPU->D[(Opcode >> 9) & 7];
 	res &= src;
 	CPU->flag_C = 0;
 	CPU->flag_V = 0;
 	CPU->flag_notZ = res;
 	CPU->flag_N = res >> 8;
-	*(WORD_OFF + (u16*)(&CPU->D[(Opcode >> 9) & 7])) = res;
+	*(WORD_OFF + (uint16_t*)(&CPU->D[(Opcode >> 9) & 7])) = res;
 	POST_IO
 }
 RET(8)
@@ -969,20 +967,20 @@ case 0xCE66:
 /* ANDaD */
 case 0xC060:
 {
-	u32 adr;
-	u32 res;
-	pointer src;
+	uint32_t adr;
+	uint32_t res;
+	uintptr_t src;
 	adr = CPU->A[(Opcode >> 0) & 7] - 2;
 	CPU->A[(Opcode >> 0) & 7] = adr;
 	PRE_IO
 	READ_WORD_F(adr, src)
-	res = (u16)CPU->D[(Opcode >> 9) & 7];
+	res = (uint16_t)CPU->D[(Opcode >> 9) & 7];
 	res &= src;
 	CPU->flag_C = 0;
 	CPU->flag_V = 0;
 	CPU->flag_notZ = res;
 	CPU->flag_N = res >> 8;
-	*(WORD_OFF + (u16*)(&CPU->D[(Opcode >> 9) & 7])) = res;
+	*(WORD_OFF + (uint16_t*)(&CPU->D[(Opcode >> 9) & 7])) = res;
 	POST_IO
 }
 RET(10)
@@ -1053,20 +1051,20 @@ case 0xCE6F:
 /* ANDaD */
 case 0xC068:
 {
-	u32 adr;
-	u32 res;
-	pointer src;
-	adr = CPU->A[(Opcode >> 0) & 7] + (s32)(s16)FETCH_WORD;
+	uint32_t adr;
+	uint32_t res;
+	uintptr_t src;
+	adr = CPU->A[(Opcode >> 0) & 7] + (int32_t)(int16_t)FETCH_WORD;
 	PC += 2;
 	PRE_IO
 	READ_WORD_F(adr, src)
-	res = (u16)CPU->D[(Opcode >> 9) & 7];
+	res = (uint16_t)CPU->D[(Opcode >> 9) & 7];
 	res &= src;
 	CPU->flag_C = 0;
 	CPU->flag_V = 0;
 	CPU->flag_notZ = res;
 	CPU->flag_N = res >> 8;
-	*(WORD_OFF + (u16*)(&CPU->D[(Opcode >> 9) & 7])) = res;
+	*(WORD_OFF + (uint16_t*)(&CPU->D[(Opcode >> 9) & 7])) = res;
 	POST_IO
 }
 RET(12)
@@ -1137,20 +1135,20 @@ case 0xCE77:
 /* ANDaD */
 case 0xC070:
 {
-	u32 adr;
-	u32 res;
-	pointer src;
+	uint32_t adr;
+	uint32_t res;
+	uintptr_t src;
 	adr = CPU->A[(Opcode >> 0) & 7];
 	DECODE_EXT_WORD
 	PRE_IO
 	READ_WORD_F(adr, src)
-	res = (u16)CPU->D[(Opcode >> 9) & 7];
+	res = (uint16_t)CPU->D[(Opcode >> 9) & 7];
 	res &= src;
 	CPU->flag_C = 0;
 	CPU->flag_V = 0;
 	CPU->flag_notZ = res;
 	CPU->flag_N = res >> 8;
-	*(WORD_OFF + (u16*)(&CPU->D[(Opcode >> 9) & 7])) = res;
+	*(WORD_OFF + (uint16_t*)(&CPU->D[(Opcode >> 9) & 7])) = res;
 	POST_IO
 }
 RET(14)
@@ -1165,20 +1163,20 @@ case 0xCE78:
 /* ANDaD */
 case 0xC078:
 {
-	u32 adr;
-	u32 res;
-	pointer src;
-	adr = (s32)(s16)FETCH_WORD;
+	uint32_t adr;
+	uint32_t res;
+	uintptr_t src;
+	adr = (int32_t)(int16_t)FETCH_WORD;
 	PC += 2;
 	PRE_IO
 	READ_WORD_F(adr, src)
-	res = (u16)CPU->D[(Opcode >> 9) & 7];
+	res = (uint16_t)CPU->D[(Opcode >> 9) & 7];
 	res &= src;
 	CPU->flag_C = 0;
 	CPU->flag_V = 0;
 	CPU->flag_notZ = res;
 	CPU->flag_N = res >> 8;
-	*(WORD_OFF + (u16*)(&CPU->D[(Opcode >> 9) & 7])) = res;
+	*(WORD_OFF + (uint16_t*)(&CPU->D[(Opcode >> 9) & 7])) = res;
 	POST_IO
 }
 RET(12)
@@ -1193,20 +1191,20 @@ case 0xCE79:
 /* ANDaD */
 case 0xC079:
 {
-	u32 adr;
-	u32 res;
-	pointer src;
-	adr = (s32)FETCH_LONG;
+	uint32_t adr;
+	uint32_t res;
+	uintptr_t src;
+	adr = (int32_t)FETCH_LONG;
 	PC += 4;
 	PRE_IO
 	READ_WORD_F(adr, src)
-	res = (u16)CPU->D[(Opcode >> 9) & 7];
+	res = (uint16_t)CPU->D[(Opcode >> 9) & 7];
 	res &= src;
 	CPU->flag_C = 0;
 	CPU->flag_V = 0;
 	CPU->flag_notZ = res;
 	CPU->flag_N = res >> 8;
-	*(WORD_OFF + (u16*)(&CPU->D[(Opcode >> 9) & 7])) = res;
+	*(WORD_OFF + (uint16_t*)(&CPU->D[(Opcode >> 9) & 7])) = res;
 	POST_IO
 }
 RET(16)
@@ -1221,20 +1219,20 @@ case 0xCE7A:
 /* ANDaD */
 case 0xC07A:
 {
-	u32 adr;
-	u32 res;
-	pointer src;
-	adr = (u32)(PC - CPU->BasePC) + (s32)(s16)FETCH_WORD;
+	uint32_t adr;
+	uint32_t res;
+	uintptr_t src;
+	adr = (uint32_t)(PC - CPU->BasePC) + (int32_t)(int16_t)FETCH_WORD;
 	PC += 2;
 	PRE_IO
 	READ_WORD_F(adr, src)
-	res = (u16)CPU->D[(Opcode >> 9) & 7];
+	res = (uint16_t)CPU->D[(Opcode >> 9) & 7];
 	res &= src;
 	CPU->flag_C = 0;
 	CPU->flag_V = 0;
 	CPU->flag_notZ = res;
 	CPU->flag_N = res >> 8;
-	*(WORD_OFF + (u16*)(&CPU->D[(Opcode >> 9) & 7])) = res;
+	*(WORD_OFF + (uint16_t*)(&CPU->D[(Opcode >> 9) & 7])) = res;
 	POST_IO
 }
 RET(12)
@@ -1249,20 +1247,20 @@ case 0xCE7B:
 /* ANDaD */
 case 0xC07B:
 {
-	u32 adr;
-	u32 res;
-	pointer src;
-	adr = (u32)(PC - CPU->BasePC);
+	uint32_t adr;
+	uint32_t res;
+	uintptr_t src;
+	adr = (uint32_t)(PC - CPU->BasePC);
 	DECODE_EXT_WORD
 	PRE_IO
 	READ_WORD_F(adr, src)
-	res = (u16)CPU->D[(Opcode >> 9) & 7];
+	res = (uint16_t)CPU->D[(Opcode >> 9) & 7];
 	res &= src;
 	CPU->flag_C = 0;
 	CPU->flag_V = 0;
 	CPU->flag_notZ = res;
 	CPU->flag_N = res >> 8;
-	*(WORD_OFF + (u16*)(&CPU->D[(Opcode >> 9) & 7])) = res;
+	*(WORD_OFF + (uint16_t*)(&CPU->D[(Opcode >> 9) & 7])) = res;
 	POST_IO
 }
 RET(14)
@@ -1277,17 +1275,17 @@ case 0xCE7C:
 /* ANDaD */
 case 0xC07C:
 {
-	u32 res;
-	pointer src;
+	uint32_t res;
+	uintptr_t src;
 	src = FETCH_WORD;
 	PC += 2;
-	res = (u16)CPU->D[(Opcode >> 9) & 7];
+	res = (uint16_t)CPU->D[(Opcode >> 9) & 7];
 	res &= src;
 	CPU->flag_C = 0;
 	CPU->flag_V = 0;
 	CPU->flag_notZ = res;
 	CPU->flag_N = res >> 8;
-	*(WORD_OFF + (u16*)(&CPU->D[(Opcode >> 9) & 7])) = res;
+	*(WORD_OFF + (uint16_t*)(&CPU->D[(Opcode >> 9) & 7])) = res;
 }
 RET(8)
 case 0xC25F:
@@ -1301,20 +1299,20 @@ case 0xCE5F:
 /* ANDaD */
 case 0xC05F:
 {
-	u32 adr;
-	u32 res;
-	pointer src;
+	uint32_t adr;
+	uint32_t res;
+	uintptr_t src;
 	adr = CPU->A[7];
 	CPU->A[7] += 2;
 	PRE_IO
 	READ_WORD_F(adr, src)
-	res = (u16)CPU->D[(Opcode >> 9) & 7];
+	res = (uint16_t)CPU->D[(Opcode >> 9) & 7];
 	res &= src;
 	CPU->flag_C = 0;
 	CPU->flag_V = 0;
 	CPU->flag_notZ = res;
 	CPU->flag_N = res >> 8;
-	*(WORD_OFF + (u16*)(&CPU->D[(Opcode >> 9) & 7])) = res;
+	*(WORD_OFF + (uint16_t*)(&CPU->D[(Opcode >> 9) & 7])) = res;
 	POST_IO
 }
 RET(8)
@@ -1329,20 +1327,20 @@ case 0xCE67:
 /* ANDaD */
 case 0xC067:
 {
-	u32 adr;
-	u32 res;
-	pointer src;
+	uint32_t adr;
+	uint32_t res;
+	uintptr_t src;
 	adr = CPU->A[7] - 2;
 	CPU->A[7] = adr;
 	PRE_IO
 	READ_WORD_F(adr, src)
-	res = (u16)CPU->D[(Opcode >> 9) & 7];
+	res = (uint16_t)CPU->D[(Opcode >> 9) & 7];
 	res &= src;
 	CPU->flag_C = 0;
 	CPU->flag_V = 0;
 	CPU->flag_notZ = res;
 	CPU->flag_N = res >> 8;
-	*(WORD_OFF + (u16*)(&CPU->D[(Opcode >> 9) & 7])) = res;
+	*(WORD_OFF + (uint16_t*)(&CPU->D[(Opcode >> 9) & 7])) = res;
 	POST_IO
 }
 RET(10)
@@ -1413,16 +1411,16 @@ case 0xCE87:
 /* ANDaD */
 case 0xC080:
 {
-	u32 res;
-	pointer src;
-	src = (u32)CPU->D[(Opcode >> 0) & 7];
-	res = (u32)CPU->D[(Opcode >> 9) & 7];
+	uint32_t res;
+	uintptr_t src;
+	src = (uint32_t)CPU->D[(Opcode >> 0) & 7];
+	res = (uint32_t)CPU->D[(Opcode >> 9) & 7];
 	res &= src;
 	CPU->flag_C = 0;
 	CPU->flag_V = 0;
 	CPU->flag_notZ = res;
 	CPU->flag_N = res >> 24;
-	*((u32*)(&CPU->D[(Opcode >> 9) & 7])) = res;
+	*((uint32_t*)(&CPU->D[(Opcode >> 9) & 7])) = res;
 }
 RET(6)
 case 0xC290:
@@ -1492,19 +1490,19 @@ case 0xCE97:
 /* ANDaD */
 case 0xC090:
 {
-	u32 adr;
-	u32 res;
-	pointer src;
+	uint32_t adr;
+	uint32_t res;
+	uintptr_t src;
 	adr = CPU->A[(Opcode >> 0) & 7];
 	PRE_IO
 	READ_LONG_F(adr, src)
-	res = (u32)CPU->D[(Opcode >> 9) & 7];
+	res = (uint32_t)CPU->D[(Opcode >> 9) & 7];
 	res &= src;
 	CPU->flag_C = 0;
 	CPU->flag_V = 0;
 	CPU->flag_notZ = res;
 	CPU->flag_N = res >> 24;
-	*((u32*)(&CPU->D[(Opcode >> 9) & 7])) = res;
+	*((uint32_t*)(&CPU->D[(Opcode >> 9) & 7])) = res;
 	POST_IO
 }
 RET(16)
@@ -1567,20 +1565,20 @@ case 0xCE9E:
 /* ANDaD */
 case 0xC098:
 {
-	u32 adr;
-	u32 res;
-	pointer src;
+	uint32_t adr;
+	uint32_t res;
+	uintptr_t src;
 	adr = CPU->A[(Opcode >> 0) & 7];
 	CPU->A[(Opcode >> 0) & 7] += 4;
 	PRE_IO
 	READ_LONG_F(adr, src)
-	res = (u32)CPU->D[(Opcode >> 9) & 7];
+	res = (uint32_t)CPU->D[(Opcode >> 9) & 7];
 	res &= src;
 	CPU->flag_C = 0;
 	CPU->flag_V = 0;
 	CPU->flag_notZ = res;
 	CPU->flag_N = res >> 24;
-	*((u32*)(&CPU->D[(Opcode >> 9) & 7])) = res;
+	*((uint32_t*)(&CPU->D[(Opcode >> 9) & 7])) = res;
 	POST_IO
 }
 RET(16)
@@ -1643,20 +1641,20 @@ case 0xCEA6:
 /* ANDaD */
 case 0xC0A0:
 {
-	u32 adr;
-	u32 res;
-	pointer src;
+	uint32_t adr;
+	uint32_t res;
+	uintptr_t src;
 	adr = CPU->A[(Opcode >> 0) & 7] - 4;
 	CPU->A[(Opcode >> 0) & 7] = adr;
 	PRE_IO
 	READ_LONG_F(adr, src)
-	res = (u32)CPU->D[(Opcode >> 9) & 7];
+	res = (uint32_t)CPU->D[(Opcode >> 9) & 7];
 	res &= src;
 	CPU->flag_C = 0;
 	CPU->flag_V = 0;
 	CPU->flag_notZ = res;
 	CPU->flag_N = res >> 24;
-	*((u32*)(&CPU->D[(Opcode >> 9) & 7])) = res;
+	*((uint32_t*)(&CPU->D[(Opcode >> 9) & 7])) = res;
 	POST_IO
 }
 RET(18)
@@ -1727,20 +1725,20 @@ case 0xCEAF:
 /* ANDaD */
 case 0xC0A8:
 {
-	u32 adr;
-	u32 res;
-	pointer src;
-	adr = CPU->A[(Opcode >> 0) & 7] + (s32)(s16)FETCH_WORD;
+	uint32_t adr;
+	uint32_t res;
+	uintptr_t src;
+	adr = CPU->A[(Opcode >> 0) & 7] + (int32_t)(int16_t)FETCH_WORD;
 	PC += 2;
 	PRE_IO
 	READ_LONG_F(adr, src)
-	res = (u32)CPU->D[(Opcode >> 9) & 7];
+	res = (uint32_t)CPU->D[(Opcode >> 9) & 7];
 	res &= src;
 	CPU->flag_C = 0;
 	CPU->flag_V = 0;
 	CPU->flag_notZ = res;
 	CPU->flag_N = res >> 24;
-	*((u32*)(&CPU->D[(Opcode >> 9) & 7])) = res;
+	*((uint32_t*)(&CPU->D[(Opcode >> 9) & 7])) = res;
 	POST_IO
 }
 RET(20)
@@ -1811,20 +1809,20 @@ case 0xCEB7:
 /* ANDaD */
 case 0xC0B0:
 {
-	u32 adr;
-	u32 res;
-	pointer src;
+	uint32_t adr;
+	uint32_t res;
+	uintptr_t src;
 	adr = CPU->A[(Opcode >> 0) & 7];
 	DECODE_EXT_WORD
 	PRE_IO
 	READ_LONG_F(adr, src)
-	res = (u32)CPU->D[(Opcode >> 9) & 7];
+	res = (uint32_t)CPU->D[(Opcode >> 9) & 7];
 	res &= src;
 	CPU->flag_C = 0;
 	CPU->flag_V = 0;
 	CPU->flag_notZ = res;
 	CPU->flag_N = res >> 24;
-	*((u32*)(&CPU->D[(Opcode >> 9) & 7])) = res;
+	*((uint32_t*)(&CPU->D[(Opcode >> 9) & 7])) = res;
 	POST_IO
 }
 RET(22)
@@ -1839,20 +1837,20 @@ case 0xCEB8:
 /* ANDaD */
 case 0xC0B8:
 {
-	u32 adr;
-	u32 res;
-	pointer src;
-	adr = (s32)(s16)FETCH_WORD;
+	uint32_t adr;
+	uint32_t res;
+	uintptr_t src;
+	adr = (int32_t)(int16_t)FETCH_WORD;
 	PC += 2;
 	PRE_IO
 	READ_LONG_F(adr, src)
-	res = (u32)CPU->D[(Opcode >> 9) & 7];
+	res = (uint32_t)CPU->D[(Opcode >> 9) & 7];
 	res &= src;
 	CPU->flag_C = 0;
 	CPU->flag_V = 0;
 	CPU->flag_notZ = res;
 	CPU->flag_N = res >> 24;
-	*((u32*)(&CPU->D[(Opcode >> 9) & 7])) = res;
+	*((uint32_t*)(&CPU->D[(Opcode >> 9) & 7])) = res;
 	POST_IO
 }
 RET(20)
@@ -1867,20 +1865,20 @@ case 0xCEB9:
 /* ANDaD */
 case 0xC0B9:
 {
-	u32 adr;
-	u32 res;
-	pointer src;
-	adr = (s32)FETCH_LONG;
+	uint32_t adr;
+	uint32_t res;
+	uintptr_t src;
+	adr = (int32_t)FETCH_LONG;
 	PC += 4;
 	PRE_IO
 	READ_LONG_F(adr, src)
-	res = (u32)CPU->D[(Opcode >> 9) & 7];
+	res = (uint32_t)CPU->D[(Opcode >> 9) & 7];
 	res &= src;
 	CPU->flag_C = 0;
 	CPU->flag_V = 0;
 	CPU->flag_notZ = res;
 	CPU->flag_N = res >> 24;
-	*((u32*)(&CPU->D[(Opcode >> 9) & 7])) = res;
+	*((uint32_t*)(&CPU->D[(Opcode >> 9) & 7])) = res;
 	POST_IO
 }
 RET(24)
@@ -1895,20 +1893,20 @@ case 0xCEBA:
 /* ANDaD */
 case 0xC0BA:
 {
-	u32 adr;
-	u32 res;
-	pointer src;
-	adr = (u32)(PC - CPU->BasePC) + (s32)(s16)FETCH_WORD;
+	uint32_t adr;
+	uint32_t res;
+	uintptr_t src;
+	adr = (uint32_t)(PC - CPU->BasePC) + (int32_t)(int16_t)FETCH_WORD;
 	PC += 2;
 	PRE_IO
 	READ_LONG_F(adr, src)
-	res = (u32)CPU->D[(Opcode >> 9) & 7];
+	res = (uint32_t)CPU->D[(Opcode >> 9) & 7];
 	res &= src;
 	CPU->flag_C = 0;
 	CPU->flag_V = 0;
 	CPU->flag_notZ = res;
 	CPU->flag_N = res >> 24;
-	*((u32*)(&CPU->D[(Opcode >> 9) & 7])) = res;
+	*((uint32_t*)(&CPU->D[(Opcode >> 9) & 7])) = res;
 	POST_IO
 }
 RET(20)
@@ -1923,20 +1921,20 @@ case 0xCEBB:
 /* ANDaD */
 case 0xC0BB:
 {
-	u32 adr;
-	u32 res;
-	pointer src;
-	adr = (u32)(PC - CPU->BasePC);
+	uint32_t adr;
+	uint32_t res;
+	uintptr_t src;
+	adr = (uint32_t)(PC - CPU->BasePC);
 	DECODE_EXT_WORD
 	PRE_IO
 	READ_LONG_F(adr, src)
-	res = (u32)CPU->D[(Opcode >> 9) & 7];
+	res = (uint32_t)CPU->D[(Opcode >> 9) & 7];
 	res &= src;
 	CPU->flag_C = 0;
 	CPU->flag_V = 0;
 	CPU->flag_notZ = res;
 	CPU->flag_N = res >> 24;
-	*((u32*)(&CPU->D[(Opcode >> 9) & 7])) = res;
+	*((uint32_t*)(&CPU->D[(Opcode >> 9) & 7])) = res;
 	POST_IO
 }
 RET(22)
@@ -1951,17 +1949,17 @@ case 0xCEBC:
 /* ANDaD */
 case 0xC0BC:
 {
-	u32 res;
-	pointer src;
+	uint32_t res;
+	uintptr_t src;
 	src = FETCH_LONG;
 	PC += 4;
-	res = (u32)CPU->D[(Opcode >> 9) & 7];
+	res = (uint32_t)CPU->D[(Opcode >> 9) & 7];
 	res &= src;
 	CPU->flag_C = 0;
 	CPU->flag_V = 0;
 	CPU->flag_notZ = res;
 	CPU->flag_N = res >> 24;
-	*((u32*)(&CPU->D[(Opcode >> 9) & 7])) = res;
+	*((uint32_t*)(&CPU->D[(Opcode >> 9) & 7])) = res;
 }
 RET(14)
 case 0xC29F:
@@ -1975,20 +1973,20 @@ case 0xCE9F:
 /* ANDaD */
 case 0xC09F:
 {
-	u32 adr;
-	u32 res;
-	pointer src;
+	uint32_t adr;
+	uint32_t res;
+	uintptr_t src;
 	adr = CPU->A[7];
 	CPU->A[7] += 4;
 	PRE_IO
 	READ_LONG_F(adr, src)
-	res = (u32)CPU->D[(Opcode >> 9) & 7];
+	res = (uint32_t)CPU->D[(Opcode >> 9) & 7];
 	res &= src;
 	CPU->flag_C = 0;
 	CPU->flag_V = 0;
 	CPU->flag_notZ = res;
 	CPU->flag_N = res >> 24;
-	*((u32*)(&CPU->D[(Opcode >> 9) & 7])) = res;
+	*((uint32_t*)(&CPU->D[(Opcode >> 9) & 7])) = res;
 	POST_IO
 }
 RET(16)
@@ -2003,20 +2001,20 @@ case 0xCEA7:
 /* ANDaD */
 case 0xC0A7:
 {
-	u32 adr;
-	u32 res;
-	pointer src;
+	uint32_t adr;
+	uint32_t res;
+	uintptr_t src;
 	adr = CPU->A[7] - 4;
 	CPU->A[7] = adr;
 	PRE_IO
 	READ_LONG_F(adr, src)
-	res = (u32)CPU->D[(Opcode >> 9) & 7];
+	res = (uint32_t)CPU->D[(Opcode >> 9) & 7];
 	res &= src;
 	CPU->flag_C = 0;
 	CPU->flag_V = 0;
 	CPU->flag_notZ = res;
 	CPU->flag_N = res >> 24;
-	*((u32*)(&CPU->D[(Opcode >> 9) & 7])) = res;
+	*((uint32_t*)(&CPU->D[(Opcode >> 9) & 7])) = res;
 	POST_IO
 }
 RET(18)
@@ -2087,10 +2085,10 @@ case 0xCF17:
 /* ANDDa */
 case 0xC110:
 {
-	u32 adr;
-	u32 res;
-	pointer src;
-	src = (u8)CPU->D[(Opcode >> 9) & 7];
+	uint32_t adr;
+	uint32_t res;
+	uintptr_t src;
+	src = (uint8_t)CPU->D[(Opcode >> 9) & 7];
 	adr = CPU->A[(Opcode >> 0) & 7];
 	PRE_IO
 	READ_BYTE_F(adr, res)
@@ -2162,10 +2160,10 @@ case 0xCF1E:
 /* ANDDa */
 case 0xC118:
 {
-	u32 adr;
-	u32 res;
-	pointer src;
-	src = (u8)CPU->D[(Opcode >> 9) & 7];
+	uint32_t adr;
+	uint32_t res;
+	uintptr_t src;
+	src = (uint8_t)CPU->D[(Opcode >> 9) & 7];
 	adr = CPU->A[(Opcode >> 0) & 7];
 	CPU->A[(Opcode >> 0) & 7] += 1;
 	PRE_IO
@@ -2238,10 +2236,10 @@ case 0xCF26:
 /* ANDDa */
 case 0xC120:
 {
-	u32 adr;
-	u32 res;
-	pointer src;
-	src = (u8)CPU->D[(Opcode >> 9) & 7];
+	uint32_t adr;
+	uint32_t res;
+	uintptr_t src;
+	src = (uint8_t)CPU->D[(Opcode >> 9) & 7];
 	adr = CPU->A[(Opcode >> 0) & 7] - 1;
 	CPU->A[(Opcode >> 0) & 7] = adr;
 	PRE_IO
@@ -2322,11 +2320,11 @@ case 0xCF2F:
 /* ANDDa */
 case 0xC128:
 {
-	u32 adr;
-	u32 res;
-	pointer src;
-	src = (u8)CPU->D[(Opcode >> 9) & 7];
-	adr = CPU->A[(Opcode >> 0) & 7] + (s32)(s16)FETCH_WORD;
+	uint32_t adr;
+	uint32_t res;
+	uintptr_t src;
+	src = (uint8_t)CPU->D[(Opcode >> 9) & 7];
+	adr = CPU->A[(Opcode >> 0) & 7] + (int32_t)(int16_t)FETCH_WORD;
 	PC += 2;
 	PRE_IO
 	READ_BYTE_F(adr, res)
@@ -2406,10 +2404,10 @@ case 0xCF37:
 /* ANDDa */
 case 0xC130:
 {
-	u32 adr;
-	u32 res;
-	pointer src;
-	src = (u8)CPU->D[(Opcode >> 9) & 7];
+	uint32_t adr;
+	uint32_t res;
+	uintptr_t src;
+	src = (uint8_t)CPU->D[(Opcode >> 9) & 7];
 	adr = CPU->A[(Opcode >> 0) & 7];
 	DECODE_EXT_WORD
 	PRE_IO
@@ -2434,11 +2432,11 @@ case 0xCF38:
 /* ANDDa */
 case 0xC138:
 {
-	u32 adr;
-	u32 res;
-	pointer src;
-	src = (u8)CPU->D[(Opcode >> 9) & 7];
-	adr = (s32)(s16)FETCH_WORD;
+	uint32_t adr;
+	uint32_t res;
+	uintptr_t src;
+	src = (uint8_t)CPU->D[(Opcode >> 9) & 7];
+	adr = (int32_t)(int16_t)FETCH_WORD;
 	PC += 2;
 	PRE_IO
 	READ_BYTE_F(adr, res)
@@ -2462,11 +2460,11 @@ case 0xCF39:
 /* ANDDa */
 case 0xC139:
 {
-	u32 adr;
-	u32 res;
-	pointer src;
-	src = (u8)CPU->D[(Opcode >> 9) & 7];
-	adr = (s32)FETCH_LONG;
+	uint32_t adr;
+	uint32_t res;
+	uintptr_t src;
+	src = (uint8_t)CPU->D[(Opcode >> 9) & 7];
+	adr = (int32_t)FETCH_LONG;
 	PC += 4;
 	PRE_IO
 	READ_BYTE_F(adr, res)
@@ -2490,10 +2488,10 @@ case 0xCF1F:
 /* ANDDa */
 case 0xC11F:
 {
-	u32 adr;
-	u32 res;
-	pointer src;
-	src = (u8)CPU->D[(Opcode >> 9) & 7];
+	uint32_t adr;
+	uint32_t res;
+	uintptr_t src;
+	src = (uint8_t)CPU->D[(Opcode >> 9) & 7];
 	adr = CPU->A[7];
 	CPU->A[7] += 2;
 	PRE_IO
@@ -2518,10 +2516,10 @@ case 0xCF27:
 /* ANDDa */
 case 0xC127:
 {
-	u32 adr;
-	u32 res;
-	pointer src;
-	src = (u8)CPU->D[(Opcode >> 9) & 7];
+	uint32_t adr;
+	uint32_t res;
+	uintptr_t src;
+	src = (uint8_t)CPU->D[(Opcode >> 9) & 7];
 	adr = CPU->A[7] - 2;
 	CPU->A[7] = adr;
 	PRE_IO
@@ -2602,10 +2600,10 @@ case 0xCF57:
 /* ANDDa */
 case 0xC150:
 {
-	u32 adr;
-	u32 res;
-	pointer src;
-	src = (u16)CPU->D[(Opcode >> 9) & 7];
+	uint32_t adr;
+	uint32_t res;
+	uintptr_t src;
+	src = (uint16_t)CPU->D[(Opcode >> 9) & 7];
 	adr = CPU->A[(Opcode >> 0) & 7];
 	PRE_IO
 	READ_WORD_F(adr, res)
@@ -2677,10 +2675,10 @@ case 0xCF5E:
 /* ANDDa */
 case 0xC158:
 {
-	u32 adr;
-	u32 res;
-	pointer src;
-	src = (u16)CPU->D[(Opcode >> 9) & 7];
+	uint32_t adr;
+	uint32_t res;
+	uintptr_t src;
+	src = (uint16_t)CPU->D[(Opcode >> 9) & 7];
 	adr = CPU->A[(Opcode >> 0) & 7];
 	CPU->A[(Opcode >> 0) & 7] += 2;
 	PRE_IO
@@ -2753,10 +2751,10 @@ case 0xCF66:
 /* ANDDa */
 case 0xC160:
 {
-	u32 adr;
-	u32 res;
-	pointer src;
-	src = (u16)CPU->D[(Opcode >> 9) & 7];
+	uint32_t adr;
+	uint32_t res;
+	uintptr_t src;
+	src = (uint16_t)CPU->D[(Opcode >> 9) & 7];
 	adr = CPU->A[(Opcode >> 0) & 7] - 2;
 	CPU->A[(Opcode >> 0) & 7] = adr;
 	PRE_IO
@@ -2837,11 +2835,11 @@ case 0xCF6F:
 /* ANDDa */
 case 0xC168:
 {
-	u32 adr;
-	u32 res;
-	pointer src;
-	src = (u16)CPU->D[(Opcode >> 9) & 7];
-	adr = CPU->A[(Opcode >> 0) & 7] + (s32)(s16)FETCH_WORD;
+	uint32_t adr;
+	uint32_t res;
+	uintptr_t src;
+	src = (uint16_t)CPU->D[(Opcode >> 9) & 7];
+	adr = CPU->A[(Opcode >> 0) & 7] + (int32_t)(int16_t)FETCH_WORD;
 	PC += 2;
 	PRE_IO
 	READ_WORD_F(adr, res)
@@ -2921,10 +2919,10 @@ case 0xCF77:
 /* ANDDa */
 case 0xC170:
 {
-	u32 adr;
-	u32 res;
-	pointer src;
-	src = (u16)CPU->D[(Opcode >> 9) & 7];
+	uint32_t adr;
+	uint32_t res;
+	uintptr_t src;
+	src = (uint16_t)CPU->D[(Opcode >> 9) & 7];
 	adr = CPU->A[(Opcode >> 0) & 7];
 	DECODE_EXT_WORD
 	PRE_IO
@@ -2949,11 +2947,11 @@ case 0xCF78:
 /* ANDDa */
 case 0xC178:
 {
-	u32 adr;
-	u32 res;
-	pointer src;
-	src = (u16)CPU->D[(Opcode >> 9) & 7];
-	adr = (s32)(s16)FETCH_WORD;
+	uint32_t adr;
+	uint32_t res;
+	uintptr_t src;
+	src = (uint16_t)CPU->D[(Opcode >> 9) & 7];
+	adr = (int32_t)(int16_t)FETCH_WORD;
 	PC += 2;
 	PRE_IO
 	READ_WORD_F(adr, res)
@@ -2977,11 +2975,11 @@ case 0xCF79:
 /* ANDDa */
 case 0xC179:
 {
-	u32 adr;
-	u32 res;
-	pointer src;
-	src = (u16)CPU->D[(Opcode >> 9) & 7];
-	adr = (s32)FETCH_LONG;
+	uint32_t adr;
+	uint32_t res;
+	uintptr_t src;
+	src = (uint16_t)CPU->D[(Opcode >> 9) & 7];
+	adr = (int32_t)FETCH_LONG;
 	PC += 4;
 	PRE_IO
 	READ_WORD_F(adr, res)
@@ -3005,10 +3003,10 @@ case 0xCF5F:
 /* ANDDa */
 case 0xC15F:
 {
-	u32 adr;
-	u32 res;
-	pointer src;
-	src = (u16)CPU->D[(Opcode >> 9) & 7];
+	uint32_t adr;
+	uint32_t res;
+	uintptr_t src;
+	src = (uint16_t)CPU->D[(Opcode >> 9) & 7];
 	adr = CPU->A[7];
 	CPU->A[7] += 2;
 	PRE_IO
@@ -3033,10 +3031,10 @@ case 0xCF67:
 /* ANDDa */
 case 0xC167:
 {
-	u32 adr;
-	u32 res;
-	pointer src;
-	src = (u16)CPU->D[(Opcode >> 9) & 7];
+	uint32_t adr;
+	uint32_t res;
+	uintptr_t src;
+	src = (uint16_t)CPU->D[(Opcode >> 9) & 7];
 	adr = CPU->A[7] - 2;
 	CPU->A[7] = adr;
 	PRE_IO
@@ -3117,10 +3115,10 @@ case 0xCF97:
 /* ANDDa */
 case 0xC190:
 {
-	u32 adr;
-	u32 res;
-	pointer src;
-	src = (u32)CPU->D[(Opcode >> 9) & 7];
+	uint32_t adr;
+	uint32_t res;
+	uintptr_t src;
+	src = (uint32_t)CPU->D[(Opcode >> 9) & 7];
 	adr = CPU->A[(Opcode >> 0) & 7];
 	PRE_IO
 	READ_LONG_F(adr, res)
@@ -3192,10 +3190,10 @@ case 0xCF9E:
 /* ANDDa */
 case 0xC198:
 {
-	u32 adr;
-	u32 res;
-	pointer src;
-	src = (u32)CPU->D[(Opcode >> 9) & 7];
+	uint32_t adr;
+	uint32_t res;
+	uintptr_t src;
+	src = (uint32_t)CPU->D[(Opcode >> 9) & 7];
 	adr = CPU->A[(Opcode >> 0) & 7];
 	CPU->A[(Opcode >> 0) & 7] += 4;
 	PRE_IO
@@ -3268,10 +3266,10 @@ case 0xCFA6:
 /* ANDDa */
 case 0xC1A0:
 {
-	u32 adr;
-	u32 res;
-	pointer src;
-	src = (u32)CPU->D[(Opcode >> 9) & 7];
+	uint32_t adr;
+	uint32_t res;
+	uintptr_t src;
+	src = (uint32_t)CPU->D[(Opcode >> 9) & 7];
 	adr = CPU->A[(Opcode >> 0) & 7] - 4;
 	CPU->A[(Opcode >> 0) & 7] = adr;
 	PRE_IO
@@ -3352,11 +3350,11 @@ case 0xCFAF:
 /* ANDDa */
 case 0xC1A8:
 {
-	u32 adr;
-	u32 res;
-	pointer src;
-	src = (u32)CPU->D[(Opcode >> 9) & 7];
-	adr = CPU->A[(Opcode >> 0) & 7] + (s32)(s16)FETCH_WORD;
+	uint32_t adr;
+	uint32_t res;
+	uintptr_t src;
+	src = (uint32_t)CPU->D[(Opcode >> 9) & 7];
+	adr = CPU->A[(Opcode >> 0) & 7] + (int32_t)(int16_t)FETCH_WORD;
 	PC += 2;
 	PRE_IO
 	READ_LONG_F(adr, res)
@@ -3436,10 +3434,10 @@ case 0xCFB7:
 /* ANDDa */
 case 0xC1B0:
 {
-	u32 adr;
-	u32 res;
-	pointer src;
-	src = (u32)CPU->D[(Opcode >> 9) & 7];
+	uint32_t adr;
+	uint32_t res;
+	uintptr_t src;
+	src = (uint32_t)CPU->D[(Opcode >> 9) & 7];
 	adr = CPU->A[(Opcode >> 0) & 7];
 	DECODE_EXT_WORD
 	PRE_IO
@@ -3464,11 +3462,11 @@ case 0xCFB8:
 /* ANDDa */
 case 0xC1B8:
 {
-	u32 adr;
-	u32 res;
-	pointer src;
-	src = (u32)CPU->D[(Opcode >> 9) & 7];
-	adr = (s32)(s16)FETCH_WORD;
+	uint32_t adr;
+	uint32_t res;
+	uintptr_t src;
+	src = (uint32_t)CPU->D[(Opcode >> 9) & 7];
+	adr = (int32_t)(int16_t)FETCH_WORD;
 	PC += 2;
 	PRE_IO
 	READ_LONG_F(adr, res)
@@ -3492,11 +3490,11 @@ case 0xCFB9:
 /* ANDDa */
 case 0xC1B9:
 {
-	u32 adr;
-	u32 res;
-	pointer src;
-	src = (u32)CPU->D[(Opcode >> 9) & 7];
-	adr = (s32)FETCH_LONG;
+	uint32_t adr;
+	uint32_t res;
+	uintptr_t src;
+	src = (uint32_t)CPU->D[(Opcode >> 9) & 7];
+	adr = (int32_t)FETCH_LONG;
 	PC += 4;
 	PRE_IO
 	READ_LONG_F(adr, res)
@@ -3520,10 +3518,10 @@ case 0xCF9F:
 /* ANDDa */
 case 0xC19F:
 {
-	u32 adr;
-	u32 res;
-	pointer src;
-	src = (u32)CPU->D[(Opcode >> 9) & 7];
+	uint32_t adr;
+	uint32_t res;
+	uintptr_t src;
+	src = (uint32_t)CPU->D[(Opcode >> 9) & 7];
 	adr = CPU->A[7];
 	CPU->A[7] += 4;
 	PRE_IO
@@ -3548,10 +3546,10 @@ case 0xCFA7:
 /* ANDDa */
 case 0xC1A7:
 {
-	u32 adr;
-	u32 res;
-	pointer src;
-	src = (u32)CPU->D[(Opcode >> 9) & 7];
+	uint32_t adr;
+	uint32_t res;
+	uintptr_t src;
+	src = (uint32_t)CPU->D[(Opcode >> 9) & 7];
 	adr = CPU->A[7] - 4;
 	CPU->A[7] = adr;
 	PRE_IO
@@ -3632,11 +3630,11 @@ case 0xCF07:
 /* ABCD */
 case 0xC100:
 {
-	u32 res;
-	pointer dst;
-	pointer src;
-	src = (u8)CPU->D[(Opcode >> 0) & 7];
-	dst = (u8)CPU->D[(Opcode >> 9) & 7];
+	uint32_t res;
+	uintptr_t dst;
+	uintptr_t src;
+	src = (uint8_t)CPU->D[(Opcode >> 0) & 7];
+	dst = (uint8_t)CPU->D[(Opcode >> 9) & 7];
 	res = (dst & 0xF) + (src & 0xF) + ((CPU->flag_X >> C68K_SR_X_SFT) & 1);
 	if (res > 9) res += 6;
 	res += (dst & 0xF0) + (src & 0xF0);
@@ -3648,7 +3646,7 @@ case 0xC100:
 	else CPU->flag_X = CPU->flag_C = 0;
 	CPU->flag_notZ |= res & 0xFF;
 	CPU->flag_N = res;
-	*(BYTE_OFF + (u8*)(&CPU->D[(Opcode >> 9) & 7])) = res;
+	*(BYTE_OFF + (uint8_t*)(&CPU->D[(Opcode >> 9) & 7])) = res;
 }
 RET(6)
 case 0xC308:
@@ -3703,10 +3701,10 @@ case 0xCD0E:
 /* ABCDM */
 case 0xC108:
 {
-	u32 adr;
-	u32 res;
-	pointer dst;
-	pointer src;
+	uint32_t adr;
+	uint32_t res;
+	uintptr_t dst;
+	uintptr_t src;
 	adr = CPU->A[(Opcode >> 0) & 7] - 1;
 	CPU->A[(Opcode >> 0) & 7] = adr;
 	PRE_IO
@@ -3739,10 +3737,10 @@ case 0xCD0F:
 /* ABCD7M */
 case 0xC10F:
 {
-	u32 adr;
-	u32 res;
-	pointer dst;
-	pointer src;
+	uint32_t adr;
+	uint32_t res;
+	uintptr_t dst;
+	uintptr_t src;
 	adr = CPU->A[7] - 2;
 	CPU->A[7] = adr;
 	PRE_IO
@@ -3775,10 +3773,10 @@ case 0xCF0E:
 /* ABCDM7 */
 case 0xCF08:
 {
-	u32 adr;
-	u32 res;
-	pointer dst;
-	pointer src;
+	uint32_t adr;
+	uint32_t res;
+	uintptr_t dst;
+	uintptr_t src;
 	adr = CPU->A[(Opcode >> 0) & 7] - 1;
 	CPU->A[(Opcode >> 0) & 7] = adr;
 	PRE_IO
@@ -3805,10 +3803,10 @@ RET(18)
 /* ABCD7M7 */
 case 0xCF0F:
 {
-	u32 adr;
-	u32 res;
-	pointer dst;
-	pointer src;
+	uint32_t adr;
+	uint32_t res;
+	uintptr_t dst;
+	uintptr_t src;
 	adr = CPU->A[7] - 2;
 	CPU->A[7] = adr;
 	PRE_IO
@@ -3898,15 +3896,15 @@ case 0xCEC7:
 /* MULU */
 case 0xC0C0:
 {
-	u32 res;
-	pointer src;
-	src = (u16)CPU->D[(Opcode >> 0) & 7];
-	res = (u16)CPU->D[(Opcode >> 9) & 7];
-	res *= (u32)src;
+	uint32_t res;
+	uintptr_t src;
+	src = (uint16_t)CPU->D[(Opcode >> 0) & 7];
+	res = (uint16_t)CPU->D[(Opcode >> 9) & 7];
+	res *= (uint32_t)src;
 	CPU->flag_N = res >> 24;
 	CPU->flag_notZ = res;
 	CPU->flag_V = CPU->flag_C = 0;
-	*((u32*)(&CPU->D[(Opcode >> 9) & 7])) = res;
+	*((uint32_t*)(&CPU->D[(Opcode >> 9) & 7])) = res;
 }
 RET(50)
 case 0xC2D0:
@@ -3976,18 +3974,18 @@ case 0xCED7:
 /* MULU */
 case 0xC0D0:
 {
-	u32 adr;
-	u32 res;
-	pointer src;
+	uint32_t adr;
+	uint32_t res;
+	uintptr_t src;
 	adr = CPU->A[(Opcode >> 0) & 7];
 	PRE_IO
 	READ_WORD_F(adr, src)
-	res = (u16)CPU->D[(Opcode >> 9) & 7];
-	res *= (u32)src;
+	res = (uint16_t)CPU->D[(Opcode >> 9) & 7];
+	res *= (uint32_t)src;
 	CPU->flag_N = res >> 24;
 	CPU->flag_notZ = res;
 	CPU->flag_V = CPU->flag_C = 0;
-	*((u32*)(&CPU->D[(Opcode >> 9) & 7])) = res;
+	*((uint32_t*)(&CPU->D[(Opcode >> 9) & 7])) = res;
 	POST_IO
 }
 RET(54)
@@ -4050,19 +4048,19 @@ case 0xCEDE:
 /* MULU */
 case 0xC0D8:
 {
-	u32 adr;
-	u32 res;
-	pointer src;
+	uint32_t adr;
+	uint32_t res;
+	uintptr_t src;
 	adr = CPU->A[(Opcode >> 0) & 7];
 	CPU->A[(Opcode >> 0) & 7] += 2;
 	PRE_IO
 	READ_WORD_F(adr, src)
-	res = (u16)CPU->D[(Opcode >> 9) & 7];
-	res *= (u32)src;
+	res = (uint16_t)CPU->D[(Opcode >> 9) & 7];
+	res *= (uint32_t)src;
 	CPU->flag_N = res >> 24;
 	CPU->flag_notZ = res;
 	CPU->flag_V = CPU->flag_C = 0;
-	*((u32*)(&CPU->D[(Opcode >> 9) & 7])) = res;
+	*((uint32_t*)(&CPU->D[(Opcode >> 9) & 7])) = res;
 	POST_IO
 }
 RET(54)
@@ -4125,19 +4123,19 @@ case 0xCEE6:
 /* MULU */
 case 0xC0E0:
 {
-	u32 adr;
-	u32 res;
-	pointer src;
+	uint32_t adr;
+	uint32_t res;
+	uintptr_t src;
 	adr = CPU->A[(Opcode >> 0) & 7] - 2;
 	CPU->A[(Opcode >> 0) & 7] = adr;
 	PRE_IO
 	READ_WORD_F(adr, src)
-	res = (u16)CPU->D[(Opcode >> 9) & 7];
-	res *= (u32)src;
+	res = (uint16_t)CPU->D[(Opcode >> 9) & 7];
+	res *= (uint32_t)src;
 	CPU->flag_N = res >> 24;
 	CPU->flag_notZ = res;
 	CPU->flag_V = CPU->flag_C = 0;
-	*((u32*)(&CPU->D[(Opcode >> 9) & 7])) = res;
+	*((uint32_t*)(&CPU->D[(Opcode >> 9) & 7])) = res;
 	POST_IO
 }
 RET(56)
@@ -4208,19 +4206,19 @@ case 0xCEEF:
 /* MULU */
 case 0xC0E8:
 {
-	u32 adr;
-	u32 res;
-	pointer src;
-	adr = CPU->A[(Opcode >> 0) & 7] + (s32)(s16)FETCH_WORD;
+	uint32_t adr;
+	uint32_t res;
+	uintptr_t src;
+	adr = CPU->A[(Opcode >> 0) & 7] + (int32_t)(int16_t)FETCH_WORD;
 	PC += 2;
 	PRE_IO
 	READ_WORD_F(adr, src)
-	res = (u16)CPU->D[(Opcode >> 9) & 7];
-	res *= (u32)src;
+	res = (uint16_t)CPU->D[(Opcode >> 9) & 7];
+	res *= (uint32_t)src;
 	CPU->flag_N = res >> 24;
 	CPU->flag_notZ = res;
 	CPU->flag_V = CPU->flag_C = 0;
-	*((u32*)(&CPU->D[(Opcode >> 9) & 7])) = res;
+	*((uint32_t*)(&CPU->D[(Opcode >> 9) & 7])) = res;
 	POST_IO
 }
 RET(58)
@@ -4291,19 +4289,19 @@ case 0xCEF7:
 /* MULU */
 case 0xC0F0:
 {
-	u32 adr;
-	u32 res;
-	pointer src;
+	uint32_t adr;
+	uint32_t res;
+	uintptr_t src;
 	adr = CPU->A[(Opcode >> 0) & 7];
 	DECODE_EXT_WORD
 	PRE_IO
 	READ_WORD_F(adr, src)
-	res = (u16)CPU->D[(Opcode >> 9) & 7];
-	res *= (u32)src;
+	res = (uint16_t)CPU->D[(Opcode >> 9) & 7];
+	res *= (uint32_t)src;
 	CPU->flag_N = res >> 24;
 	CPU->flag_notZ = res;
 	CPU->flag_V = CPU->flag_C = 0;
-	*((u32*)(&CPU->D[(Opcode >> 9) & 7])) = res;
+	*((uint32_t*)(&CPU->D[(Opcode >> 9) & 7])) = res;
 	POST_IO
 }
 RET(60)
@@ -4318,19 +4316,19 @@ case 0xCEF8:
 /* MULU */
 case 0xC0F8:
 {
-	u32 adr;
-	u32 res;
-	pointer src;
-	adr = (s32)(s16)FETCH_WORD;
+	uint32_t adr;
+	uint32_t res;
+	uintptr_t src;
+	adr = (int32_t)(int16_t)FETCH_WORD;
 	PC += 2;
 	PRE_IO
 	READ_WORD_F(adr, src)
-	res = (u16)CPU->D[(Opcode >> 9) & 7];
-	res *= (u32)src;
+	res = (uint16_t)CPU->D[(Opcode >> 9) & 7];
+	res *= (uint32_t)src;
 	CPU->flag_N = res >> 24;
 	CPU->flag_notZ = res;
 	CPU->flag_V = CPU->flag_C = 0;
-	*((u32*)(&CPU->D[(Opcode >> 9) & 7])) = res;
+	*((uint32_t*)(&CPU->D[(Opcode >> 9) & 7])) = res;
 	POST_IO
 }
 RET(58)
@@ -4345,19 +4343,19 @@ case 0xCEF9:
 /* MULU */
 case 0xC0F9:
 {
-	u32 adr;
-	u32 res;
-	pointer src;
-	adr = (s32)FETCH_LONG;
+	uint32_t adr;
+	uint32_t res;
+	uintptr_t src;
+	adr = (int32_t)FETCH_LONG;
 	PC += 4;
 	PRE_IO
 	READ_WORD_F(adr, src)
-	res = (u16)CPU->D[(Opcode >> 9) & 7];
-	res *= (u32)src;
+	res = (uint16_t)CPU->D[(Opcode >> 9) & 7];
+	res *= (uint32_t)src;
 	CPU->flag_N = res >> 24;
 	CPU->flag_notZ = res;
 	CPU->flag_V = CPU->flag_C = 0;
-	*((u32*)(&CPU->D[(Opcode >> 9) & 7])) = res;
+	*((uint32_t*)(&CPU->D[(Opcode >> 9) & 7])) = res;
 	POST_IO
 }
 RET(62)
@@ -4372,19 +4370,19 @@ case 0xCEFA:
 /* MULU */
 case 0xC0FA:
 {
-	u32 adr;
-	u32 res;
-	pointer src;
-	adr = (u32)(PC - CPU->BasePC) + (s32)(s16)FETCH_WORD;
+	uint32_t adr;
+	uint32_t res;
+	uintptr_t src;
+	adr = (uint32_t)(PC - CPU->BasePC) + (int32_t)(int16_t)FETCH_WORD;
 	PC += 2;
 	PRE_IO
 	READ_WORD_F(adr, src)
-	res = (u16)CPU->D[(Opcode >> 9) & 7];
-	res *= (u32)src;
+	res = (uint16_t)CPU->D[(Opcode >> 9) & 7];
+	res *= (uint32_t)src;
 	CPU->flag_N = res >> 24;
 	CPU->flag_notZ = res;
 	CPU->flag_V = CPU->flag_C = 0;
-	*((u32*)(&CPU->D[(Opcode >> 9) & 7])) = res;
+	*((uint32_t*)(&CPU->D[(Opcode >> 9) & 7])) = res;
 	POST_IO
 }
 RET(58)
@@ -4399,19 +4397,19 @@ case 0xCEFB:
 /* MULU */
 case 0xC0FB:
 {
-	u32 adr;
-	u32 res;
-	pointer src;
-	adr = (u32)(PC - CPU->BasePC);
+	uint32_t adr;
+	uint32_t res;
+	uintptr_t src;
+	adr = (uint32_t)(PC - CPU->BasePC);
 	DECODE_EXT_WORD
 	PRE_IO
 	READ_WORD_F(adr, src)
-	res = (u16)CPU->D[(Opcode >> 9) & 7];
-	res *= (u32)src;
+	res = (uint16_t)CPU->D[(Opcode >> 9) & 7];
+	res *= (uint32_t)src;
 	CPU->flag_N = res >> 24;
 	CPU->flag_notZ = res;
 	CPU->flag_V = CPU->flag_C = 0;
-	*((u32*)(&CPU->D[(Opcode >> 9) & 7])) = res;
+	*((uint32_t*)(&CPU->D[(Opcode >> 9) & 7])) = res;
 	POST_IO
 }
 RET(60)
@@ -4426,16 +4424,16 @@ case 0xCEFC:
 /* MULU */
 case 0xC0FC:
 {
-	u32 res;
-	pointer src;
+	uint32_t res;
+	uintptr_t src;
 	src = FETCH_WORD;
 	PC += 2;
-	res = (u16)CPU->D[(Opcode >> 9) & 7];
-	res *= (u32)src;
+	res = (uint16_t)CPU->D[(Opcode >> 9) & 7];
+	res *= (uint32_t)src;
 	CPU->flag_N = res >> 24;
 	CPU->flag_notZ = res;
 	CPU->flag_V = CPU->flag_C = 0;
-	*((u32*)(&CPU->D[(Opcode >> 9) & 7])) = res;
+	*((uint32_t*)(&CPU->D[(Opcode >> 9) & 7])) = res;
 }
 RET(54)
 case 0xC2DF:
@@ -4449,19 +4447,19 @@ case 0xCEDF:
 /* MULU */
 case 0xC0DF:
 {
-	u32 adr;
-	u32 res;
-	pointer src;
+	uint32_t adr;
+	uint32_t res;
+	uintptr_t src;
 	adr = CPU->A[7];
 	CPU->A[7] += 2;
 	PRE_IO
 	READ_WORD_F(adr, src)
-	res = (u16)CPU->D[(Opcode >> 9) & 7];
-	res *= (u32)src;
+	res = (uint16_t)CPU->D[(Opcode >> 9) & 7];
+	res *= (uint32_t)src;
 	CPU->flag_N = res >> 24;
 	CPU->flag_notZ = res;
 	CPU->flag_V = CPU->flag_C = 0;
-	*((u32*)(&CPU->D[(Opcode >> 9) & 7])) = res;
+	*((uint32_t*)(&CPU->D[(Opcode >> 9) & 7])) = res;
 	POST_IO
 }
 RET(54)
@@ -4476,19 +4474,19 @@ case 0xCEE7:
 /* MULU */
 case 0xC0E7:
 {
-	u32 adr;
-	u32 res;
-	pointer src;
+	uint32_t adr;
+	uint32_t res;
+	uintptr_t src;
 	adr = CPU->A[7] - 2;
 	CPU->A[7] = adr;
 	PRE_IO
 	READ_WORD_F(adr, src)
-	res = (u16)CPU->D[(Opcode >> 9) & 7];
-	res *= (u32)src;
+	res = (uint16_t)CPU->D[(Opcode >> 9) & 7];
+	res *= (uint32_t)src;
 	CPU->flag_N = res >> 24;
 	CPU->flag_notZ = res;
 	CPU->flag_V = CPU->flag_C = 0;
-	*((u32*)(&CPU->D[(Opcode >> 9) & 7])) = res;
+	*((uint32_t*)(&CPU->D[(Opcode >> 9) & 7])) = res;
 	POST_IO
 }
 RET(56)
@@ -4559,15 +4557,15 @@ case 0xCFC7:
 /* MULS */
 case 0xC1C0:
 {
-	u32 res;
-	pointer src;
-	src = (s32)(s16)CPU->D[(Opcode >> 0) & 7];
-	res = (s32)(s16)CPU->D[(Opcode >> 9) & 7];
-	res *= (s32)src;
+	uint32_t res;
+	uintptr_t src;
+	src = (int32_t)(int16_t)CPU->D[(Opcode >> 0) & 7];
+	res = (int32_t)(int16_t)CPU->D[(Opcode >> 9) & 7];
+	res *= (int32_t)src;
 	CPU->flag_N = res >> 24;
 	CPU->flag_notZ = res;
 	CPU->flag_V = CPU->flag_C = 0;
-	*((u32*)(&CPU->D[(Opcode >> 9) & 7])) = res;
+	*((uint32_t*)(&CPU->D[(Opcode >> 9) & 7])) = res;
 }
 RET(50)
 case 0xC3D0:
@@ -4637,18 +4635,18 @@ case 0xCFD7:
 /* MULS */
 case 0xC1D0:
 {
-	u32 adr;
-	u32 res;
-	pointer src;
+	uint32_t adr;
+	uint32_t res;
+	uintptr_t src;
 	adr = CPU->A[(Opcode >> 0) & 7];
 	PRE_IO
 	READSX_WORD_F(adr, src)
-	res = (s32)(s16)CPU->D[(Opcode >> 9) & 7];
-	res *= (s32)src;
+	res = (int32_t)(int16_t)CPU->D[(Opcode >> 9) & 7];
+	res *= (int32_t)src;
 	CPU->flag_N = res >> 24;
 	CPU->flag_notZ = res;
 	CPU->flag_V = CPU->flag_C = 0;
-	*((u32*)(&CPU->D[(Opcode >> 9) & 7])) = res;
+	*((uint32_t*)(&CPU->D[(Opcode >> 9) & 7])) = res;
 	POST_IO
 }
 RET(54)
@@ -4711,19 +4709,19 @@ case 0xCFDE:
 /* MULS */
 case 0xC1D8:
 {
-	u32 adr;
-	u32 res;
-	pointer src;
+	uint32_t adr;
+	uint32_t res;
+	uintptr_t src;
 	adr = CPU->A[(Opcode >> 0) & 7];
 	CPU->A[(Opcode >> 0) & 7] += 2;
 	PRE_IO
 	READSX_WORD_F(adr, src)
-	res = (s32)(s16)CPU->D[(Opcode >> 9) & 7];
-	res *= (s32)src;
+	res = (int32_t)(int16_t)CPU->D[(Opcode >> 9) & 7];
+	res *= (int32_t)src;
 	CPU->flag_N = res >> 24;
 	CPU->flag_notZ = res;
 	CPU->flag_V = CPU->flag_C = 0;
-	*((u32*)(&CPU->D[(Opcode >> 9) & 7])) = res;
+	*((uint32_t*)(&CPU->D[(Opcode >> 9) & 7])) = res;
 	POST_IO
 }
 RET(54)
@@ -4786,19 +4784,19 @@ case 0xCFE6:
 /* MULS */
 case 0xC1E0:
 {
-	u32 adr;
-	u32 res;
-	pointer src;
+	uint32_t adr;
+	uint32_t res;
+	uintptr_t src;
 	adr = CPU->A[(Opcode >> 0) & 7] - 2;
 	CPU->A[(Opcode >> 0) & 7] = adr;
 	PRE_IO
 	READSX_WORD_F(adr, src)
-	res = (s32)(s16)CPU->D[(Opcode >> 9) & 7];
-	res *= (s32)src;
+	res = (int32_t)(int16_t)CPU->D[(Opcode >> 9) & 7];
+	res *= (int32_t)src;
 	CPU->flag_N = res >> 24;
 	CPU->flag_notZ = res;
 	CPU->flag_V = CPU->flag_C = 0;
-	*((u32*)(&CPU->D[(Opcode >> 9) & 7])) = res;
+	*((uint32_t*)(&CPU->D[(Opcode >> 9) & 7])) = res;
 	POST_IO
 }
 RET(56)
@@ -4869,19 +4867,19 @@ case 0xCFEF:
 /* MULS */
 case 0xC1E8:
 {
-	u32 adr;
-	u32 res;
-	pointer src;
-	adr = CPU->A[(Opcode >> 0) & 7] + (s32)(s16)FETCH_WORD;
+	uint32_t adr;
+	uint32_t res;
+	uintptr_t src;
+	adr = CPU->A[(Opcode >> 0) & 7] + (int32_t)(int16_t)FETCH_WORD;
 	PC += 2;
 	PRE_IO
 	READSX_WORD_F(adr, src)
-	res = (s32)(s16)CPU->D[(Opcode >> 9) & 7];
-	res *= (s32)src;
+	res = (int32_t)(int16_t)CPU->D[(Opcode >> 9) & 7];
+	res *= (int32_t)src;
 	CPU->flag_N = res >> 24;
 	CPU->flag_notZ = res;
 	CPU->flag_V = CPU->flag_C = 0;
-	*((u32*)(&CPU->D[(Opcode >> 9) & 7])) = res;
+	*((uint32_t*)(&CPU->D[(Opcode >> 9) & 7])) = res;
 	POST_IO
 }
 RET(58)
@@ -4952,19 +4950,19 @@ case 0xCFF7:
 /* MULS */
 case 0xC1F0:
 {
-	u32 adr;
-	u32 res;
-	pointer src;
+	uint32_t adr;
+	uint32_t res;
+	uintptr_t src;
 	adr = CPU->A[(Opcode >> 0) & 7];
 	DECODE_EXT_WORD
 	PRE_IO
 	READSX_WORD_F(adr, src)
-	res = (s32)(s16)CPU->D[(Opcode >> 9) & 7];
-	res *= (s32)src;
+	res = (int32_t)(int16_t)CPU->D[(Opcode >> 9) & 7];
+	res *= (int32_t)src;
 	CPU->flag_N = res >> 24;
 	CPU->flag_notZ = res;
 	CPU->flag_V = CPU->flag_C = 0;
-	*((u32*)(&CPU->D[(Opcode >> 9) & 7])) = res;
+	*((uint32_t*)(&CPU->D[(Opcode >> 9) & 7])) = res;
 	POST_IO
 }
 RET(60)
@@ -4979,19 +4977,19 @@ case 0xCFF8:
 /* MULS */
 case 0xC1F8:
 {
-	u32 adr;
-	u32 res;
-	pointer src;
-	adr = (s32)(s16)FETCH_WORD;
+	uint32_t adr;
+	uint32_t res;
+	uintptr_t src;
+	adr = (int32_t)(int16_t)FETCH_WORD;
 	PC += 2;
 	PRE_IO
 	READSX_WORD_F(adr, src)
-	res = (s32)(s16)CPU->D[(Opcode >> 9) & 7];
-	res *= (s32)src;
+	res = (int32_t)(int16_t)CPU->D[(Opcode >> 9) & 7];
+	res *= (int32_t)src;
 	CPU->flag_N = res >> 24;
 	CPU->flag_notZ = res;
 	CPU->flag_V = CPU->flag_C = 0;
-	*((u32*)(&CPU->D[(Opcode >> 9) & 7])) = res;
+	*((uint32_t*)(&CPU->D[(Opcode >> 9) & 7])) = res;
 	POST_IO
 }
 RET(58)
@@ -5006,19 +5004,19 @@ case 0xCFF9:
 /* MULS */
 case 0xC1F9:
 {
-	u32 adr;
-	u32 res;
-	pointer src;
-	adr = (s32)FETCH_LONG;
+	uint32_t adr;
+	uint32_t res;
+	uintptr_t src;
+	adr = (int32_t)FETCH_LONG;
 	PC += 4;
 	PRE_IO
 	READSX_WORD_F(adr, src)
-	res = (s32)(s16)CPU->D[(Opcode >> 9) & 7];
-	res *= (s32)src;
+	res = (int32_t)(int16_t)CPU->D[(Opcode >> 9) & 7];
+	res *= (int32_t)src;
 	CPU->flag_N = res >> 24;
 	CPU->flag_notZ = res;
 	CPU->flag_V = CPU->flag_C = 0;
-	*((u32*)(&CPU->D[(Opcode >> 9) & 7])) = res;
+	*((uint32_t*)(&CPU->D[(Opcode >> 9) & 7])) = res;
 	POST_IO
 }
 RET(62)
@@ -5033,19 +5031,19 @@ case 0xCFFA:
 /* MULS */
 case 0xC1FA:
 {
-	u32 adr;
-	u32 res;
-	pointer src;
-	adr = (u32)(PC - CPU->BasePC) + (s32)(s16)FETCH_WORD;
+	uint32_t adr;
+	uint32_t res;
+	uintptr_t src;
+	adr = (uint32_t)(PC - CPU->BasePC) + (int32_t)(int16_t)FETCH_WORD;
 	PC += 2;
 	PRE_IO
 	READSX_WORD_F(adr, src)
-	res = (s32)(s16)CPU->D[(Opcode >> 9) & 7];
-	res *= (s32)src;
+	res = (int32_t)(int16_t)CPU->D[(Opcode >> 9) & 7];
+	res *= (int32_t)src;
 	CPU->flag_N = res >> 24;
 	CPU->flag_notZ = res;
 	CPU->flag_V = CPU->flag_C = 0;
-	*((u32*)(&CPU->D[(Opcode >> 9) & 7])) = res;
+	*((uint32_t*)(&CPU->D[(Opcode >> 9) & 7])) = res;
 	POST_IO
 }
 RET(58)
@@ -5060,19 +5058,19 @@ case 0xCFFB:
 /* MULS */
 case 0xC1FB:
 {
-	u32 adr;
-	u32 res;
-	pointer src;
-	adr = (u32)(PC - CPU->BasePC);
+	uint32_t adr;
+	uint32_t res;
+	uintptr_t src;
+	adr = (uint32_t)(PC - CPU->BasePC);
 	DECODE_EXT_WORD
 	PRE_IO
 	READSX_WORD_F(adr, src)
-	res = (s32)(s16)CPU->D[(Opcode >> 9) & 7];
-	res *= (s32)src;
+	res = (int32_t)(int16_t)CPU->D[(Opcode >> 9) & 7];
+	res *= (int32_t)src;
 	CPU->flag_N = res >> 24;
 	CPU->flag_notZ = res;
 	CPU->flag_V = CPU->flag_C = 0;
-	*((u32*)(&CPU->D[(Opcode >> 9) & 7])) = res;
+	*((uint32_t*)(&CPU->D[(Opcode >> 9) & 7])) = res;
 	POST_IO
 }
 RET(60)
@@ -5087,16 +5085,16 @@ case 0xCFFC:
 /* MULS */
 case 0xC1FC:
 {
-	u32 res;
-	pointer src;
-	src = (s32)(s16)FETCH_WORD;
+	uint32_t res;
+	uintptr_t src;
+	src = (int32_t)(int16_t)FETCH_WORD;
 	PC += 2;
-	res = (s32)(s16)CPU->D[(Opcode >> 9) & 7];
-	res *= (s32)src;
+	res = (int32_t)(int16_t)CPU->D[(Opcode >> 9) & 7];
+	res *= (int32_t)src;
 	CPU->flag_N = res >> 24;
 	CPU->flag_notZ = res;
 	CPU->flag_V = CPU->flag_C = 0;
-	*((u32*)(&CPU->D[(Opcode >> 9) & 7])) = res;
+	*((uint32_t*)(&CPU->D[(Opcode >> 9) & 7])) = res;
 }
 RET(54)
 case 0xC3DF:
@@ -5110,19 +5108,19 @@ case 0xCFDF:
 /* MULS */
 case 0xC1DF:
 {
-	u32 adr;
-	u32 res;
-	pointer src;
+	uint32_t adr;
+	uint32_t res;
+	uintptr_t src;
 	adr = CPU->A[7];
 	CPU->A[7] += 2;
 	PRE_IO
 	READSX_WORD_F(adr, src)
-	res = (s32)(s16)CPU->D[(Opcode >> 9) & 7];
-	res *= (s32)src;
+	res = (int32_t)(int16_t)CPU->D[(Opcode >> 9) & 7];
+	res *= (int32_t)src;
 	CPU->flag_N = res >> 24;
 	CPU->flag_notZ = res;
 	CPU->flag_V = CPU->flag_C = 0;
-	*((u32*)(&CPU->D[(Opcode >> 9) & 7])) = res;
+	*((uint32_t*)(&CPU->D[(Opcode >> 9) & 7])) = res;
 	POST_IO
 }
 RET(54)
@@ -5137,19 +5135,19 @@ case 0xCFE7:
 /* MULS */
 case 0xC1E7:
 {
-	u32 adr;
-	u32 res;
-	pointer src;
+	uint32_t adr;
+	uint32_t res;
+	uintptr_t src;
 	adr = CPU->A[7] - 2;
 	CPU->A[7] = adr;
 	PRE_IO
 	READSX_WORD_F(adr, src)
-	res = (s32)(s16)CPU->D[(Opcode >> 9) & 7];
-	res *= (s32)src;
+	res = (int32_t)(int16_t)CPU->D[(Opcode >> 9) & 7];
+	res *= (int32_t)src;
 	CPU->flag_N = res >> 24;
 	CPU->flag_notZ = res;
 	CPU->flag_V = CPU->flag_C = 0;
-	*((u32*)(&CPU->D[(Opcode >> 9) & 7])) = res;
+	*((uint32_t*)(&CPU->D[(Opcode >> 9) & 7])) = res;
 	POST_IO
 }
 RET(56)
@@ -5220,13 +5218,13 @@ case 0xCF47:
 /* EXGDD */
 case 0xC140:
 {
-	u32 res;
-	pointer src;
-	res = (u32)CPU->D[(Opcode >> 0) & 7];
-	src = (u32)CPU->D[(Opcode >> 9) & 7];
-	*((u32*)(&CPU->D[(Opcode >> 9) & 7])) = res;
-	res = (u32)src;
-	*((u32*)(&CPU->D[(Opcode >> 0) & 7])) = res;
+	uint32_t res;
+	uintptr_t src;
+	res = (uint32_t)CPU->D[(Opcode >> 0) & 7];
+	src = (uint32_t)CPU->D[(Opcode >> 9) & 7];
+	*((uint32_t*)(&CPU->D[(Opcode >> 9) & 7])) = res;
+	res = (uint32_t)src;
+	*((uint32_t*)(&CPU->D[(Opcode >> 0) & 7])) = res;
 }
 RET(6)
 case 0xC348:
@@ -5296,12 +5294,12 @@ case 0xCF4F:
 /* EXGAA */
 case 0xC148:
 {
-	u32 res;
-	pointer src;
-	res = (u32)CPU->A[(Opcode >> 0) & 7];
-	src = (u32)CPU->A[(Opcode >> 9) & 7];
+	uint32_t res;
+	uintptr_t src;
+	res = (uint32_t)CPU->A[(Opcode >> 0) & 7];
+	src = (uint32_t)CPU->A[(Opcode >> 9) & 7];
 	CPU->A[(Opcode >> 9) & 7] = res;
-	res = (u32)src;
+	res = (uint32_t)src;
 	CPU->A[(Opcode >> 0) & 7] = res;
 }
 RET(6)
@@ -5372,12 +5370,10 @@ case 0xCF8F:
 /* EXGAD */
 case 0xC188:
 {
-	u32 res;
-	pointer src;
-	res = (u32)CPU->A[(Opcode >> 0) & 7];
-	src = (u32)CPU->D[(Opcode >> 9) & 7];
-	*((u32*)(&CPU->D[(Opcode >> 9) & 7])) = res;
-	res = (u32)src;
+	uint32_t  res = (uint32_t)CPU->A[(Opcode >> 0) & 7];
+	uintptr_t src = (uint32_t)CPU->D[(Opcode >> 9) & 7];
+	*((uint32_t*)(&CPU->D[(Opcode >> 9) & 7])) = res;
+	res = (uint32_t)src;
 	CPU->A[(Opcode >> 0) & 7] = res;
 }
 RET(6)

@@ -25,7 +25,7 @@
 #include "c68k.h"
 
 /* exception cycle table (taken from musashi core) */
-static const s32 c68k_exception_cycle_table[256] =
+static const int32_t c68k_exception_cycle_table[256] =
 {
 	  4, /*  0: Reset - Initial Stack Pointer */
 	  4, /*  1: Reset - Initial Program Counter */
@@ -108,7 +108,7 @@ static void *JumpTable[0x10000];
 #endif
 #endif
 
-static u32 C68k_Initialised = 0;
+static uint32_t C68k_Initialised = 0;
 
 /* internals core macros */
 
@@ -187,10 +187,10 @@ static u32 C68k_Initialised = 0;
 #endif
 
 #define READSX_BYTE_F(A, D)             \
-    D = (s32)(s8)CPU->Read_Byte(A);
+    D = (int32_t)(int8_t)CPU->Read_Byte(A);
 
 #define READSX_WORD_F(A, D)             \
-    D = (s32)(s16)CPU->Read_Word(A);
+    D = (int32_t)(int16_t)CPU->Read_Word(A);
     
 #ifdef MSB_FIRST
     #define READSX_LONG_F(A, D)         \
@@ -238,7 +238,7 @@ static u32 C68k_Initialised = 0;
     CPU->Write_Word(CPU->A[7] -= 2, D); \
 
 #define POP_16_F(D)                     \
-    D = (u16)CPU->Read_Word(CPU->A[7]); \
+    D = (uint16_t)CPU->Read_Word(CPU->A[7]); \
     CPU->A[7] += 2;
 
 #ifdef MSB_FIRST
@@ -263,57 +263,47 @@ static u32 C68k_Initialised = 0;
     CPU->A[7] += 4;
 #endif
 
-#define FETCH_BYTE          \
-((*(u16*)PC) & 0xFF)
-
-#define FETCH_WORD          \
-(*(u16*)PC)
-
-
-#define FETCH_LONG          \
-(*(u32*)PC)
+#define FETCH_BYTE ((*(uint16_t*)PC) & 0xFF)
+#define FETCH_WORD (*(uint16_t*)PC)
+#define FETCH_LONG (*(uint32_t*)PC)
 
 #define DECODE_EXT_WORD     \
 {                           \
-    u32 ext;                \
-                            \
-    ext = (*(u16*)PC);      \
+    uint32_t ext = (*(uint16_t*)PC);      \
     PC += 2;                \
                             \
-    adr += (s32)((s8)(ext));                            \
-    if (ext & 0x0800) adr += (s32) CPU->D[ext >> 12];   \
-    else adr += (s32)((s16)(CPU->D[ext >> 12]));        \
+    adr += (int32_t)((int8_t)(ext));                            \
+    if (ext & 0x0800) adr += (int32_t) CPU->D[ext >> 12];   \
+    else adr += (int32_t)((int16_t)(CPU->D[ext >> 12]));        \
 }
 
 #ifndef MSB_FIRST
 #ifdef C68K_BYTE_SWAP_OPT
     #undef FETCH_LONG
     #define FETCH_LONG          \
-    ((((u32)(*(u16*)PC)) << 16) | ((u32)(*(u16*)(PC + 2))))
+    ((((uint32_t)(*(uint16_t*)PC)) << 16) | ((uint32_t)(*(uint16_t*)(PC + 2))))
 #else
     #undef FETCH_BYTE
     #define FETCH_BYTE          \
-    (*(u16*)PC) >> 8)
+    (*(uint16_t*)PC) >> 8)
 
     #undef FETCH_WORD
     #define FETCH_WORD          \
-    ((((u16)(*(u8*)PC)) << 8) | ((u16)(*(u8*)(PC + 1))))
+    ((((uint16_t)(*(uint8_t*)PC)) << 8) | ((uint16_t)(*(uint8_t*)(PC + 1))))
 
     #undef FETCH_LONG
     #define FETCH_LONG          \
-    ((((u32)(*(u8*)PC)) << 24) | (((u32)(*(u8*)(PC + 1))) << 16) | (((u32)(*(u8*)(PC + 2))) << 8) | ((u32)(*(u8*)(PC + 3))))
+    ((((uint32_t)(*(uint8_t*)PC)) << 24) | (((uint32_t)(*(uint8_t*)(PC + 1))) << 16) | (((uint32_t)(*(uint8_t*)(PC + 2))) << 8) | ((uint32_t)(*(uint8_t*)(PC + 3))))
 
     #undef DECODE_EXT_WORD
     #define DECODE_EXT_WORD     \
     {                           \
-        u32 ext;                \
-                                \
-        ext = (*(u16*)PC);      \
+        uint32_t ext = (*(uint16_t*)PC);      \
         PC += 2;                \
                                 \
-        adr += (s32)((s8)(ext >> 8));                                   \
-        if (ext & 0x0008) adr += (s32) CPU->D[(ext >> 4) & 0x000F];     \
-        else adr += (s32)((s16)(CPU->D[(ext >> 4) & 0x000F]));          \
+        adr += (int32_t)((int8_t)(ext >> 8));                                   \
+        if (ext & 0x0008) adr += (int32_t) CPU->D[(ext >> 4) & 0x000F];     \
+        else adr += (int32_t)((int16_t)(CPU->D[(ext >> 4) & 0x000F]));          \
     }
 #endif
 #endif
@@ -344,11 +334,10 @@ static u32 C68k_Initialised = 0;
 
 #define CHECK_INT                                     \
     {                                                 \
-        s32 line, vect;                               \
+        int32_t vect;                               \
+        int32_t line = CPU->IRQLine;                          \
                                                       \
-        line = CPU->IRQLine;                          \
-                                                      \
-        if ((line == 7) || (line > (s32)CPU->flag_I)) \
+        if ((line == 7) || (line > (int32_t)CPU->flag_I)) \
         {                                             \
             /* get vector */                                        \
             CPU->IRQLine = 0;                                       \
@@ -362,9 +351,7 @@ static u32 C68k_Initialised = 0;
             /* swap A7 and USP */              \
             if (!CPU->flag_S)                  \
             {                                  \
-                u32 tmpSP;                     \
-                                               \
-                tmpSP = CPU->USP;              \
+                uint32_t tmpSP = CPU->USP;     \
                 CPU->USP = CPU->A[7];          \
                 CPU->A[7] = tmpSP;             \
             }                                  \
@@ -372,7 +359,7 @@ static u32 C68k_Initialised = 0;
             PRE_IO                             \
                                                \
             /* push PC and SR */               \
-            PUSH_32_F((u32)(PC - CPU->BasePC)) \
+            PUSH_32_F((uint32_t)(PC - CPU->BasePC)) \
             PUSH_16_F(GET_SR)                  \
                                                \
             /* adjust SR */                    \
@@ -389,12 +376,12 @@ static u32 C68k_Initialised = 0;
 
 /* main exec function */
 
-s32 FASTCALL C68k_Exec(c68k_struc *cpu, s32 cycle)
+int32_t FASTCALL C68k_Exec(c68k_struc *cpu, int32_t cycle)
 {
     c68k_struc *CPU;
-    pointer PC;
-    s32 CCnt;
-    u32 Opcode;
+    uintptr_t PC;
+    int32_t CCnt;
+    uint32_t Opcode;
 
 #ifdef C68K_NO_JUMP_TABLE
     C68k_Initialised = 1;

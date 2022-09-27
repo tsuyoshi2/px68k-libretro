@@ -258,7 +258,7 @@ case 0x6201:
 {
 	if (CPU->flag_notZ && (!(CPU->flag_C & 0x100)))
 	{
-		PC += (s32)(s8)Opcode;
+		PC += (int32_t)(int8_t)Opcode;
 	CCnt -= 2;
 	}
 }
@@ -523,7 +523,7 @@ case 0x6301:
 {
 	if ((!CPU->flag_notZ) || (CPU->flag_C & 0x100))
 	{
-		PC += (s32)(s8)Opcode;
+		PC += (int32_t)(int8_t)Opcode;
 	CCnt -= 2;
 	}
 }
@@ -788,7 +788,7 @@ case 0x6401:
 {
 	if (!(CPU->flag_C & 0x100))
 	{
-		PC += (s32)(s8)Opcode;
+		PC += (int32_t)(int8_t)Opcode;
 	CCnt -= 2;
 	}
 }
@@ -1053,7 +1053,7 @@ case 0x6501:
 {
 	if (CPU->flag_C & 0x100)
 	{
-		PC += (s32)(s8)Opcode;
+		PC += (int32_t)(int8_t)Opcode;
 	CCnt -= 2;
 	}
 }
@@ -1318,7 +1318,7 @@ case 0x6601:
 {
 	if (CPU->flag_notZ)
 	{
-		PC += (s32)(s8)Opcode;
+		PC += (int32_t)(int8_t)Opcode;
 	CCnt -= 2;
 	}
 }
@@ -1583,7 +1583,7 @@ case 0x6701:
 {
 	if (!CPU->flag_notZ)
 	{
-		PC += (s32)(s8)Opcode;
+		PC += (int32_t)(int8_t)Opcode;
 	CCnt -= 2;
 	}
 }
@@ -1848,7 +1848,7 @@ case 0x6801:
 {
 	if (!(CPU->flag_V & 0x80))
 	{
-		PC += (s32)(s8)Opcode;
+		PC += (int32_t)(int8_t)Opcode;
 	CCnt -= 2;
 	}
 }
@@ -2113,7 +2113,7 @@ case 0x6901:
 {
 	if (CPU->flag_V & 0x80)
 	{
-		PC += (s32)(s8)Opcode;
+		PC += (int32_t)(int8_t)Opcode;
 	CCnt -= 2;
 	}
 }
@@ -2378,7 +2378,7 @@ case 0x6A01:
 {
 	if (!(CPU->flag_N & 0x80))
 	{
-		PC += (s32)(s8)Opcode;
+		PC += (int32_t)(int8_t)Opcode;
 	CCnt -= 2;
 	}
 }
@@ -2643,7 +2643,7 @@ case 0x6B01:
 {
 	if (CPU->flag_N & 0x80)
 	{
-		PC += (s32)(s8)Opcode;
+		PC += (int32_t)(int8_t)Opcode;
 	CCnt -= 2;
 	}
 }
@@ -2908,7 +2908,7 @@ case 0x6C01:
 {
 	if (!((CPU->flag_N ^ CPU->flag_V) & 0x80))
 	{
-		PC += (s32)(s8)Opcode;
+		PC += (int32_t)(int8_t)Opcode;
 	CCnt -= 2;
 	}
 }
@@ -3173,7 +3173,7 @@ case 0x6D01:
 {
 	if ((CPU->flag_N ^ CPU->flag_V) & 0x80)
 	{
-		PC += (s32)(s8)Opcode;
+		PC += (int32_t)(int8_t)Opcode;
 	CCnt -= 2;
 	}
 }
@@ -3438,7 +3438,7 @@ case 0x6E01:
 {
 	if (CPU->flag_notZ && (!((CPU->flag_N ^ CPU->flag_V) & 0x80)))
 	{
-		PC += (s32)(s8)Opcode;
+		PC += (int32_t)(int8_t)Opcode;
 	CCnt -= 2;
 	}
 }
@@ -3703,7 +3703,7 @@ case 0x6F01:
 {
 	if ((!CPU->flag_notZ) || ((CPU->flag_N ^ CPU->flag_V) & 0x80))
 	{
-		PC += (s32)(s8)Opcode;
+		PC += (int32_t)(int8_t)Opcode;
 	CCnt -= 2;
 	}
 }
@@ -3714,7 +3714,7 @@ case 0x6200:
 {
 	if (CPU->flag_notZ && (!(CPU->flag_C & 0x100)))
 	{
-		PC += (s32)(s16)FETCH_WORD;
+		PC += (int32_t)(int16_t)FETCH_WORD;
 		PC -= CPU->BasePC;
 		SET_PC(PC);
 	RET(10)
@@ -3728,7 +3728,7 @@ case 0x6300:
 {
 	if ((!CPU->flag_notZ) || (CPU->flag_C & 0x100))
 	{
-		PC += (s32)(s16)FETCH_WORD;
+		PC += (int32_t)(int16_t)FETCH_WORD;
 		PC -= CPU->BasePC;
 		SET_PC(PC);
 	RET(10)
@@ -3742,7 +3742,7 @@ case 0x6400:
 {
 	if (!(CPU->flag_C & 0x100))
 	{
-		PC += (s32)(s16)FETCH_WORD;
+		PC += (int32_t)(int16_t)FETCH_WORD;
 		PC -= CPU->BasePC;
 		SET_PC(PC);
 	RET(10)
@@ -3756,7 +3756,7 @@ case 0x6500:
 {
 	if (CPU->flag_C & 0x100)
 	{
-		PC += (s32)(s16)FETCH_WORD;
+		PC += (int32_t)(int16_t)FETCH_WORD;
 		PC -= CPU->BasePC;
 		SET_PC(PC);
 	RET(10)
@@ -3770,7 +3770,7 @@ case 0x6600:
 {
 	if (CPU->flag_notZ)
 	{
-		PC += (s32)(s16)FETCH_WORD;
+		PC += (int32_t)(int16_t)FETCH_WORD;
 		PC -= CPU->BasePC;
 		SET_PC(PC);
 	RET(10)
@@ -3784,7 +3784,7 @@ case 0x6700:
 {
 	if (!CPU->flag_notZ)
 	{
-		PC += (s32)(s16)FETCH_WORD;
+		PC += (int32_t)(int16_t)FETCH_WORD;
 		PC -= CPU->BasePC;
 		SET_PC(PC);
 	RET(10)
@@ -3798,7 +3798,7 @@ case 0x6800:
 {
 	if (!(CPU->flag_V & 0x80))
 	{
-		PC += (s32)(s16)FETCH_WORD;
+		PC += (int32_t)(int16_t)FETCH_WORD;
 		PC -= CPU->BasePC;
 		SET_PC(PC);
 	RET(10)
@@ -3812,7 +3812,7 @@ case 0x6900:
 {
 	if (CPU->flag_V & 0x80)
 	{
-		PC += (s32)(s16)FETCH_WORD;
+		PC += (int32_t)(int16_t)FETCH_WORD;
 		PC -= CPU->BasePC;
 		SET_PC(PC);
 	RET(10)
@@ -3826,7 +3826,7 @@ case 0x6A00:
 {
 	if (!(CPU->flag_N & 0x80))
 	{
-		PC += (s32)(s16)FETCH_WORD;
+		PC += (int32_t)(int16_t)FETCH_WORD;
 		PC -= CPU->BasePC;
 		SET_PC(PC);
 	RET(10)
@@ -3840,7 +3840,7 @@ case 0x6B00:
 {
 	if (CPU->flag_N & 0x80)
 	{
-		PC += (s32)(s16)FETCH_WORD;
+		PC += (int32_t)(int16_t)FETCH_WORD;
 		PC -= CPU->BasePC;
 		SET_PC(PC);
 	RET(10)
@@ -3854,7 +3854,7 @@ case 0x6C00:
 {
 	if (!((CPU->flag_N ^ CPU->flag_V) & 0x80))
 	{
-		PC += (s32)(s16)FETCH_WORD;
+		PC += (int32_t)(int16_t)FETCH_WORD;
 		PC -= CPU->BasePC;
 		SET_PC(PC);
 	RET(10)
@@ -3868,7 +3868,7 @@ case 0x6D00:
 {
 	if ((CPU->flag_N ^ CPU->flag_V) & 0x80)
 	{
-		PC += (s32)(s16)FETCH_WORD;
+		PC += (int32_t)(int16_t)FETCH_WORD;
 		PC -= CPU->BasePC;
 		SET_PC(PC);
 	RET(10)
@@ -3882,7 +3882,7 @@ case 0x6E00:
 {
 	if (CPU->flag_notZ && (!((CPU->flag_N ^ CPU->flag_V) & 0x80)))
 	{
-		PC += (s32)(s16)FETCH_WORD;
+		PC += (int32_t)(int16_t)FETCH_WORD;
 		PC -= CPU->BasePC;
 		SET_PC(PC);
 	RET(10)
@@ -3896,7 +3896,7 @@ case 0x6F00:
 {
 	if ((!CPU->flag_notZ) || ((CPU->flag_N ^ CPU->flag_V) & 0x80))
 	{
-		PC += (s32)(s16)FETCH_WORD;
+		PC += (int32_t)(int16_t)FETCH_WORD;
 		PC -= CPU->BasePC;
 		SET_PC(PC);
 	RET(10)
@@ -4162,14 +4162,14 @@ case 0x60FF:
 /* BRA */
 case 0x6001:
 {
-	PC += (s32)(s8)Opcode;
+	PC += (int32_t)(int8_t)Opcode;
 }
 RET(10)
 
 /* BRA16 */
 case 0x6000:
 {
-	PC += (s32)(s16)FETCH_WORD;
+	PC += (int32_t)(int16_t)FETCH_WORD;
 	PC -= CPU->BasePC;
 	SET_PC(PC);
 }
@@ -4433,8 +4433,8 @@ case 0x61FF:
 case 0x6101:
 {
 	PRE_IO
-	PUSH_32_F((u32)(PC - CPU->BasePC))
-	PC += (s32)(s8)Opcode;
+	PUSH_32_F((uint32_t)(PC - CPU->BasePC))
+	PC += (int32_t)(int8_t)Opcode;
 	POST_IO
 }
 RET(18)
@@ -4442,12 +4442,11 @@ RET(18)
 /* BSR16 */
 case 0x6100:
 {
-	u32 res;
-	res = (s32)(s16)FETCH_WORD;
+	uint32_t res = (int32_t)(int16_t)FETCH_WORD;
 	PC -= CPU->BasePC;
 	PRE_IO
-	PUSH_32_F((u32)PC + 2)
-	PC += (s32) res;
+	PUSH_32_F((uint32_t)PC + 2)
+	PC += (int32_t) res;
 	SET_PC(PC);
 	POST_IO
 }

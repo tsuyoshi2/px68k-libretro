@@ -50,27 +50,7 @@
 #endif 
 #endif
 
-#ifdef GEKKO
-/* Wii have both stdint.h and "yabause" definitions of fixed
-size types */
-#include <gccore.h>
-typedef unsigned long pointer;
-
-#else /* ! GEKKO */
-
 #include <stdint.h>
-typedef uint8_t u8;
-typedef  int8_t s8;
-typedef uint16_t u16;
-typedef  int16_t s16;
-typedef uint32_t u32;
-typedef  int32_t s32;
-typedef uint64_t u64;
-typedef  int64_t s64;
-typedef uintptr_t pointer;
-
-
-#endif /* !GEKKO */
 
 /* Minimum/maximum values */
 
