@@ -37,7 +37,7 @@
 
 extern char slash;
 
-static char  curpath[MAX_PATH+32] = "";
+static char  curpath[MAX_PATH] = "";
 static char *curfilep = curpath;
 
 void *file_open(const char *filename)
@@ -96,7 +96,7 @@ size_t file_write(void *handle, void *data, size_t length)
 
 void file_setcd(const char *exename)
 {
-	strncpy(curpath, exename, sizeof(curpath));
+	strncpy(curpath, exename, sizeof(curpath) - 1);
 	plusyen(curpath, sizeof(curpath));
 	curfilep  = curpath + strlen(exename) + 1;
 	*curfilep = '\0';

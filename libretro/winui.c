@@ -600,8 +600,10 @@ int WinUI_Menu(int first)
                   mfl.stackptr = (mfl.stackptr - 1) % 256;
                   mfl.ptr = mfl.stack[0][mfl.stackptr];
                   mfl.y = mfl.stack[1][mfl.stackptr];
-               } else {
-                  strcat(mfl.dir[drv], mfl.name[y]);
+               }
+               else
+               {
+                  strncat(mfl.dir[drv], mfl.name[y], sizeof(mfl.dir[drv]) - 1);
 #ifdef _WIN32
                   strcat(mfl.dir[drv], "\\");
 #else

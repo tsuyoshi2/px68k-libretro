@@ -66,8 +66,8 @@ const float framerates[][MODES] = {
    { MODE_NORM_COMPAT, MODE_HIGH_COMPAT }
 };
 
-char	winx68k_dir[MAX_PATH];
-char	winx68k_ini[MAX_PATH];
+char	winx68k_dir[2048];
+char	winx68k_ini[2048];
 
 uint16_t	VLINE_TOTAL = 567;
 uint32_t	VLINE = 0;
