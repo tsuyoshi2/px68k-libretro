@@ -68,12 +68,12 @@
 
 #include "fmg_wrap.h"
 
-uint8_t		Debug_Text=1, Debug_Grp=1, Debug_Sp=1;
+uint8_t	Debug_Text=1, Debug_Grp=1, Debug_Sp=1;
 
 char		filepath[MAX_PATH] = ".";
 
-char cur_dir_str[MAX_PATH];
-int cur_dir_slen;
+char     cur_dir_str[MAX_PATH];
+size_t   cur_dir_slen;
 
 struct menu_flist mfl;
 
@@ -155,32 +155,22 @@ void
 WinUI_Init(void)
 {
 	int i;
-#if defined(ANDROID)
-#define CUR_DIR_STR winx68k_dir
-#elif TARGET_OS_IPHONE && TARGET_IPHONE_SIMULATOR == 0
-#define CUR_DIR_STR "/var/mobile/px68k/"
-#else
-
-#ifdef __LIBRETRO__
-
+/* TODO/FIXME - we need a way of iterating over all drives for Windows */
 #ifdef _WIN32
 #define CUR_DIR_STR "c:\\"
 #else
 #define CUR_DIR_STR "/"
 #endif
-#else
-#define CUR_DIR_STR "./"
-#endif
-#endif
-if(filepath[0] != 0)strcpy(cur_dir_str, filepath);
-else	strcpy(cur_dir_str, CUR_DIR_STR);
-#ifdef ANDROID
-	strcat(cur_dir_str, "/");
-#endif
-	cur_dir_slen = strlen(cur_dir_str);
 
-	for (i = 0; i < 4; i++)
-		strcpy(mfl.dir[i], cur_dir_str);
+   if(filepath[0] != 0)
+      strcpy(cur_dir_str, filepath);
+   else
+      strcpy(cur_dir_str, CUR_DIR_STR);
+
+   cur_dir_slen = strlen(cur_dir_str);
+
+   for (i = 0; i < 4; i++)
+	   strcpy(mfl.dir[i], cur_dir_str);
 }
 
 int menu_state = ms_key;
@@ -189,23 +179,25 @@ int mkey_pos = 0;
 
 static void menu_system(int v)
 {
-	switch (v) {
-	case 0 :
-		WinX68k_Reset();
-		break;
-	case 1:
-		IRQH_Int(7, NULL);
-		break;
-	}
+	switch (v)
+   {
+      case 0 :
+         WinX68k_Reset();
+         break;
+      case 1:
+         IRQH_Int(7, NULL);
+         break;
+   }
 }
 
 static void upper(char *s)
 {
-	while (*s != '\0') {
-		if (*s >= 'a' && *s <= 'z')
-			*s = 'A' + *s - 'a';
-		s++;
-	}
+	while (*s != '\0')
+   {
+      if (*s >= 'a' && *s <= 'z')
+         *s = 'A' + *s - 'a';
+      s++;
+   }
 }
 
 static void switch_mfl(int a, int b)
@@ -224,10 +216,8 @@ static void switch_mfl(int a, int b)
 	mfl.type[b] = type_tmp;
 }
 
-#ifdef __LIBRETRO__
 extern char slash;
 extern char base_dir[MAX_PATH];
-#endif
 
 static void menu_create_flist(int v)
 {
