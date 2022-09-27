@@ -59,137 +59,314 @@ static uint32_t FASTCALL DMA_Int(uint8_t irq)
 
 uint8_t FASTCALL DMA_Read(uint32_t adr)
 {
-	uint8_t *p;
-	int off = adr&0x3f, ch = ((adr-0xe84000)>>6);
+   int off = adr & 0x3f;
+   int ch = (adr >> 6) & 0x03;
 
-	if ( adr>=0xe84100 ) return 0;		/* ¤Ð¤¹¤¨¤é¡¼¡© */
+   if (adr >= 0xe84100)
+      return 0; /* ¿¿¿¿¿¿ */
 
-	p = (uint8_t*)&DMA[ch];
-
-	switch ( off )
+   switch (off)
    {
       case 0x00:
-         if ( (ch==2)&&(off==0) ) {
-#ifndef	NO_MERCURY
-            DMA[ch].CSR = (DMA[ch].CSR&0xfe)|(Mcry_LRTiming&1);
+         if ((ch == 2) && (off == 0))
+         {
+#ifndef NO_MERCURY
+            DMA[ch].CSR = (DMA[ch].CSR & 0xfe) | (Mcry_LRTiming & 1);
 #else
-            DMA[ch].CSR = (DMA[ch].CSR&0xfe);
+            DMA[ch].CSR = (DMA[ch].CSR & 0xfe);
             Mcry_LRTiming ^= 1;
 #endif
          }
-         break;
-      case 0x0a: case 0x0b: case 0x1a: case 0x1b:
-         p += (off^1);
-         break;
-      case 0x0c: case 0x0d: case 0x0e: case 0x0f:
-      case 0x14: case 0x15: case 0x16: case 0x17:
-      case 0x1c: case 0x1d: case 0x1e: case 0x1f:
-         p += ((off&0xfc)+3-(off&3));
-         break;
-      default:
-         p += off;
+         return DMA[ch].CSR;
+      case 0x01:
+         return DMA[ch].CER;
+      case 0x04:
+         return DMA[ch].DCR;
+      case 0x05:
+         return DMA[ch].OCR;
+      case 0x06:
+         return DMA[ch].SCR;
+      case 0x07:
+         return DMA[ch].CCR;
+      case 0x0a:
+         return (DMA[ch].MTC >> 8) & 0xff;
+      case 0x0b:
+         return DMA[ch].MTC & 0xff;
+      case 0x0c:
+         return (DMA[ch].MAR >> 24) & 0xff;
+      case 0x0d:
+         return (DMA[ch].MAR >> 16) & 0xff;
+      case 0x0e:
+         return (DMA[ch].MAR >> 8) & 0xff;
+      case 0x0f:
+         return DMA[ch].MAR & 0xff;
+      case 0x14:
+         return (DMA[ch].DAR >> 24) & 0xff;
+      case 0x15:
+         return (DMA[ch].DAR >> 16) & 0xff;
+      case 0x16:
+         return (DMA[ch].DAR >> 8) & 0xff;
+      case 0x17:
+         return DMA[ch].DAR & 0xff;
+      case 0x1a:
+         return (DMA[ch].BTC >> 8) & 0xff;
+      case 0x1b:
+         return DMA[ch].BTC & 0xff;
+      case 0x1c:
+         return (DMA[ch].BAR >> 24) & 0xff;
+      case 0x1d:
+         return (DMA[ch].BAR >> 16) & 0xff;
+      case 0x1e:
+         return (DMA[ch].BAR >> 8) & 0xff;
+      case 0x1f:
+         return DMA[ch].BAR & 0xff;
+      case 0x25:
+         return DMA[ch].NIV;
+      case 0x27:
+         return DMA[ch].EIV;
+      case 0x29:
+         return DMA[ch].MFC;
+      case 0x2d:
+         return DMA[ch].CPR;
+      case 0x31:
+         return DMA[ch].DFC;
+      case 0x39:
+         return DMA[ch].BFC;
+      case 0x3f:
+         return DMA[ch].GCR;
    }
-	return *p;
+
+   return 0;
 }
 
 void FASTCALL DMA_Write(uint32_t adr, uint8_t data)
 {
-	uint8_t *p;
-	int off = adr&0x3f, ch = ((adr-0xe84000)>>6);
-	uint8_t old;
+   int off = adr & 0x3f;
+   int ch = (adr >> 6) & 0x03;
+   uint8_t old = 0;
 
-	if ( adr>=0xe84100 ) return;		/* ¤Ð¤¹¤¨¤é¡¼¡© */
+   if (adr >= 0xe84100)
+      return; /* ¿¿¿¿¿¿ */
 
-	p = (uint8_t*)&DMA[ch];
-
-	switch ( off )
+   switch (off)
    {
-      case 0x0a: case 0x0b: case 0x1a: case 0x1b:
-         p[off^1] = data;
-         break;
-      case 0x0c: case 0x0d: case 0x0e: case 0x0f:
-      case 0x14: case 0x15: case 0x16: case 0x17:
-      case 0x1c: case 0x1d: case 0x1e: case 0x1f:
-         p[(off&0xfc)+3-(off&3)] = data;
-         break;
       case 0x00:
-         p[off] &= ((~data)|0x09);
+         DMA[ch].CSR &= ((~data) | 0x09);
          break;
+
       case 0x01:
-         p[off] &= (~data);
+         DMA[ch].CER &= (~data);
          break;
+
+      case 0x04:
+         DMA[ch].DCR = data;
+         break;
+
+      case 0x05:
+         DMA[ch].OCR = data;
+         break;
+
+      case 0x06:
+         DMA[ch].SCR = data;
+         break;
+
       case 0x07:
-         old = DMA[ch].CCR;
-         DMA[ch].CCR = (data&0xef) | (DMA[ch].CCR&0x80);	/* CCR¤ÎSTR¤Ï½ñ¤­¹þ¤ß¤Ç¤ÏÍî¤È¤»¤Ê¤¤ */
-         if ( (data&0x10)&&(DMA[ch].CCR&0x80) ) {		/* Software Abort */
-            DMAERR(ch,0x11)
+         old         = DMA[ch].CCR;
+         DMA[ch].CCR = (data & 0xef) | (DMA[ch].CCR & 0x80); /* CCR¿STR¿¿¿¿¿¿¿¿¿¿¿¿ */
+         if ((data & 0x10) && (DMA[ch].CCR & 0x80))
+         {
+            /* Software Abort */
+            DMAERR(ch, 0x11)
                break;
          }
-         if ( data&0x20 ) /* Halt */
+         if (data & 0x20) /* Halt */
+         {
+            /* ¿¿¿¿¿¿¿¿¿Nemesis'90¿¿¿¿¿¿¿¿ */
+            /* DMA[ch].CSR &= 0xf7; */
             break;
-         if ( data&0x80 ) {							/* Æ°ºî³«»Ï */
-            if ( old&0x20 ) {				/* Halt²ò½ü */
+         }
+         if (data & 0x80)
+         {
+            /* ¿¿¿¿ */
+            if (old & 0x20)
+            {
+               /* Halt¿¿ */
                DMA[ch].CSR |= 0x08;
                DMA_Exec(ch);
-            } else {
-               if ( DMA[ch].CSR&0xf8 ) {					/* ¥¿¥¤¥ß¥ó¥°¥¨¥é¡¼ */
-                  DMAERR(ch,0x02)
+            }
+            else
+            {
+               if (DMA[ch].CSR & 0xf8)
+               {
+                  /* ¿¿¿¿¿¿¿¿ */
+                  DMAERR(ch, 0x02)
                      break;
                }
                DMA[ch].CSR |= 0x08;
-               if ( (DMA[ch].OCR&8)/*&&(!DMA[ch].MTC)*/ ) {	/* ¥¢¥ì¥¤¡¿¥ê¥ó¥¯¥¢¥ì¥¤¥Á¥§¥¤¥ó */
-                  DMA[ch].MAR = dma_readmem24_dword(DMA[ch].BAR)&0xffffff;
-                  DMA[ch].MTC = dma_readmem24_word(DMA[ch].BAR+4);
-                  if (DMA[ch].OCR&4) {
-                     DMA[ch].BAR = dma_readmem24_dword(DMA[ch].BAR+6);
-                  } else {
+               if ((DMA[ch].OCR & 8) /*&&(!DMA[ch].MTC)*/)
+               {
+                  /* ¿¿¿¿¿¿¿¿¿¿¿¿¿¿ */
+                  DMA[ch].MAR = dma_readmem24_dword(DMA[ch].BAR) & 0xffffff;
+                  DMA[ch].MTC = dma_readmem24_word(DMA[ch].BAR + 4);
+                  if (DMA[ch].OCR & 4)
+                  {
+                     DMA[ch].BAR = dma_readmem24_dword(DMA[ch].BAR + 6);
+                  }
+                  else
+                  {
                      DMA[ch].BAR += 6;
-                     if ( !DMA[ch].BTC ) {			/* ¤³¤ì¤â¥«¥¦¥ó¥È¥¨¥é¡¼ */
-                        DMAERR(ch,0x0f)
+                     if (!DMA[ch].BTC)
+                     {
+                        /* ¿¿¿¿¿¿¿¿¿¿ */
+                        DMAERR(ch, 0x0f)
                            break;
                      }
                   }
                }
-               if ( !DMA[ch].MTC ) {					/* ¥«¥¦¥ó¥È¥¨¥é¡¼ */
-                  DMAERR(ch,0x0d)
+               if (!DMA[ch].MTC)
+               {
+                  /* ¿¿¿¿¿¿¿ */
+                  DMAERR(ch, 0x0d)
                      break;
                }
-               DMA[ch].CER  = 0x00;
-               DMA_Exec(ch);								/* ³«»ÏÄ¾¸å¤Ë¥«¥¦¥ó¥¿¤ò¸«¤ÆÆ°ºî¥Á¥§¥Ã¥¯¤¹¤ë¾ì¹ç¤¬¤¢¤ë¤Î¤Ç¡¢¾¯¤·¤À¤±¼Â¹Ô¤·¤Æ¤ª¤¯ */
+               DMA[ch].CER = 0x00;
+               DMA_Exec(ch); /* ¿¿¿¿¿¿¿¿¿¿¿¿¿¿¿¿¿¿¿¿¿¿¿¿¿¿¿¿¿¿¿¿¿¿¿¿¿¿ */
             }
          }
-         if ( (data&0x40)&&(!DMA[ch].MTC) ) {			/* Continuous Op. */
-            if ( DMA[ch].CCR&0x80 ) {
-               if ( DMA[ch].CCR&0x40 ) {
-                  DMAERR(ch,0x02)
-               } else if ( DMA[ch].OCR&8 ) {				/* ¥¢¥ì¥¤¡¿¥ê¥ó¥¯¥¢¥ì¥¤¥Á¥§¥¤¥ó */
-                  DMAERR(ch,0x01)
-               } else {
+         if ((data & 0x40) && (!DMA[ch].MTC))
+         {
+            /* Continuous Op. */
+            if (DMA[ch].CCR & 0x80)
+            {
+               if (DMA[ch].CCR & 0x40)
+               {
+                  DMAERR(ch, 0x02)
+               }
+               else if (DMA[ch].OCR & 8)
+               {
+                  /* ¿¿¿¿¿¿¿¿¿¿¿¿¿¿ */
+                  DMAERR(ch, 0x01)
+               }
+               else
+               {
                   DMA[ch].MAR = DMA[ch].BAR;
                   DMA[ch].MTC = DMA[ch].BTC;
                   DMA[ch].CSR |= 0x08;
                   DMA[ch].BAR = 0;
                   DMA[ch].BTC = 0;
-                  if ( !DMA[ch].MAR ) {
-                     DMA[ch].CSR |= 0x40;			/* ¥Ö¥í¥Ã¥¯Å¾Á÷½ªÎ»¥Ó¥Ã¥È¡¿³ä¤ê¹þ¤ß */
+                  if (!DMA[ch].MAR)
+                  {
+                     DMA[ch].CSR |= 0x40; /* ¿¿¿¿¿¿¿¿¿¿¿¿¿¿¿¿ ? */
                      DMAINT(ch)
                         break;
-                  } else if ( !DMA[ch].MTC ) {
-                     DMAERR(ch,0x0d)
+                  }
+                  else if (!DMA[ch].MTC)
+                  {
+                     DMAERR(ch, 0x0d)
                         break;
                   }
                   DMA[ch].CCR &= 0xbf;
                   DMA_Exec(ch);
                }
-            } else {									/* ÈóActive»þ¤ÎCNT¥Ó¥Ã¥È¤ÏÆ°ºî¥¿¥¤¥ß¥ó¥°¥¨¥é¡¼ */
-               DMAERR(ch,0x02)
+            }
+            else
+            {
+               /* ¿Active¿¿CNT¿¿¿¿¿¿¿¿¿¿¿¿¿¿ */
+               DMAERR(ch, 0x02)
             }
          }
          break;
+
+      case 0x0a:
+         DMA[ch].MTC &= 0x00ff;
+         DMA[ch].MTC |= (data << 8);
+         break;
+      case 0x0b:
+         DMA[ch].MTC &= 0xff00;
+         DMA[ch].MTC |= data;
+         break;
+
+      case 0x0c:
+         break;
+      case 0x0d:
+         DMA[ch].MAR &= 0x0000ffff;
+         DMA[ch].MAR |= (data << 16);
+         break;
+      case 0x0e:
+         DMA[ch].MAR &= 0x00ff00ff;
+         DMA[ch].MAR |= (data << 8);
+         break;
+      case 0x0f:
+         DMA[ch].MAR &= 0x00ffff00;
+         DMA[ch].MAR |= data;
+         break;
+
+      case 0x14:
+         break;
+      case 0x15:
+         DMA[ch].DAR &= 0x0000ffff;
+         DMA[ch].DAR |= (data << 16);
+         break;
+      case 0x16:
+         DMA[ch].DAR &= 0x00ff00ff;
+         DMA[ch].DAR |= (data << 8);
+         break;
+      case 0x17:
+         DMA[ch].DAR &= 0x00ffff00;
+         DMA[ch].DAR |= data;
+         break;
+
+      case 0x1a:
+         DMA[ch].BTC &= 0x00ff;
+         DMA[ch].BTC |= (data << 8);
+         break;
+      case 0x1b:
+         DMA[ch].BTC &= 0xff00;
+         DMA[ch].BTC |= data;
+         break;
+
+      case 0x1c:
+         break;
+      case 0x1d:
+         DMA[ch].BAR &= 0x0000ffff;
+         DMA[ch].BAR |= (data << 16);
+         break;
+      case 0x1e:
+         DMA[ch].BAR &= 0x00ff00ff;
+         DMA[ch].BAR |= (data << 8);
+         break;
+      case 0x1f:
+         DMA[ch].BAR &= 0x00ffff00;
+         DMA[ch].BAR |= data;
+         break;
+
+      case 0x25:
+         DMA[ch].NIV = data;
+         break;
+
+      case 0x27:
+         DMA[ch].EIV = data;
+         break;
+
+      case 0x29:
+         DMA[ch].MFC = data;
+         break;
+
+      case 0x2d:
+         DMA[ch].CPR = data;
+         break;
+
+      case 0x31:
+         DMA[ch].DFC = data;
+         break;
+
+      case 0x39:
+         DMA[ch].BFC = data;
+         break;
+
       case 0x3f:
-         if ( ch!=3 ) break;
-      default:
-         p[off] = data;
+         if (ch == 3)
+            DMA[ch].GCR = data;
          break;
    }
 }

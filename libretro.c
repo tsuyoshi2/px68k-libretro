@@ -977,6 +977,7 @@ static int pmain(int argc, char *argv[])
    Mouse_Init();
    Joystick_Init();
    SRAM_Init();
+   /* FIXME: actually, this sets initial register values rather than suppose to set soft-reset values */
    WinX68k_Reset();
    Timer_Init();
 
