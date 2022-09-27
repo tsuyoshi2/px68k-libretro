@@ -124,8 +124,6 @@ void FASTCALL Pal_Write(uint32_t adr, uint8_t data)
 	}
 	else if (adr<0x400)
 	{
-		if (MemByteAccess)
-			return;
 		Pal_Regs[adr] = data;
 		TVRAM_SetAllDirty();
 		pal = Pal_Regs[adr&0xfffe];
