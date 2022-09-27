@@ -103,9 +103,7 @@ static const int32_t c68k_exception_cycle_table[256] =
 /* global variable */
 
 #ifndef C68K_NO_JUMP_TABLE
-#ifndef C68K_CONST_JUMP_TABLE
 static void *JumpTable[0x10000];
-#endif
 #endif
 
 static uint32_t C68k_Initialised = 0;
@@ -393,9 +391,8 @@ int32_t FASTCALL C68k_Exec(c68k_struc *cpu, int32_t cycle)
     if (CPU->Status & (C68K_RUNNING | C68K_DISABLE | C68K_FAULTED))
     {
 #ifndef C68K_NO_JUMP_TABLE
-#ifndef C68K_CONST_JUMP_TABLE
-        if (!C68k_Initialised) goto C68k_Init;
-#endif
+        if (!C68k_Initialised)
+           goto C68k_Init;
 #endif
         return (CPU->Status | 0x80000000);
     }
@@ -435,7 +432,18 @@ SwitchTable:
     #include "c68k_opE.inc"
     #include "c68k_opF.inc"
 #ifdef C68K_NO_JUMP_TABLE
-    }
+       /* fallthrough and loop to SwitchTable */
+	default:
+		if (Opcode <= 0xFFFF)
+		{
+			const uint32_t JmpTable[] = {
+				0x4AFC, 0x4AFC, 0x4AFC, 0x4AFC, 0x4AFC, 0x4AFC, 0x4AFC, 0x4AFC,
+				0x4AFC, 0x4AFC, 0xA000, 0x4AFC, 0x4AFC, 0x4AFC, 0x4AFC, 0xF000
+			};
+			Opcode = JmpTable[(Opcode & 0xF000) >> 12];
+			goto SwitchTable;
+		}
+	}
 #endif
 
 C68k_Exec_End:
@@ -452,13 +460,11 @@ C68k_Exec_Really_End:
     
     return (CPU->CycleToDo - CCnt);
 
-#ifndef C68K_CONST_JUMP_TABLE
 #ifndef C68K_NO_JUMP_TABLE
 C68k_Init:
     C68k_Initialised = 1;
     
     return 0;
-#endif
 #endif
 }
 
