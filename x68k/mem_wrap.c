@@ -114,40 +114,44 @@ static uint8_t rm_buserr(uint32_t addr)
 
 static void cpu_setOPbase24(uint32_t addr)
 {
-	switch ((addr >> 20) & 0xf) {
-	case 0: case 1: case 2: case 3: case 4: case 5: case 6: case 7:
-	case 8: case 9: case 0xa: case 0xb:
-		OP_ROM = MEM;
-		break;
+	switch ((addr >> 20) & 0xf)
+   {
+      case 0: case 1: case 2: case 3: case 4: case 5: case 6: case 7:
+      case 8: case 9: case 0xa: case 0xb:
+         OP_ROM = MEM;
+         break;
 
-	case 0xc: case 0xd:
-		OP_ROM = GVRAM - 0x00c00000;
-		break;
+      case 0xc:
+      case 0xd:
+         OP_ROM = GVRAM + (addr - 0x00c00000);
+         break;
 
-	case 0xe:
-		if (addr < 0x00e80000) 
-			OP_ROM = TVRAM - 0x00e00000;
-		else if ((addr >= 0x00ea0000) && (addr < 0x00ea2000))
-			OP_ROM = SCSIIPL - 0x00ea0000;
-		else if ((addr >= 0x00ed0000) && (addr < 0x00ed4000))
-			OP_ROM = SRAM - 0x00ed0000;
-		else {
-			BusErrFlag = 3;
-			BusErrAdr = addr;
-			BusErrHandling = 1;
-		}
-		break;
+      case 0xe:
+         if (addr < 0x00e80000) 
+            OP_ROM = TVRAM + (addr - 0x00e00000);
+         else if ((addr >= 0x00ea0000) && (addr < 0x00ea2000))
+            OP_ROM = SCSIIPL + (addr - 0x00ea0000);
+         else if ((addr >= 0x00ed0000) && (addr < 0x00ed4000))
+            OP_ROM = SRAM + (addr - 0x00ed0000);
+         else
+         {
+            BusErrFlag = 3;
+            BusErrAdr = addr;
+            BusErrHandling = 1;
+         }
+         break;
 
-	case 0xf:
-		if (addr >= 0x00fe0000)
-			OP_ROM = IPL - 0x00fe0000;
-		else {
-			BusErrFlag = 3;
-			BusErrAdr = addr;
-			BusErrHandling = 1;
-		}
-		break;
-	}
+      case 0xf:
+         if ((addr >= 0x00fc0000) && (addr < 0x01000000))
+            OP_ROM = IPL + (addr - 0x00fc0000);
+         else
+         {
+            BusErrFlag     = 3;
+            BusErrAdr      = addr;
+            BusErrHandling = 1;
+         }
+         break;
+   }
 }
 
 uint8_t (*MemReadTable[])(uint32_t) = {
