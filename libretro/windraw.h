@@ -8,7 +8,6 @@ extern uint16_t WinDraw_Pal16B, WinDraw_Pal16R, WinDraw_Pal16G;
 void WinDraw_Init(void);
 void WinDraw_Cleanup(void);
 void FASTCALL WinDraw_Draw(void);
-void WinDraw_ShowMenu(int flag);
 void WinDraw_DrawLine(void);
 
 int WinDraw_MenuInit(void);

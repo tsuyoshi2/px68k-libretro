@@ -18,8 +18,6 @@ typedef struct
 	int ToneMap;
 	char ToneMapFile[MAX_PATH];
 	int XVIMode;
-	int WinDrvFD;
-	int WinStretch;
 	int Sound_LPF;
 	int SoundROMEO;
 	int MIDIDelay;

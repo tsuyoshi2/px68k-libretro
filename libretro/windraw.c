@@ -997,11 +997,17 @@ void WinDraw_DrawMenufile(struct menu_flist *mfl)
 	int i;
 	char ptr[PATH_MAX];
 
+   /* 0xf800 - red */
+	/* 0xf81f - magenta */
+
+	/* bottom frame */
+
 	p6m.mcolor  = 0xffff;
-	p6m.mbcolor = 0x1; /* 0x0だと透過モードq */
+	p6m.mbcolor = 0x1; /* 0 means transparent */
 	set_mlocateC(1, 1);
 	draw_str(swaku_str);
-	for (i = 2; i < 16; i++) {
+	for (i = 2; i < 16; i++)
+   {
 		set_mlocateC(1, i);
 		draw_str(swaku2_str);
 	}
@@ -1022,16 +1028,18 @@ void WinDraw_DrawMenufile(struct menu_flist *mfl)
 			p6m.mcolor  = 0xffff;
 			p6m.mbcolor = 0x1;
 		}
-		/* ディレクトリだったらファイル名を[]で囲う */
+		/* enclose directory in '[ ]' */
 		set_mlocateC(3, i + 2);
-		if (mfl->type[i + mfl->ptr]) draw_str("[");
+		if (mfl->type[i + mfl->ptr])
+         draw_str("[");
 		strncpy(ptr, mfl->name[i + mfl->ptr], sizeof(ptr));
 		ptr[56] = '\0';
 		draw_str(ptr);
-		if (mfl->type[i + mfl->ptr]) draw_str("]");
+		if (mfl->type[i + mfl->ptr])
+         draw_str("]");
 	}
 
-	p6m.mbcolor = 0x0; /* 透過モードに戻しておく */
+	p6m.mbcolor = 0x0; /* switch back to transparent mode */
 
 	videoBuffer=(uint16_t*)menu_buffer;
 }

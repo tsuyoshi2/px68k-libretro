@@ -1154,11 +1154,14 @@ void retro_set_environment(retro_environment_t cb)
    libretro_set_core_options(environ_cb);
 }
 
-static void update_variables(void)
+static void update_variables(int running)
 {
    int i = 0, snd_opt = 0;
    char key[256] = {0};
    struct retro_variable var = {0};
+
+   if (!running)
+      update_variable_midi_interface();
 
    strcpy(key, "px68k_joytype");
    var.key = key;
@@ -1437,7 +1440,9 @@ static void update_variables(void)
          Config.AdjustFrameRates = 0;
       else if (!strcmp(var.value, "enabled"))
          Config.AdjustFrameRates = 1;
-      CHANGEAV_TIMING = CHANGEAV_TIMING || Config.AdjustFrameRates != temp;
+
+      if (running) /* minimize the chance of resetting av_info during startup */
+         CHANGEAV_TIMING = CHANGEAV_TIMING || Config.AdjustFrameRates != temp;
    }
 
    var.key = "px68k_audio_desync_hack";
@@ -1634,7 +1639,7 @@ void retro_init(void)
    Config.JOY_TYPE[0]   = 0;
    Config.JOY_TYPE[1]   = 0;
 
-   update_variables();
+   update_variables(0);
 
    memset(Core_Key_State, 0, 512);
    memset(Core_old_Key_State, 0, sizeof(Core_old_Key_State));
@@ -2063,14 +2068,13 @@ void retro_run(void)
       pre_main();
       firstcall     = 0;
       /* Initialization done */
-      update_variables();
-      update_variable_midi_interface();
+      update_variables(0);
       soundbuf_size = SNDSZ;
       return;
    }
 
    if (environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE_UPDATE, &updated) && updated)
-      update_variables();
+      update_variables(1);
 
    if (CHANGEAV || CHANGEAV_TIMING)
    {
@@ -2157,8 +2161,7 @@ void retro_run(void)
 
 	if (menu_mode != menu_out)
 	{
-		int ret;
-
+		int ret = 0;
 		keyb_in = 0;
 		if (Core_Key_State[RETROK_RIGHT] || Core_Key_State[RETROK_PAGEDOWN])
 			keyb_in |= JOY_RIGHT;

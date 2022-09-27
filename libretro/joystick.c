@@ -65,7 +65,7 @@ void FASTCALL Joystick_Write(uint8_t num, uint8_t data)
 /* Menu navigation related vars */
 #define RATE   3      /* repeat rate */
 #define JOYDELAY 30   /* delay before 1st repeat */
-uint8_t keyb_in, joy_in;
+uint8_t keyb_in;
 
 static uint32_t get_px68k_input_bitmasks(int port)
 {
@@ -165,17 +165,18 @@ void FASTCALL Joystick_Update(int is_menu, int key, int port)
 
 	/* input overrides section during Menu mode for faster menu browsing
 	 * by pressing and holding key or button aka turbo mode */
-	if (is_menu) {
+	if (is_menu)
+   {
 		int i;
 		static int repeat_rate, repeat_delay;
 		static uint8_t last_in;
-		uint8_t inbuf;
+		uint8_t inbuf, joy_in;
 
 		for (i = 0; i < 4; i++)
 			speedup_joy[1 << i] = 0;
 
 		joy_in = (ret0 ^ 0xff);
-		inbuf = (joy_in | keyb_in);
+		inbuf  = (joy_in | keyb_in);
 
 		if ((inbuf & (JOY_LEFT | JOY_RIGHT)) == (JOY_LEFT | JOY_RIGHT))
 			inbuf &= ~(JOY_LEFT | JOY_RIGHT);

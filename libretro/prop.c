@@ -69,8 +69,6 @@ static void LoadDefaults(void)
 	Config.MIDI_SW = 1;
 	Config.MIDI_Reset = 1;
 	Config.MIDI_Type = 1;
-	Config.WinDrvFD = 1;
-	Config.WinStretch = 1;
 	Config.XVIMode = 0;
 	Config.ToneMap = 0;
 	Config.ToneMapFile[0] = 0;

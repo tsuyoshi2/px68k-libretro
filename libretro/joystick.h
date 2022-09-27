@@ -28,6 +28,6 @@ uint8_t get_joy_downstate(void);
 void reset_joy_downstate(void);
 
 extern uint8_t JoyKeyState;
-extern uint8_t keyb_in, joy_in;
+extern uint8_t keyb_in;
 
 #endif /* WINX68K_JOY_H */
