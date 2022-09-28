@@ -130,18 +130,15 @@ static uint32_t C68k_Initialised = 0;
 #define ROR_32(A, C)    (LSR_32(A, C) | LSL_32(A, 32-(C)))
 #define ROR_33(A, C)    (LSR_32(A, C) | LSL_32(A, 33-(C)))
 
-#define PRE_IO                  \
-    CPU->CycleIO = CCnt;
-
 #ifndef C68K_NO_JUMP_TABLE
 #define NEXT                    \
-    PRE_IO                      \
+    CPU->CycleIO = CCnt;        \
     Opcode = FETCH_WORD;        \
     PC += 2;                    \
     goto *JumpTable[Opcode];
 #else
 #define NEXT                    \
-    PRE_IO                      \
+    CPU->CycleIO = CCnt;        \
     Opcode = FETCH_WORD;        \
     PC += 2;                    \
     goto SwitchTable;
@@ -157,8 +154,8 @@ static uint32_t C68k_Initialised = 0;
     CPU->BasePC -= (A) & 0xFF000000;    \
     PC = (A) + CPU->BasePC;
 
-#define POST_IO                 \
-    CCnt = CPU->CycleIO;
+#define PRE_IO  CPU->CycleIO = CCnt
+#define POST_IO CCnt = CPU->CycleIO
 
 #define READ_BYTE_F(A, D)           \
     D = CPU->Read_Byte(A) & 0xFF;
@@ -208,11 +205,8 @@ static uint32_t C68k_Initialised = 0;
     D |= CPU->Read_Word((A)) << 16;
 #endif
 
-#define WRITE_BYTE_F(A, D)      \
-    CPU->Write_Byte(A, D);
-
-#define WRITE_WORD_F(A, D)      \
-    CPU->Write_Word(A, D);
+#define WRITE_BYTE_F(A, D) CPU->Write_Byte(A, D);
+#define WRITE_WORD_F(A, D) CPU->Write_Word(A, D);
 
 #ifdef MSB_FIRST
     #define WRITE_LONG_F(A, D)              \
@@ -267,31 +261,32 @@ static uint32_t C68k_Initialised = 0;
 
 #define DECODE_EXT_WORD     \
 {                           \
-    uint32_t ext = (*(uint16_t*)PC);      \
-    PC += 2;                \
-                            \
-    adr += (int32_t)((int8_t)(ext));                            \
-    if (ext & 0x0800) adr += (int32_t) CPU->D[ext >> 12];   \
-    else adr += (int32_t)((int16_t)(CPU->D[ext >> 12]));        \
+    uint32_t ext = (*(uint16_t*)PC); \
+    PC += 2; \
+    adr += (int32_t)((int8_t)(ext)); \
+    if (ext & 0x0800) \
+       adr += (int32_t) CPU->D[ext >> 12]; \
+    else \
+       adr += (int32_t)((int16_t)(CPU->D[ext >> 12]));        \
 }
 
 #ifndef MSB_FIRST
 #ifdef C68K_BYTE_SWAP_OPT
     #undef FETCH_LONG
-    #define FETCH_LONG          \
-    ((((uint32_t)(*(uint16_t*)PC)) << 16) | ((uint32_t)(*(uint16_t*)(PC + 2))))
+    #define FETCH_LONG          ((((uint32_t)(*(uint16_t*)PC)) << 16) | ((uint32_t)(*(uint16_t*)(PC + 2))))
+    
 #else
     #undef FETCH_BYTE
-    #define FETCH_BYTE          \
-    (*(uint16_t*)PC) >> 8)
+    #define FETCH_BYTE          (*(uint16_t*)PC) >> 8)
+    
 
     #undef FETCH_WORD
-    #define FETCH_WORD          \
-    ((((uint16_t)(*(uint8_t*)PC)) << 8) | ((uint16_t)(*(uint8_t*)(PC + 1))))
+    #define FETCH_WORD          ((((uint16_t)(*(uint8_t*)PC)) << 8) | ((uint16_t)(*(uint8_t*)(PC + 1))))
+    
 
     #undef FETCH_LONG
-    #define FETCH_LONG          \
-    ((((uint32_t)(*(uint8_t*)PC)) << 24) | (((uint32_t)(*(uint8_t*)(PC + 1))) << 16) | (((uint32_t)(*(uint8_t*)(PC + 2))) << 8) | ((uint32_t)(*(uint8_t*)(PC + 3))))
+    #define FETCH_LONG          ((((uint32_t)(*(uint8_t*)PC)) << 24) | (((uint32_t)(*(uint8_t*)(PC + 1))) << 16) | (((uint32_t)(*(uint8_t*)(PC + 2))) << 8) | ((uint32_t)(*(uint8_t*)(PC + 3))))
+    
 
     #undef DECODE_EXT_WORD
     #define DECODE_EXT_WORD     \
@@ -354,7 +349,7 @@ static uint32_t C68k_Initialised = 0;
                 CPU->A[7] = tmpSP;             \
             }                                  \
                                                \
-            PRE_IO                             \
+    	    CPU->CycleIO = CCnt;               \
                                                \
             /* push PC and SR */               \
             PUSH_32_F((uint32_t)(PC - CPU->BasePC)) \
@@ -368,7 +363,7 @@ static uint32_t C68k_Initialised = 0;
             READ_LONG_F(vect * 4, PC)          \
             SET_PC(PC)                         \
                                                \
-            POST_IO                            \
+	    CCnt = CPU->CycleIO;               \
         }                                      \
     }
 
@@ -397,7 +392,8 @@ int32_t FASTCALL C68k_Exec(c68k_struc *cpu, int32_t cycle)
         return (CPU->Status | 0x80000000);
     }
 
-    if (cycle <= 0) return -cycle;
+    if (cycle <= 0)
+       return -cycle;
     
     CPU->CycleToDo = CCnt = cycle;
 

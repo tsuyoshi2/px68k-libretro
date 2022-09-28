@@ -40,18 +40,31 @@ c68k_struc C68K;
 
 /* prototype */
 
-uint32_t FASTCALL C68k_Read_Dummy(const uint32_t adr);
-void FASTCALL C68k_Write_Dummy(const uint32_t adr, uint32_t data);
+/* Read / Write dummy functions */
 
-uint32_t C68k_Read_Byte(c68k_struc *cpu, uint32_t adr);
-uint32_t C68k_Read_Word(c68k_struc *cpu, uint32_t adr);
-uint32_t C68k_Read_Long(c68k_struc *cpu, uint32_t adr);
-void C68k_Write_Byte(c68k_struc *cpu, uint32_t adr, uint32_t data);
-void C68k_Write_Word(c68k_struc *cpu, uint32_t adr, uint32_t data);
-void C68k_Write_Long(c68k_struc *cpu, uint32_t adr, uint32_t data);
+static uint32_t FASTCALL C68k_Read_Dummy(const uint32_t adr)
+{
+    return 0;
+}
 
-int32_t  FASTCALL C68k_Interrupt_Ack_Dummy(int32_t level);
-void FASTCALL C68k_Reset_Dummy(void);
+static int32_t FASTCALL C68k_Interrupt_Ack_Dummy(int32_t level)
+{
+    /* return vector */
+    return (C68K_INTERRUPT_AUTOVECTOR_EX + level);
+}
+
+/* Read / Write core functions */
+static uint32_t C68k_Read_Long(c68k_struc *cpu, uint32_t adr)
+{
+#ifdef MSB_FIRST
+    return (cpu->Read_Word(adr) << 16) | (cpu->Read_Word(adr + 2) & 0xFFFF);
+#else
+    return (cpu->Read_Word(adr) << 16) | (cpu->Read_Word(adr + 2) & 0xFFFF);
+#endif
+}
+
+static void FASTCALL C68k_Reset_Dummy(void) { }
+static void FASTCALL C68k_Write_Dummy(const uint32_t adr, uint32_t data) { }
 
 /* core main functions */
 
@@ -65,9 +78,11 @@ void C68k_Init(c68k_struc *cpu, C68K_INT_CALLBACK *int_cb)
     C68k_Set_WriteB(cpu, C68k_Write_Dummy);
     C68k_Set_WriteW(cpu, C68k_Write_Dummy);
 
-    if (int_cb) cpu->Interrupt_CallBack = int_cb;
-    else cpu->Interrupt_CallBack = C68k_Interrupt_Ack_Dummy;
-    cpu->Reset_CallBack = C68k_Reset_Dummy;
+    if (int_cb)
+       cpu->Interrupt_CallBack = int_cb;
+    else
+       cpu->Interrupt_CallBack = C68k_Interrupt_Ack_Dummy;
+    cpu->Reset_CallBack        = C68k_Reset_Dummy;
 
     /* used to init JumpTable */
     cpu->Status |= C68K_DISABLE;
@@ -81,8 +96,8 @@ int32_t FASTCALL C68k_Reset(c68k_struc *cpu)
     memset(cpu, 0, ((uint8_t *)&(cpu->dirty1)) - ((uint8_t *)&(cpu->D[0])));
     
     cpu->flag_notZ = 1;
-    cpu->flag_I = 7;
-    cpu->flag_S = C68K_SR_S;
+    cpu->flag_I    = 7;
+    cpu->flag_S    = C68K_SR_S;
 
     cpu->A[7] = C68k_Read_Long(cpu, 0);
     C68k_Set_PC(cpu, C68k_Read_Long(cpu, 4));
@@ -96,110 +111,15 @@ void FASTCALL C68k_Set_IRQ(c68k_struc *cpu, int32_t level)
     if (cpu->Status & C68K_RUNNING)
     {
         cpu->CycleSup = cpu->CycleIO;
-        cpu->CycleIO = 0;
+        cpu->CycleIO  = 0;
     }
     cpu->Status &= ~(C68K_HALTED | C68K_WAITING);
 }
 
-int32_t FASTCALL C68k_Get_CycleToDo(c68k_struc *cpu)
-{
-    if (!(cpu->Status & C68K_RUNNING)) return -1;
-    
-    return cpu->CycleToDo;
-}
-
-int32_t FASTCALL C68k_Get_CycleRemaining(c68k_struc *cpu)
-{
-    if (!(cpu->Status & C68K_RUNNING)) return -1;
-
-    return (cpu->CycleIO + cpu->CycleSup);
-}
-
-int32_t FASTCALL C68k_Get_CycleDone(c68k_struc *cpu)
-{
-    if (!(cpu->Status & C68K_RUNNING)) return -1;
-
-    return (cpu->CycleToDo - (cpu->CycleIO + cpu->CycleSup));
-}
-
-void FASTCALL C68k_Release_Cycle(c68k_struc *cpu)
-{
-    if (cpu->Status & C68K_RUNNING) cpu->CycleIO = cpu->CycleSup = 0;
-}
-
-void FASTCALL C68k_Add_Cycle(c68k_struc *cpu, int32_t cycle)
-{
-    if (cpu->Status & C68K_RUNNING) cpu->CycleIO -= cycle;
-}
-
-/* Read / Write dummy functions */
-
-uint32_t FASTCALL C68k_Read_Dummy(const uint32_t adr)
-{
-    return 0;
-}
-
-void FASTCALL C68k_Write_Dummy(const uint32_t adr, uint32_t data)
-{
-
-}
-
-int32_t FASTCALL C68k_Interrupt_Ack_Dummy(int32_t level)
-{
-    /* return vector */
-    return (C68K_INTERRUPT_AUTOVECTOR_EX + level);
-}
-
-void FASTCALL C68k_Reset_Dummy(void)
-{
-
-}
-
-/* Read / Write core functions */
-
-uint32_t C68k_Read_Byte(c68k_struc *cpu, uint32_t adr)
-{
-    return cpu->Read_Byte(adr);
-}
-
-uint32_t C68k_Read_Word(c68k_struc *cpu, uint32_t adr)
-{
-    return cpu->Read_Word(adr);
-}
-
-uint32_t C68k_Read_Long(c68k_struc *cpu, uint32_t adr)
-{
-#ifdef MSB_FIRST
-    return (cpu->Read_Word(adr) << 16) | (cpu->Read_Word(adr + 2) & 0xFFFF);
-#else
-    return (cpu->Read_Word(adr) << 16) | (cpu->Read_Word(adr + 2) & 0xFFFF);
-#endif
-}
-
-void C68k_Write_Byte(c68k_struc *cpu, uint32_t adr, uint32_t data)
-{
-    cpu->Write_Byte(adr, data);
-}
-
-void C68k_Write_Word(c68k_struc *cpu, uint32_t adr, uint32_t data)
-{
-    cpu->Write_Word(adr, data);
-}
-
-void C68k_Write_Long(c68k_struc *cpu, uint32_t adr, uint32_t data)
-{
-#ifdef MSB_FIRST
-    cpu->Write_Word(adr, data >> 16);
-    cpu->Write_Word(adr + 2, data & 0xFFFF);
-#else
-    cpu->Write_Word(adr, data >> 16);
-    cpu->Write_Word(adr + 2, data & 0xFFFF);
-#endif
-}
-
 /* setting core functions */
 
-void C68k_Set_Fetch(c68k_struc *cpu, uint32_t low_adr, uint32_t high_adr, uintptr_t fetch_adr)
+void C68k_Set_Fetch(c68k_struc *cpu, uint32_t low_adr,
+      uint32_t high_adr, uintptr_t fetch_adr)
 {
     uint32_t i = (low_adr >> C68K_FETCH_SFT) & C68K_FETCH_MASK;
     uint32_t j = (high_adr >> C68K_FETCH_SFT) & C68K_FETCH_MASK;
@@ -246,25 +166,27 @@ uint32_t C68k_Get_PC(c68k_struc *cpu)
 
 uint32_t C68k_Get_SR(c68k_struc *cpu)
 {
-    c68k_struc *CPU = cpu;
-    return ((CPU->flag_S << 0) | (CPU->flag_I << 8) |
-    (((CPU->flag_C >> (C68K_SR_C_SFT - 0)) & 1) |
-     ((CPU->flag_V >> (C68K_SR_V_SFT - 1)) & 2) |
-     (((!CPU->flag_notZ) & 1) << 2) |
-     ((CPU->flag_N >> (C68K_SR_N_SFT - 3)) & 8) | 
-     ((CPU->flag_X >> (C68K_SR_X_SFT - 4)) & 0x10)));
+   c68k_struc *CPU = cpu;
+   return ((CPU->flag_S << 0) | (CPU->flag_I << 8) |
+         (((CPU->flag_C >> (C68K_SR_C_SFT - 0)) & 1) |
+          ((CPU->flag_V >> (C68K_SR_V_SFT - 1)) & 2) |
+          (((!CPU->flag_notZ) & 1) << 2) |
+          ((CPU->flag_N >> (C68K_SR_N_SFT - 3)) & 8) | 
+          ((CPU->flag_X >> (C68K_SR_X_SFT - 4)) & 0x10)));
 }
 
 uint32_t C68k_Get_USP(c68k_struc *cpu)
 {
-    if (cpu->flag_S) return cpu->USP;
-    else return cpu->A[7];
+    if (cpu->flag_S)
+       return cpu->USP;
+    return cpu->A[7];
 }
 
 uint32_t C68k_Get_MSP(c68k_struc *cpu)
 {
-    if (cpu->flag_S) return cpu->A[7];
-    else return cpu->USP;
+    if (cpu->flag_S)
+       return cpu->A[7];
+    return cpu->USP;
 }
 
 void C68k_Set_DReg(c68k_struc *cpu, uint32_t num, uint32_t val)

@@ -151,19 +151,13 @@ extern  c68k_struc C68K;
 
 void    C68k_Init(c68k_struc *cpu, C68K_INT_CALLBACK *int_cb);
 
-int32_t     FASTCALL C68k_Reset(c68k_struc *cpu);
+int32_t FASTCALL C68k_Reset(c68k_struc *cpu);
 
 /* if <  0 --> error (cpu state returned)
  * if >= 0 --> number of extras cycles done */
-int32_t	    FASTCALL C68k_Exec(c68k_struc *cpu, int32_t cycle);
+int32_t FASTCALL C68k_Exec(c68k_struc *cpu, int32_t cycle);
 
-void    FASTCALL C68k_Set_IRQ(c68k_struc *cpu, int32_t level);
-
-int32_t     FASTCALL C68k_Get_CycleToDo(c68k_struc *cpu);
-int32_t     FASTCALL C68k_Get_CycleRemaining(c68k_struc *cpu);
-int32_t     FASTCALL C68k_Get_CycleDone(c68k_struc *cpu);
-void    FASTCALL C68k_Release_Cycle(c68k_struc *cpu);
-void    FASTCALL C68k_Add_Cycle(c68k_struc *cpu, int32_t cycle);
+void FASTCALL C68k_Set_IRQ(c68k_struc *cpu, int32_t level);
 
 void    C68k_Set_Fetch(c68k_struc *cpu, uint32_t low_adr, uint32_t high_adr, uintptr_t fetch_adr);
 

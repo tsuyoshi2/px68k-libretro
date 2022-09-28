@@ -4432,10 +4432,10 @@ case 0x61FF:
 /* BSR */
 case 0x6101:
 {
-	PRE_IO
+	PRE_IO;
 	PUSH_32_F((uint32_t)(PC - CPU->BasePC))
 	PC += (int32_t)(int8_t)Opcode;
-	POST_IO
+	POST_IO;
 }
 RET(18)
 
@@ -4444,10 +4444,10 @@ case 0x6100:
 {
 	uint32_t res = (int32_t)(int16_t)FETCH_WORD;
 	PC -= CPU->BasePC;
-	PRE_IO
+	PRE_IO;
 	PUSH_32_F((uint32_t)PC + 2)
 	PC += (int32_t) res;
 	SET_PC(PC);
-	POST_IO
+	POST_IO;
 }
 RET(18)
