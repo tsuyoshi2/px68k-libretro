@@ -13,7 +13,7 @@
 //	定数その１
 //	静的テーブルのサイズ
 
-#define FM_LFOBITS		8					// 変更不可
+#define FM_LFOBITS		8
 #define FM_TLBITS		7
 
 // ---------------------------------------------------------------------------
@@ -30,7 +30,7 @@
 namespace FM
 {	
 	//	Types ----------------------------------------------------------------
-	typedef int32_t 			ISample;
+	typedef int32_t ISample;
 
 	enum OpType { typeN=0, typeM=1 };
 
@@ -45,8 +45,6 @@ namespace FM
 		Operator();
 		void	SetChip(Chip* chip) { chip_ = chip; }
 
-		static void	MakeTimeTable(uint32_t ratio);
-		
 		ISample	Calc(ISample in);
 		ISample	CalcL(ISample in);
 		ISample CalcFB(uint32_t fb);
@@ -57,7 +55,7 @@ namespace FM
 		void	KeyOff();
 		void	Reset();
 		void	ResetFB();
-		int		IsOn();
+		int	IsOn();
 
 		void	SetDT(uint32_t dt);
 		void	SetDT2(uint32_t dt2);
@@ -77,17 +75,10 @@ namespace FM
 		void	SetMS(uint32_t ms);
 		void	Mute(bool);
 		
-		int		Out() { return out_; }
-
-		int		dbgGetIn2() { return in2_; } 
-		void	dbgStopPG() { pg_diff_ = 0; pg_diff_lfo_ = 0; }
-		
+		int	Out() { return out_; }
 	private:
-		typedef uint32_t Counter;
-		
 		Chip*	chip_;
 		ISample	out_, out2_;
-		ISample in2_;
 
 	//	Phase Generator ------------------------------------------------------
 		uint32_t	PGCalc();
@@ -99,7 +90,7 @@ namespace FM
 		uint32_t	multiple_;	// Multiple
 		uint32_t	pg_count_;	// Phase 現在値
 		uint32_t	pg_diff_;	// Phase 差分値
-		int32_t	pg_diff_lfo_;	// Phase 差分値 >> x
+		int32_t		pg_diff_lfo_;	// Phase 差分値 >> x
 
 	//	Envelop Generator ---------------------------------------------------
 		enum	EGPhase { next, attack, decay, sustain, release, off };
@@ -110,11 +101,9 @@ namespace FM
 		void	SSGShiftPhase(int mode);
 		void	SetEGRate(uint32_t);
 		void	EGUpdate();
-		int		FBCalc(int fb);
 		ISample LogToLin(uint32_t a);
-
 		
-		OpType	type_;		// OP の種類 (M, N...)
+		OpType		type_;		// OP の種類 (M, N...)
 		uint32_t	bn_;		// Block/Note
 		int		eg_level_;	// EG の出力値
 		int		eg_level_on_next_phase_;	// 次の eg_phase_ に移る値
@@ -152,7 +141,7 @@ namespace FM
 		bool	mute_;
 		
 	//	Tables ---------------------------------------------------------------
-		static Counter rate_table[16];
+		static uint32_t rate_table[16];
 		static uint32_t multable[4][16];
 
 		static const uint8_t notetable[128];
@@ -168,16 +157,8 @@ namespace FM
 		static bool tablehasmade;
 		static void MakeTable();
 
-
-
 	//	friends --------------------------------------------------------------
 		friend class Channel4;
-
-	public:
-		int		dbgopout_;
-		int		dbgpgout_;
-		static const int32_t* dbgGetClTable() { return cltable; }
-		static const uint32_t* dbgGetSineTable() { return sinetable; }
 	};
 	
 	//	4-op Channel ---------------------------------------------------------
@@ -201,19 +182,16 @@ namespace FM
 		void Reset();
 		void SetMS(uint32_t ms);
 		void Mute(bool);
-		void Refresh();
 
-		void dbgStopPG() { for (int i=0; i<4; i++) op[i].dbgStopPG(); }
-		
 	private:
 		static const uint8_t fbtable[8];
-		uint32_t	fb;
-		int		buf[4];
-		int*	in[3];			// 各 OP の入力ポインタ
-		int*	out[3];			// 各 OP の出力ポインタ
-		int*	pms;
-		int		algo_;
-		Chip*	chip_;
+		uint32_t fb;
+		int	 buf[4];
+		int*	 in[3];			// 各 OP の入力ポインタ
+		int*	 out[3];		// 各 OP の出力ポインタ
+		int*	 pms;
+		int	 algo_;
+		Chip*	 chip_;
 
 		static void MakeTable();
 

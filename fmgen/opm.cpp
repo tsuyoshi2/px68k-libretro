@@ -50,7 +50,6 @@ bool OPM::Init(uint32_t c, uint32_t rf)
 bool OPM::SetRate(uint32_t c, uint32_t r)
 {
 	clock = c;
-	pcmrate = r;
 	rate = r;
 
 	RebuildTimeTable();

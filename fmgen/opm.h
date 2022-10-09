@@ -57,7 +57,6 @@ namespace FM
 
 		uint32_t	clock;
 		uint32_t	rate;
-		uint32_t	pcmrate;
 
 		uint32_t	pmd;
 		uint32_t	amd;
@@ -72,10 +71,9 @@ namespace FM
 		uint32_t	lfowaveform;
 		uint32_t	rateratio;
 		uint32_t	noise;
-		int32_t	noisecount;
+		int32_t		noisecount;
 		uint32_t	noisedelta;
 		
-		bool	interpolation;
 		uint8_t	lfofreq;
 		uint8_t	status;
 		uint8_t	reg01;

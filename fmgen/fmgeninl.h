@@ -54,7 +54,7 @@ inline void Operator::KeyOn()
 			ssg_phase_ = -1;
 			ShiftPhase(attack);
 			EGUpdate();
-			in2_ = out_ = out2_ = 0;
+			out_ = out2_ = 0;
 			pg_count_ = 0;
 		}
 	}
@@ -201,13 +201,6 @@ inline void Channel4::Mute(bool m)
 {
 	for (int i=0; i<4; i++)
 		op[i].Mute(m);
-}
-
-//	内部パラメータを再計算
-inline void Channel4::Refresh()
-{
-	for (int i=0; i<4; i++)
-		op[i].param_changed_ = true;
 }
 
 inline void Channel4::SetChip(Chip* chip)

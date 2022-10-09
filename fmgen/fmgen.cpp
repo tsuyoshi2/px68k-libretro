@@ -399,8 +399,6 @@ void Operator::Prepare()
 		// LFO
 		ams_ = amtable[type_][amon_ ? (ms_ >> 4) & 3 : 0];
 		EGUpdate();
-
-		dbgopout_ = 0;
 	}
 }
 //	envelop の eg_phase_ 変更
@@ -580,7 +578,6 @@ inline uint32_t FM::Operator::PGCalc()
 {
 	uint32_t ret = pg_count_;
 	pg_count_ += pg_diff_;
-	dbgpgout_ = ret;
 	return ret;
 }
 
@@ -588,7 +585,6 @@ inline uint32_t FM::Operator::PGCalcL()
 {
 	uint32_t ret = pg_count_;
 	pg_count_ += pg_diff_ + ((pg_diff_lfo_ * chip_->GetPMV()) >> 5);// & -(1 << (2+IS2EC_SHIFT)));
-	dbgpgout_ = ret;
 	return ret /* + pmv * pg_diff_;*/;
 }
 
@@ -602,8 +598,6 @@ inline FM::ISample FM::Operator::Calc(ISample in)
 	int pgin = PGCalc() >> (20+FM_PGBITS-FM_OPSINBITS);
 	pgin += in >> (20+FM_PGBITS-FM_OPSINBITS-(2+IS2EC_SHIFT));
 	out_ = LogToLin(eg_out_ + SINE(pgin));
-
-	dbgopout_ = out_;
 	return out_;
 }
 
@@ -614,8 +608,6 @@ inline FM::ISample FM::Operator::CalcL(ISample in)
 	int pgin = PGCalcL() >> (20+FM_PGBITS-FM_OPSINBITS);
 	pgin += in >> (20+FM_PGBITS-FM_OPSINBITS-(2+IS2EC_SHIFT));
 	out_ = LogToLin(eg_out_ + SINE(pgin) + ams_[chip_->GetAML()]);
-
-	dbgopout_ = out_;
 	return out_;
 }
 
@@ -628,8 +620,6 @@ inline FM::ISample FM::Operator::CalcN(uint32_t noise)
 	// noise & 1 ? lv : -lv と等価 
 	noise = (noise & 1) - 1;
 	out_ = (lv + noise) ^ noise;
-
-	dbgopout_ = out_;
 	return out_;
 }
 
@@ -648,8 +638,6 @@ inline FM::ISample FM::Operator::CalcFB(uint32_t fb)
 		pgin += ((in << (1 + IS2EC_SHIFT)) >> fb) >> (20+FM_PGBITS-FM_OPSINBITS);
 	}
 	out_ = LogToLin(eg_out_ + SINE(pgin));
-	dbgopout_ = out2_;
-
 	return out2_;
 }
 
@@ -667,8 +655,6 @@ inline FM::ISample FM::Operator::CalcFBL(uint32_t fb)
 	}
 
 	out_ = LogToLin(eg_out_ + SINE(pgin) + ams_[chip_->GetAML()]);
-	dbgopout_ = out_;
-
 	return out_;
 }
 
