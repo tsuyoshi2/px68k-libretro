@@ -19,36 +19,36 @@ uint pmmu_translate_addr(uint addr_in)
 	resolved = 0;
 	addr_out = addr_in;
 
-	// if SRP is enabled and we're in supervisor mode, use it
+	/* if SRP is enabled and we're in supervisor mode, use it */
 	if ((m68ki_cpu.mmu_tc & 0x02000000) && (m68ki_get_sr() & 0x2000))
 	{
 		root_aptr = m68ki_cpu.mmu_srp_aptr;
 		root_limit = m68ki_cpu.mmu_srp_limit;
 	}
-	else	// else use the CRP
+	else	/* else use the CRP */
 	{
 		root_aptr = m68ki_cpu.mmu_crp_aptr;
 		root_limit = m68ki_cpu.mmu_crp_limit;
 	}
 
-	// get initial shift (# of top bits to ignore)
+	/* get initial shift (# of top bits to ignore) */
 	is = (m68ki_cpu.mmu_tc>>16) & 0xf;
 	abits = (m68ki_cpu.mmu_tc>>12)&0xf;
 	bbits = (m68ki_cpu.mmu_tc>>8)&0xf;
 	cbits = (m68ki_cpu.mmu_tc>>4)&0xf;
 
-	// get table A offset
+	/* get table A offset */
 	tofs = (addr_in<<is)>>(32-abits);
 
-	// find out what format table A is
+	/* find out what format table A is */
 	switch (root_limit & 3)
 	{
-		case 0:	// invalid, should cause MMU exception
-		case 1:	// page descriptor, should cause direct mapping
+		case 0:	/* invalid, should cause MMU exception */
+		case 1:	/* page descriptor, should cause direct mapping */
 			fatalerror("680x0 PMMU: Unhandled root mode\n");
 			break;
 
-		case 2:	// valid 4 byte descriptors
+		case 2:	/* valid 4 byte descriptors */
 			tofs *= 4;
 			tbl_entry = m68k_read_memory_32( tofs + (root_aptr & 0xfffffffc));
 			tamode = tbl_entry & 3;

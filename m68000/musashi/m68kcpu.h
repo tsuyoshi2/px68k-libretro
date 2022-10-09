@@ -495,7 +495,7 @@ typedef uint32 uint64;
 		#define m68ki_illg_callback(opcode) CALLBACK_ILLG_INSTR(opcode)
 	#endif
 #else
-	#define m68ki_illg_callback(opcode) 0 // Default is 0 = not handled, exception will occur
+	#define m68ki_illg_callback(opcode) 0 /* Default is 0 = not handled, exception will occur */
 #endif /* M68K_ILLG_HAS_CALLBACK */
 
 #if M68K_INSTRUCTION_HOOK
