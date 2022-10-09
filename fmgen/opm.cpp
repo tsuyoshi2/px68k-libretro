@@ -451,9 +451,8 @@ void OPM::Mix(int16_t* buffer, int nsamples, uint8_t* pbsp, uint8_t* pbep)
 
 #define CHECK_BUF_END() if ((uint8_t*)dest >= pbep) {dest = (int16_t *)pbsp;}
 
-	int16_t* dest;
-	int16_t dval0, dval1;
 	int i;
+	int16_t* dest;
 	
 	// odd bits - active, even bits - lfo
 	uint32_t activech=0;
@@ -488,8 +487,7 @@ void OPM::Mix(int16_t* buffer, int nsamples, uint8_t* pbsp, uint8_t* pbep)
 
 			StoreSample(dest[0], IStoSample(ibuf[1] + ibuf[3]));
 			StoreSample(dest[1], IStoSample(ibuf[2] + ibuf[3]));
-			dval0 = dest[0];
-			dval1 = dest[1];
+
 			dest += 2;
 		}
 	}
