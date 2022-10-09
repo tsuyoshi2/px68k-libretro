@@ -91,9 +91,7 @@ void OPM::Reset()
 void OPM::RebuildTimeTable()
 {
 	uint32_t fmclock = clock / 64;
-
-	assert(fmclock < (0x80000000 >> FM_RATIOBITS));
-	rateratio = ((fmclock << FM_RATIOBITS) + rate/2) / rate;
+	rateratio        = ((fmclock << FM_RATIOBITS) + rate/2) / rate;
 	SetTimerBase(fmclock);
 	
 	chip.SetRatio(rateratio);
@@ -197,9 +195,7 @@ void OPM::SetReg(uint32_t addr, uint32_t data)
 		break;
 	
 	case 0x18:					// LFRQ(lfo freq)
-		lfofreq = data;
-
-		assert(16-4-FM_RATIOBITS >= 0);
+		lfofreq         = data;
 		lfo_count_diff_ = 
 			rateratio 
 			* ((16 + (lfofreq & 15)) << (16 - 4 - FM_RATIOBITS)) 

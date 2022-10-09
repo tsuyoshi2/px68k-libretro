@@ -9,11 +9,6 @@
 #include "opna.h"
 #include "fmgeninl.h"
 
-#define BUILD_OPN
-#define BUILD_OPNA
-#define	BUILD_288
-
-
 //	TOFIX:
 //	 OPN ch3 が常にPrepareの対象となってしまう障害
 
@@ -24,8 +19,6 @@ namespace FM
 
 // ---------------------------------------------------------------------------
 //	OPNBase
-
-#if defined(BUILD_OPN) || defined(BUILD_OPNA)
 
 uint32_t	OPNBase::lfotable[8];			// OPNA/B 用
 
@@ -110,7 +103,6 @@ void OPNBase::SetPrescaler(uint32_t p)
 		rate = psgrate;
 		
 		// 合成周波数と出力周波数の比
-		assert(fmclock < (0x80000000 >> FM_RATIOBITS));
 		uint32_t ratio = ((fmclock << FM_RATIOBITS) + rate/2) / rate;
 
 		SetTimerBase(fmclock);
@@ -118,9 +110,7 @@ void OPNBase::SetPrescaler(uint32_t p)
 		psg.SetClock(clock / table[p][1], psgrate);
 
 		for (int i=0; i<8; i++)
-		{
 			lfotable[i] = (ratio << (2+FM_LFOCBITS-FM_RATIOBITS)) / table2[i];
-		}
 	}
 }
 
@@ -153,13 +143,9 @@ void OPNBase::TimerA()
 	}
 }
 
-#endif // defined(BUILD_OPN) || defined(BUILD_OPNA)
-
 // ---------------------------------------------------------------------------
 //	YM2203
 //
-#ifdef BUILD_OPN
-
 OPN::OPN()
 {
 	SetVolumeFM(0);
@@ -351,13 +337,9 @@ void OPN::Mix(int16_t* buffer, size_t nsamples)
 #undef IStoSample
 }
 
-#endif // BUILD_OPN
-
 // ---------------------------------------------------------------------------
 //	YM2608/2610 common part
 // ---------------------------------------------------------------------------
-
-#if defined(BUILD_OPNA)
 
 int OPNABase::amtable[FM_LFOENTS] = { -1, };
 int OPNABase::pmtable[FM_LFOENTS];
@@ -1099,13 +1081,9 @@ void OPNABase::Mix6(int16_t* buffer, size_t nsamples, int activech)
 	}
 }
 
-#endif // defined(BUILD_OPNA)
-
 // ---------------------------------------------------------------------------
 //	YM2608(OPNA)
 // ---------------------------------------------------------------------------
-
-#ifdef BUILD_OPNA
 
 // ---------------------------------------------------------------------------
 //	構築
@@ -1415,13 +1393,9 @@ void OPNA::Mix(int16_t* buffer, size_t nsamples)
 	RhythmMix(buffer, nsamples);
 }
 
-#endif // BUILD_OPNA
-
 // ---------------------------------------------------------------------------
 //	YMF288
 // ---------------------------------------------------------------------------
-
-#ifdef BUILD_288
 
 // ---------------------------------------------------------------------------
 //	構築
@@ -1719,7 +1693,5 @@ void Y288::Mix(int16_t* buffer, size_t nsamples)
 	psg.Mix(buffer, nsamples);
 	RhythmMix(buffer, nsamples);
 }
-
-#endif // BUILD_288
 
 }	// namespace FM

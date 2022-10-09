@@ -217,9 +217,7 @@ void MakeLFOTable()
 		for (i=0; i<4; i++)
 		{
 			for (int j=0; j<FM_LFOENTS; j++)
-			{
 				amtable[type][i][j] = (((j * 4) >> amt[type][i]) * 2) << 2;
-			}
 		}
 	}
 }
@@ -251,7 +249,6 @@ void Chip::MakeTable()
 	static const float dt2lv[4] = { 1.f, 1.414f, 1.581f, 1.732f };
 	for (h=0; h<4; h++)
 	{
-		assert(2 + FM_RATIOBITS - FM_PGBITS >= 0);
 		double rr = dt2lv[h] * double(ratio_) / (1 << (2 + FM_RATIOBITS - FM_PGBITS));
 		for (l=0; l<16; l++)
 		{
@@ -317,8 +314,6 @@ void FM::Operator::Reset()
 void Operator::MakeTable()
 {
 	// 対数テーブルの作成
-	assert(FM_CLENTS >= 256);
-
 	int* p = cltable;
 	int i;
 	for (i=0; i<256; i++)
@@ -396,8 +391,6 @@ void Operator::Prepare()
 		if (ssg_type_ && (eg_phase_ != release))
 		{
 			int m = ar_ >= ((ssg_type_ == 8 || ssg_type_ == 12) ? 56 : 60);
-
-			assert(0 <= ssg_phase_ && ssg_phase_ <= 2);
 			const int* table = ssgenvtable[ssg_type_ & 7][m][ssg_phase_];
 
 			ssg_offset_ = table[0] * 0x200;
@@ -424,8 +417,6 @@ void Operator::ShiftPhase(EGPhase nextphase)
 				ssg_phase_ = 1;
 			
 			int m = ar_ >= ((ssg_type_ == 8 || ssg_type_ == 12) ? 56 : 60);
-
-			assert(0 <= ssg_phase_ && ssg_phase_ <= 2);
 			const int* table = ssgenvtable[ssg_type_ & 7][m][ssg_phase_];
 
 			ssg_offset_ = table[0] * 0x200;
