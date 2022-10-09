@@ -357,11 +357,9 @@ inline void OPM::LFO()
 {
 	if (lfowaveform != 3)
 	{
-		{
-			int c = (lfo_count_ >> 15) & 0x1fe;
-			chip.SetPML(pmtable[lfowaveform][c] * pmd / 128 + 0x80);
-			chip.SetAML(amtable[lfowaveform][c] * amd / 128);
-		}
+		int c = (lfo_count_ >> 15) & 0x1fe;
+		chip.SetPML(pmtable[lfowaveform][c] * pmd / 128 + 0x80);
+		chip.SetAML(amtable[lfowaveform][c] * amd / 128);
 	}
 	else
 	{
@@ -375,9 +373,7 @@ inline void OPM::LFO()
 	lfo_count_prev_ = lfo_count_;
 	lfo_step_++;
 	if ((lfo_step_ & 7) == 0)
-	{
 		lfo_count_ += lfo_count_diff_;
-	}
 }
 
 inline uint32_t OPM::Noise()
@@ -402,13 +398,20 @@ inline uint32_t OPM::Noise()
 //
 inline void OPM::MixSub(int activech, ISample** idest)
 {
-	if (activech & 0x4000) (*idest[0]  = ch[0].Calc());
-	if (activech & 0x1000) (*idest[1] += ch[1].Calc());
-	if (activech & 0x0400) (*idest[2] += ch[2].Calc());
-	if (activech & 0x0100) (*idest[3] += ch[3].Calc());
-	if (activech & 0x0040) (*idest[4] += ch[4].Calc());
-	if (activech & 0x0010) (*idest[5] += ch[5].Calc());
-	if (activech & 0x0004) (*idest[6] += ch[6].Calc());
+	if (activech & 0x4000)
+		*idest[0]  = ch[0].Calc();
+	if (activech & 0x1000)
+		*idest[1] += ch[1].Calc();
+	if (activech & 0x0400)
+		*idest[2] += ch[2].Calc();
+	if (activech & 0x0100)
+		*idest[3] += ch[3].Calc();
+	if (activech & 0x0040)
+		*idest[4] += ch[4].Calc();
+	if (activech & 0x0010)
+		*idest[5] += ch[5].Calc();
+	if (activech & 0x0004)
+		*idest[6] += ch[6].Calc();
 	if (activech & 0x0001)
 	{
 		if (noisedelta & 0x80)
@@ -420,13 +423,20 @@ inline void OPM::MixSub(int activech, ISample** idest)
 
 inline void OPM::MixSubL(int activech, ISample** idest)
 {
-	if (activech & 0x4000) (*idest[0]  = ch[0].CalcL());
-	if (activech & 0x1000) (*idest[1] += ch[1].CalcL());
-	if (activech & 0x0400) (*idest[2] += ch[2].CalcL());
-	if (activech & 0x0100) (*idest[3] += ch[3].CalcL());
-	if (activech & 0x0040) (*idest[4] += ch[4].CalcL());
-	if (activech & 0x0010) (*idest[5] += ch[5].CalcL());
-	if (activech & 0x0004) (*idest[6] += ch[6].CalcL());
+	if (activech & 0x4000)
+		*idest[0]  = ch[0].CalcL();
+	if (activech & 0x1000)
+		*idest[1] += ch[1].CalcL();
+	if (activech & 0x0400)
+		*idest[2] += ch[2].CalcL();
+	if (activech & 0x0100)
+		*idest[3] += ch[3].CalcL();
+	if (activech & 0x0040)
+		*idest[4] += ch[4].CalcL();
+	if (activech & 0x0010)
+		*idest[5] += ch[5].CalcL();
+	if (activech & 0x0004)
+		*idest[6] += ch[6].CalcL();
 	if (activech & 0x0001)
 	{
 		if (noisedelta & 0x80)
@@ -436,16 +446,13 @@ inline void OPM::MixSubL(int activech, ISample** idest)
 	}
 }
 
+#define IStoSample(s)	((Limit(s, 0xffff, -0x10000) * fmvolume) >> 14)
 
 // ---------------------------------------------------------------------------
 //	¹çÀ® (stereo)
 //
 void OPM::Mix(int16_t* buffer, int nsamples, uint8_t* pbsp, uint8_t* pbep)
 {
-#define IStoSample(s)	((Limit(s, 0xffff, -0x10000) * fmvolume) >> 14)
-
-#define CHECK_BUF_END() if ((uint8_t*)dest >= pbep) {dest = (int16_t *)pbsp;}
-
 	int i;
 	int16_t* dest;
 	
@@ -472,8 +479,10 @@ void OPM::Mix(int16_t* buffer, int nsamples, uint8_t* pbsp, uint8_t* pbep)
 		idest[6] = &ibuf[pan[6]];
 		idest[7] = &ibuf[pan[7]];
 		
-		for (i = 0, dest = buffer; i < nsamples; i++) {
-			CHECK_BUF_END();
+		for (i = 0, dest = buffer; i < nsamples; i++)
+		{
+			if ((uint8_t*)dest >= pbep)
+				dest = (int16_t *)pbsp;
 			ibuf[1] = ibuf[2] = ibuf[3] = 0;
 			if (activech & 0xaaaa)
 				LFO(), MixSubL(activech, idest);
@@ -486,7 +495,6 @@ void OPM::Mix(int16_t* buffer, int nsamples, uint8_t* pbsp, uint8_t* pbep)
 			dest += 2;
 		}
 	}
-#undef IStoSample
 }
 
 }	// namespace FM
