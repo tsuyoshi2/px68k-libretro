@@ -52,8 +52,6 @@ void file_setcd(const char *exename);
 void *file_open_c(const char *filename);
 void *file_create_c(const char *filename);
 
-void plusyen(char *s, size_t len);
-
 #ifdef __cplusplus
 };
 #endif

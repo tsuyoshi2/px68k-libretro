@@ -40,6 +40,21 @@ extern char slash;
 static char  curpath[MAX_PATH] = "";
 static char *curfilep = curpath;
 
+static void plusyen(char *s, size_t len)
+{
+	size_t pos = strlen(s);
+
+	if (pos)
+	{
+		if (s[pos-1] == slash)
+			return;
+	}
+	if ((pos + 2) >= len)
+		return;
+	s[pos++] = slash;
+	s[pos]   = '\0';
+}
+
 void *file_open(const char *filename)
 {
 	void *ret = create_file(filename, GENERIC_READ | GENERIC_WRITE,
@@ -96,19 +111,4 @@ void *file_create_c(const char *filename)
 {
 	strncpy(curfilep, filename, MAX_PATH - (curfilep - curpath));
 	return file_create(curpath);
-}
-
-void plusyen(char *s, size_t len)
-{
-	size_t pos = strlen(s);
-
-	if (pos)
-	{
-		if (s[pos-1] == slash)
-			return;
-	}
-	if ((pos + 2) >= len)
-		return;
-	s[pos++] = slash;
-	s[pos]   = '\0';
 }
