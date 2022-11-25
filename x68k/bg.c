@@ -23,8 +23,8 @@ static uint32_t BG_AdrMask = 511;
 static uint32_t	BG0ScrollX = 0, BG0ScrollY = 0;
 static uint32_t	BG1ScrollX = 0, BG1ScrollY = 0;
 
-long	BG_HAdjust = 0;
-long	BG_VLINE = 0;
+int32_t	BG_HAdjust = 0;
+int32_t	BG_VLINE = 0;
 
 static uint8_t	BGCHR8[8*8*256];
 static uint8_t	BGCHR16[16*16*256];
@@ -136,11 +136,11 @@ void FASTCALL BG_Write(uint32_t adr, uint8_t data)
 			break;
 
 		case 0x0d:
-			BG_HAdjust = ((long)BG_Regs[0x0d]-(CRTC_HSTART+4))*8;				/* 水平方向は解像度による1/2はいらない？（Tetris） */
+			BG_HAdjust = ((int32_t)BG_Regs[0x0d] - (CRTC_HSTART + 4)) * 8; /* 水平方向は解像度による1/2はいらない？（Tetris） */
 			TVRAM_SetAllDirty();
 			break;
 		case 0x0f:
-			BG_VLINE = ((long)BG_Regs[0x0f]-CRTC_VSTART)/((BG_Regs[0x11]&4)?1:2);	/* BGとその他がずれてる時の差分 */
+			BG_VLINE = ((int32_t)BG_Regs[0x0f] - CRTC_VSTART) / ((BG_Regs[0x11] & 4) ? 1 : 2); /* BGとその他がずれてる時の差分 */
 			TVRAM_SetAllDirty();
 			break;
 
@@ -158,8 +158,8 @@ void FASTCALL BG_Write(uint32_t adr, uint8_t data)
 				BG_CHREND = 0x2000;
 			BG_CHRSIZE = ((data&3)?16:8);
 			BG_AdrMask = ((data&3)?1023:511);
-			BG_HAdjust = ((long)BG_Regs[0x0d]-(CRTC_HSTART+4))*8;				/* 水平方向は解像度による1/2はいらない？（Tetris） */
-			BG_VLINE = ((long)BG_Regs[0x0f]-CRTC_VSTART)/((BG_Regs[0x11]&4)?1:2);	/* BGとその他がずれてる時の差分 */
+			BG_HAdjust = ((int32_t)BG_Regs[0x0d] - (CRTC_HSTART + 4)) * 8; /* 水平方向は解像度による1/2はいらない？（Tetris） */
+			BG_VLINE   = ((int32_t)BG_Regs[0x0f] - CRTC_VSTART) / ((BG_Regs[0x11] & 4) ? 1 : 2); /* BGとその他がずれてる時の差分 */
 			break;
 		case 0x09:		/* BG Plane Cfg Changed */
 			TVRAM_SetAllDirty();
@@ -323,7 +323,7 @@ static INLINE void Sprite_DrawLineMcr(int pri)
         }						    \
 }
 
-static void bg_drawline_loopx8(uint16_t BGTOP, uint32_t BGScrollX, uint32_t BGScrollY, long adjust, int ng)
+static void bg_drawline_loopx8(uint16_t BGTOP, uint32_t BGScrollX, uint32_t BGScrollY, int32_t adjust, int ng)
 {
        uint8_t dat, bl;
        int i, j, d;
@@ -361,7 +361,7 @@ static void bg_drawline_loopx8(uint16_t BGTOP, uint32_t BGScrollX, uint32_t BGSc
        }
 }
 
-static void bg_drawline_loopx16(uint16_t BGTOP, uint32_t BGScrollX, uint32_t BGScrollY, long adjust, int ng)
+static void bg_drawline_loopx16(uint16_t BGTOP, uint32_t BGScrollX, uint32_t BGScrollY, int32_t adjust, int ng)
 {
        uint16_t si;
        uint8_t dat, bl;

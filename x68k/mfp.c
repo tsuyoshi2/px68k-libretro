@@ -231,7 +231,7 @@ void FASTCALL MFP_Write(uint32_t adr, uint8_t data)
    }
 }
 
-void FASTCALL MFP_Timer(long clock)
+void FASTCALL MFP_Timer(int32_t clock)
 {
 	if ( (!(MFP[MFP_TACR]&8))&&(MFP[MFP_TACR]&7) )
    {

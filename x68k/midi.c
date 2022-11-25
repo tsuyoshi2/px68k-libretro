@@ -34,26 +34,26 @@ enum {						/* 各機種リセット用に一応。 */
 };
 
 static void *hOut = NULL;
-int		MIDI_CTRL;
-int		MIDI_POS;
-int		MIDI_SYSCOUNT;
-uint8_t		MIDI_LAST;
-uint8_t		MIDI_BUF[MIDIBUFFERS];
-uint8_t		MIDI_EXCVBUF[MIDIBUFFERS];
+static int		MIDI_CTRL;
+static int		MIDI_POS;
+static int		MIDI_SYSCOUNT;
+static uint8_t		MIDI_LAST;
+static uint8_t		MIDI_BUF[MIDIBUFFERS];
+static uint8_t		MIDI_EXCVBUF[MIDIBUFFERS];
 
-uint8_t		MIDI_RegHigh = 0;				/* X68K用 */
-uint8_t		MIDI_Vector = 0;
-uint8_t		MIDI_IntEnable = 0;
-uint8_t		MIDI_IntVect = 0;
-uint8_t		MIDI_IntFlag = 0;
-uint32_t		MIDI_Buffered = 0;
-long		MIDI_BufTimer = 3333;
-uint8_t		MIDI_R05 = 0;
-uint32_t		MIDI_GTimerMax = 0;
-uint32_t		MIDI_MTimerMax = 0;
-long		MIDI_GTimerVal = 0;
-long		MIDI_MTimerVal = 0;
-uint8_t		MIDI_MODULE = MIDI_NOTUSED;
+static uint8_t		MIDI_RegHigh = 0;				/* X68K用 */
+static uint8_t		MIDI_Vector = 0;
+static uint8_t		MIDI_IntEnable = 0;
+static uint8_t		MIDI_IntVect = 0;
+static uint8_t		MIDI_IntFlag = 0;
+static uint32_t		MIDI_Buffered = 0;
+static int32_t		MIDI_BufTimer = 3333;
+static uint8_t		MIDI_R05 = 0;
+static uint32_t		MIDI_GTimerMax = 0;
+static uint32_t		MIDI_MTimerMax = 0;
+static int32_t		MIDI_GTimerVal = 0;
+static int32_t		MIDI_MTimerVal = 0;
+static uint8_t		MIDI_MODULE = MIDI_NOTUSED;
 
 static uint8_t MIDI_ResetType[5] = {		/* Config.MIDI_Type に合わせて… */
 	MIDI_LA, MIDI_GM, MIDI_GS, MIDI_XG

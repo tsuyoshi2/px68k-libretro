@@ -7,12 +7,12 @@
 extern	uint8_t	BG_DrawWork0[1024*1024];
 extern	uint8_t	BG_DrawWork1[1024*1024];
 extern	uint8_t	BG_Regs[0x12];
-extern	long	BG_HAdjust;
-extern	long	BG_VLINE;
-extern	uint32_t	VLINEBG;
+extern	int32_t	BG_HAdjust;
+extern	int32_t	BG_VLINE;
+extern	uint32_t VLINEBG;
 
 extern	uint8_t	Sprite_DrawWork[1024*1024];
-extern	uint16_t	BG_LineBuf[1600];
+extern	uint16_t BG_LineBuf[1600];
 
 void BG_Init(void);
 

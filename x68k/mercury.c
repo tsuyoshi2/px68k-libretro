@@ -10,18 +10,18 @@
 #define MCRY_IRQ 4
 #define Mcry_BufSize		48000*2
 
-static long	Mcry_WrPtr         = 0;
-static long	Mcry_RdPtr         = 0;
-static long	Mcry_SampleRate    = 44100;
-static long	Mcry_ClockRate     = 44100;
-static long	Mcry_Count         = 0;
+static int32_t	Mcry_WrPtr         = 0;
+static int32_t	Mcry_RdPtr         = 0;
+static int32_t	Mcry_SampleRate    = 44100;
+static int32_t	Mcry_ClockRate     = 44100;
+static int32_t	Mcry_Count         = 0;
 static uint8_t	Mcry_Status     = 0;
 uint8_t	Mcry_LRTiming         = 0;
 static int16_t	Mcry_OutDataL   = 0;
 static int16_t	Mcry_OutDataR   = 0;
 static int16_t	Mcry_BufL[Mcry_BufSize];
 static int16_t	Mcry_BufR[Mcry_BufSize];
-static long	Mcry_PreCounter    = 0;
+static int32_t	Mcry_PreCounter    = 0;
 
 static int16_t	Mcry_OldR, Mcry_OldL;
 static int	Mcry_DMABytes      = 0;
@@ -220,7 +220,7 @@ uint8_t FASTCALL Mcry_Read(uint32_t adr)
  */
 void Mcry_SetClock(void)
 {
-	static long Mcry_Clocks[8] = { 22050, 16000, 22050, 24000 };
+	static int32_t Mcry_Clocks[8] = { 22050, 16000, 22050, 24000 };
 	Mcry_ClockRate = Mcry_Clocks[(Mcry_Status>>4)&3];
 	if (Mcry_Status&0x80)
       Mcry_ClockRate *= 2;
@@ -234,7 +234,7 @@ void Mcry_SetClock(void)
 void Mcry_SetVolume(uint8_t vol)
 {
 	if (vol>16)
-      vol=16;
+		vol=16;
 
 	if (vol)
 		Mcry_VolumeShift = pow(1.189207115, (16-vol));
@@ -256,7 +256,7 @@ void Mcry_Init(const char* path)
 	Mcry_OutDataL = 0;
 	Mcry_OutDataR = 0;
 	Mcry_Status = 0;
-	Mcry_SampleRate = (long)44100;
+	Mcry_SampleRate = (int32_t)44100;
 	Mcry_LRTiming = 0;
 	Mcry_PreCounter = 0;
 
