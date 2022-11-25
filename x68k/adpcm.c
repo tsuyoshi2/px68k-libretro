@@ -40,8 +40,8 @@ static int dif_table[49*16];
 static int16_t ADPCM_BufR[ADPCM_BufSize];
 static int16_t ADPCM_BufL[ADPCM_BufSize];
 
-static long ADPCM_WrPtr = 0;
-static long ADPCM_RdPtr = 0;
+static int32_t  ADPCM_WrPtr = 0;
+static int32_t  ADPCM_RdPtr = 0;
 static uint32_t ADPCM_SampleRate = 44100*12;
 static uint32_t ADPCM_ClockRate = 7800*12;
 static uint32_t ADPCM_Count = 0;
