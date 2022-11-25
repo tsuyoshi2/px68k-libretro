@@ -68,7 +68,7 @@ uint8_t FASTCALL SysPort_Read(uint32_t adr)
 		default:		/* 10MHz */
 			break;
 		}
-		return 0xff;
+		break;
 	case 0xe8e00d:
 		return SysPort[5];
 	case 0xe8e00f:
