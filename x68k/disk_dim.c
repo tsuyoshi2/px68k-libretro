@@ -4,6 +4,13 @@
 #include "fdd.h"
 #include "disk_dim.h"
 
+/*
+	22-10-24
+		https://pc98.org/main.html
+		- respect header trackflag instead of overriding it,
+		prevents unnecessary resizing upon eject or saving of image file
+*/
+
 /* DIM Image Header */
 typedef struct {
 	uint8_t	type;
@@ -40,6 +47,7 @@ void DIM_Init(void)
 
 	for (drv=0; drv<4; drv++) {
 		DIMCur[drv] = 0;
+		DIMTrk[drv] = 0;
 		DIMImg[drv] = 0;
 		memset(DIMFile[drv], 0, MAX_PATH);
 	}
@@ -88,7 +96,6 @@ int DIM_SetFD(int drv, char* filename)
 		p += len;
 	}
 	file_close(fp);
-	if ( !dh->overtrack ) memset(dh->trkflag, 1, 170);
 	return 1;
 
 dim_set_error:
