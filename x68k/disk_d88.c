@@ -82,14 +82,14 @@ int D88_SetFD(int drv, char* filename)
             si = (D88_SECTINFO*)malloc(sizeof(D88_SECTINFO)+d88s.size);
             if ( !si ) goto d88_set_error;
             if ( sct ) {
-               oldsi->next = si;
+               if (oldsi) oldsi->next = si;
             } else {
                D88Trks[drv][trk] = si;
             }
             memcpy(&si->sect, &d88s, sizeof(D88_SECTOR));
             if ( file_lread(fp, ((uint8_t*)si)+sizeof(D88_SECTINFO), d88s.size)!=d88s.size ) goto d88_set_error;
             si->next = 0;
-            if (oldsi) oldsi = si;
+            oldsi    = si;
          }
       }
    }
