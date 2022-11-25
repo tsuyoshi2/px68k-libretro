@@ -20,7 +20,7 @@ static uint16_t	Grp_LineBufSP_Tr[1024];
 static uint16_t	Pal16Adr[256];			/* 16bit color パレットアドレス計算用 */
 
 /* xxx: for little endian only */
-#define GET_uint16_t_W8(src) (*(uint8_t *)(src) | *((uint8_t *)(src) + 1) << 8)
+#define GET_WORD_W8(adr) (uint16_t)GVRAM[(adr + 1) & 0x7FFFF] << 8 | (uint16_t)GVRAM[adr & 0x7FFFF]
 
 /*
  *   初期化〜
@@ -262,12 +262,13 @@ void Grp_DrawLine16(void)
 
 void FASTCALL Grp_DrawLine8(int page, int opaq)
 {
-	uint16_t *srcp, *destp;
+	uint16_t *destp;
 	uint32_t x, x0;
 	uint32_t y, y0;
 	uint32_t off;
 	uint32_t i;
 	uint16_t v;
+   uint32_t adr;
 
 	page &= 1;
 
@@ -283,8 +284,8 @@ void FASTCALL Grp_DrawLine8(int page, int opaq)
 	x = GrphScrollX[page * 2] & 0x1ff;
 	x0 = GrphScrollX[page * 2 + 1] & 0x1ff;
 
-	off = y0 + x0 * 2;
-	srcp = (uint16_t *)(GVRAM + y + x * 2);
+	off   = y0 + x0 * 2;
+	adr   = y  + x  * 2;
 	destp = (uint16_t *)Grp_LineBuf;
 
 	x = (x ^ 0x1ff) + 1;
@@ -295,8 +296,8 @@ void FASTCALL Grp_DrawLine8(int page, int opaq)
 	if (opaq) {
 		if (x < TextDotX) {
 			for (; i < x; ++i) {
-				v = GET_uint16_t_W8(srcp);
-				srcp++;
+				v = GET_WORD_W8(adr);
+				adr += 2;
 				v = GrphPal[(GVRAM[off] & 0xf0) | (v & 0x0f)];
 				*destp++ = v;
 
@@ -304,12 +305,12 @@ void FASTCALL Grp_DrawLine8(int page, int opaq)
 				if ((off & 0x3fe) == 0x000)
 					off -= 0x400;
 			}
-			srcp -= 0x200;
+			adr -= 0x400;
 		}
 
 		for (; i < TextDotX; ++i) {
-			v = GET_uint16_t_W8(srcp);
-			srcp++;
+			v = GET_WORD_W8(adr);
+         adr += 2;
 			v = GrphPal[(GVRAM[off] & 0xf0) | (v & 0x0f)];
 			*destp++ = v;
 
@@ -320,8 +321,8 @@ void FASTCALL Grp_DrawLine8(int page, int opaq)
 	} else {
 		if (x < TextDotX) {
 			for (; i < x; ++i) {
-				v = GET_uint16_t_W8(srcp);
-				srcp++;
+				v = GET_WORD_W8(adr);
+            adr += 2;
 				v = (GVRAM[off] & 0xf0) | (v & 0x0f);
 				if (v != 0x00)
 					*destp = GrphPal[v];
@@ -331,12 +332,12 @@ void FASTCALL Grp_DrawLine8(int page, int opaq)
 				if ((off & 0x3fe) == 0x000)
 					off -= 0x400;
 			}
-			srcp -= 0x200;
+			adr -= 0x400;
 		}
 
 		for (; i < TextDotX; ++i) {
-			v = GET_uint16_t_W8(srcp);
-			srcp++;
+			v = GET_WORD_W8(adr);
+         adr += 2;
 			v = (GVRAM[off] & 0xf0) | (v & 0x0f);
 			if (v != 0x00)
 				*destp = GrphPal[v];
@@ -352,11 +353,12 @@ void FASTCALL Grp_DrawLine8(int page, int opaq)
 /* Manhattan Requiem Opening 7.0→7.5MHz */
 void FASTCALL Grp_DrawLine4(uint32_t page, int opaq)
 {
-	uint16_t *srcp, *destp;	/* XXX: ALIGN */
+	uint16_t *destp;	/* XXX: ALIGN */
 	uint32_t x, y;
 	uint32_t off;
 	uint32_t i;
 	uint16_t v;
+   uint32_t adr;
 
 	page &= 3;
 
@@ -370,7 +372,7 @@ void FASTCALL Grp_DrawLine4(uint32_t page, int opaq)
 
 	x ^= 0x1ff;
 
-	srcp = (uint16_t *)(GVRAM + off + (page >> 1));
+   adr   = off + (page >> 1);
 	destp = (uint16_t *)Grp_LineBuf;
 
 	v = 0;
@@ -380,34 +382,34 @@ void FASTCALL Grp_DrawLine4(uint32_t page, int opaq)
 		if (opaq) {
 			if (x < TextDotX) {
 				for (; i < x; ++i) {
-					v = GET_uint16_t_W8(srcp);
-					srcp++;
+					v = GET_WORD_W8(adr);
+               adr += 2;
 					v = GrphPal[(v >> 4) & 0xf];
 					*destp++ = v;
 				}
-				srcp -= 0x200;
+				adr -= 0x400;
 			}
 			for (; i < TextDotX; ++i) {
-				v = GET_uint16_t_W8(srcp);
-				srcp++;
+				v = GET_WORD_W8(adr);
+				adr += 2;
 				v = GrphPal[(v >> 4) & 0xf];
 				*destp++ = v;
 			}
 		} else {
 			if (x < TextDotX) {
 				for (; i < x; ++i) {
-					v = GET_uint16_t_W8(srcp);
-					srcp++;
+					v = GET_WORD_W8(adr);
+               adr += 2;
 					v = (v >> 4) & 0x0f;
 					if (v != 0x00)
 						*destp = GrphPal[v];
 					destp++;
 				}
-				srcp -= 0x200;
+				adr -= 0x400;
 			}
 			for (; i < TextDotX; ++i) {
-				v = GET_uint16_t_W8(srcp);
-				srcp++;
+				v = GET_WORD_W8(adr);
+            adr += 2;
 				v = (v >> 4) & 0x0f;
 				if (v != 0x00)
 					*destp = GrphPal[v];
@@ -418,34 +420,34 @@ void FASTCALL Grp_DrawLine4(uint32_t page, int opaq)
 		if (opaq) {
 			if (x < TextDotX) {
 				for (; i < x; ++i) {
-					v = GET_uint16_t_W8(srcp);
-					srcp++;
+					v = GET_WORD_W8(adr);
+               adr += 2;
 					v = GrphPal[v & 0x0f];
 					*destp++ = v;
 				}
-				srcp -= 0x200;
+				adr -= 0x400;
 			}
 			for (; i < TextDotX; ++i) {
-				v = GET_uint16_t_W8(srcp);
-				srcp++;
+				v = GET_WORD_W8(adr);
+            adr += 2;
 				v = GrphPal[v & 0x0f];
 				*destp++ = v;
 			}
 		} else {
 			if (x < TextDotX) {
 				for (; i < x; ++i) {
-					v = GET_uint16_t_W8(srcp);
-					srcp++;
+					v = GET_WORD_W8(adr);
+               adr += 2;
 					v &= 0x0f;
 					if (v != 0x00)
 						*destp = GrphPal[v];
 					destp++;
 				}
-				srcp -= 0x200;
+				adr -= 0x400;
 			}
 			for (; i < TextDotX; ++i) {
-				v = GET_uint16_t_W8(srcp);
-				srcp++;
+				v = GET_WORD_W8(adr);
+            adr += 2;
 				v &= 0x0f;
 				if (v != 0x00)
 					*destp = GrphPal[v];
