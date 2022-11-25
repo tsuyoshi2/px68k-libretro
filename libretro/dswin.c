@@ -36,7 +36,7 @@
 
 static uint8_t pcmbuffer[PCMBUF_SIZE];
 static uint8_t rsndbuf  [PCMBUF_SIZE];
-static long snd_precounter = 0;
+static int32_t snd_precounter = 0;
 
 uint8_t *pbsp = pcmbuffer;
 uint8_t *pbrp = pcmbuffer, *pbwp = pcmbuffer;
@@ -64,7 +64,7 @@ static void sound_send(int length)
       pbwp = pbsp + (pbwp - pbep);
 }
 
-void DSound_Send0(long clock)
+void DSound_Send0(int32_t clock)
 {
 	int length = 0;
 
