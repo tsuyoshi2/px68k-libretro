@@ -1,5 +1,6 @@
 /*
  *  CRTC.C - CRT Controller / Video Controller
+ *  TurtleBazooka - Code correction suggestions
  */
 
 #include	"common.h"
@@ -160,13 +161,15 @@ void FASTCALL CRTC_Write(uint32_t adr, uint8_t data)
          case 0x04:
          case 0x05:
             CRTC_HSTART = (((uint16_t)CRTC_Regs[0x4]<<8)+CRTC_Regs[0x5]);
-            TextDotX = (CRTC_HEND-CRTC_HSTART)*8;
+            if (CRTC_HEND > CRTC_HSTART)
+               TextDotX = (CRTC_HEND-CRTC_HSTART)*8;
             BG_HAdjust = ((long)BG_Regs[0x0d]-(CRTC_HSTART+4))*8;				/* 水平方向は解像度による1/2はいらない？（Tetris） */
             break;
          case 0x06:
          case 0x07:
             CRTC_HEND = (((uint16_t)CRTC_Regs[0x6]<<8)+CRTC_Regs[0x7]);
-            TextDotX = (CRTC_HEND-CRTC_HSTART)*8;
+            if (CRTC_HEND > CRTC_HSTART)
+               TextDotX = (CRTC_HEND-CRTC_HSTART)*8;
             break;
          case 0x08:
          case 0x09:
