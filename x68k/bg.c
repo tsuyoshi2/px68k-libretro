@@ -52,7 +52,9 @@ uint8_t FASTCALL BG_Read(uint32_t adr)
 	if ((adr>=0xeb0000)&&(adr<0xeb0400))
 	{
 		adr -= 0xeb0000;
+#ifndef MSB_FIRST
 		adr ^= 1;
+#endif
 		return Sprite_Regs[adr];
 	}
 	else if ((adr>=0xeb0800)&&(adr<0xeb0812))
@@ -72,7 +74,9 @@ void FASTCALL BG_Write(uint32_t adr, uint8_t data)
 	if ((adr>=0xeb0000)&&(adr<0xeb0400))
 	{
 		adr &= 0x3ff;
+#ifndef MSB_FIRST
 		adr ^= 1;
+#endif
 		if (Sprite_Regs[adr] != data)
 		{
 

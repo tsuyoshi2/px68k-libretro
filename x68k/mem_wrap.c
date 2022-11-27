@@ -136,7 +136,13 @@ static void wm_cnt(uint32_t addr, uint8_t val)
 {
 	addr &= 0x00ffffff;
 	if (addr < 0x00c00000) /* Use RAM upto 12MB */
+	{
+#ifdef MSB_FIRST
+		MEM[addr    ] = val;
+#else
 		MEM[addr ^ 1] = val;
+#endif
+	}
 	else if (addr < 0x00e00000)
 		GVRAM_Write(addr, val);
 	else

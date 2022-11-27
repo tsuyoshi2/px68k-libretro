@@ -48,7 +48,9 @@ void TVRAM_Init(void)
 uint8_t FASTCALL TVRAM_Read(uint32_t adr)
 {
 	adr &= 0x7ffff;
+#ifndef MSB_FIRST
 	adr ^= 1;
+#endif
 	return TVRAM[adr];
 }
 
@@ -75,7 +77,9 @@ static INLINE void TVRAM_WriteByteMask(uint32_t adr, uint8_t data)
 void FASTCALL TVRAM_Write(uint32_t adr, uint8_t data)
 {
 	adr &= 0x7ffff;
+#ifndef MSB_FIRST
 	adr ^= 1;
+#endif
 	if (CRTC_Regs[0x2a]&1)
 	{
 		adr &= 0x1ffff;

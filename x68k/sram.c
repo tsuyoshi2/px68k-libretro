@@ -25,7 +25,6 @@ void SRAM_VirusCheck(void)
 void SRAM_Init(void)
 {
 	int i;
-	uint8_t tmp;
 	void *fp;
 
 	for (i=0; i<0x4000; i++)
@@ -35,26 +34,28 @@ void SRAM_Init(void)
 	{
 		file_lread(fp, SRAM, 0x4000);
 		file_close(fp);
+
+#ifndef MSB_FIRST
 		for (i=0; i<0x4000; i+=2)
 		{
-			tmp = SRAM[i];
-			SRAM[i] = SRAM[i+1];
-			SRAM[i+1] = tmp;
+			uint8_t tmp = SRAM[i];
+			SRAM[i]     = SRAM[i+1];
+			SRAM[i+1]   = tmp;
 		}
+#endif
 	}
 }
 
 void SRAM_Cleanup(void)
 {
    int i;
-   uint8_t tmp;
    void *fp;
 
    for (i=0; i<0x4000; i+=2)
    {
-      tmp       = SRAM[i];
-      SRAM[i]   = SRAM[i+1];
-      SRAM[i+1] = tmp;
+      uint8_t tmp = SRAM[i];
+      SRAM[i]     = SRAM[i+1];
+      SRAM[i+1]   = tmp;
    }
 
    if (!(fp = file_open_c("sram.dat")))
@@ -80,7 +81,9 @@ void FASTCALL SRAM_Write(uint32_t adr, uint8_t data)
 	if ( (SysPort[5]==0x31)&&(adr<0xed4000) )
 	{
 		adr       &= 0xffff;
+#ifndef MSB_FIRST
 		adr       ^= 1;
+#endif
 		SRAM[adr]  = data;
 	}
 }
