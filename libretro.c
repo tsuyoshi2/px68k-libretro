@@ -793,13 +793,11 @@ entry point) */
 	int i;
 
 	scsi = 0;
-	for (i = 0x30600; i < 0x30c00; i += 2)
-   {
+	for (i = 0x30600; i < 0x30c00; i += 2) {
 		p1 = (uint16_t *)(&IPL[i]);
 		p2 = p1 + 1;
 		/* xxx: works only for little endian guys */
-		if (*p1 == 0xfc00 && *p2 == 0x0000)
-      {
+		if (*p1 == 0xfc00 && *p2 == 0x0000) {
 			scsi = 1;
 			break;
 		}
@@ -845,15 +843,11 @@ static int WinX68k_LoadROMs(void)
    /* if SCSI IPL, SCSI BIOS is established around $fc0000 */
 	WinX68k_SCSICheck();	
 
-#ifndef MSB_FIRST
-   /* for little endian */
-	for (i = 0; i < 0x40000; i += 2)
-   {
-		tmp        = IPL[i];
-		IPL[i]     = IPL[i + 1];
+	for (i = 0; i < 0x40000; i += 2) {
+		tmp = IPL[i];
+		IPL[i] = IPL[i + 1];
 		IPL[i + 1] = tmp;
 	}
-#endif
 
 	fp = file_open_c((char *)FONTFILE);
 	if (fp == 0) {
