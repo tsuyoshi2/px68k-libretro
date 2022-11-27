@@ -14,23 +14,26 @@
 
 uint8_t	GVRAM[0x80000];
 uint16_t	Grp_LineBuf[1024];
-uint16_t	Grp_LineBufSP[1024];		/* ÆÃ¼ì¥×¥é¥¤¥ª¥ê¥Æ¥£¡¿È¾Æ©ÌÀÍÑ¥Ð¥Ã¥Õ¥¡ */
-uint16_t	Grp_LineBufSP2[1024];		/* È¾Æ©ÌÀ¥Ù¡¼¥¹¥×¥ì¡¼¥óÍÑ¥Ð¥Ã¥Õ¥¡¡ÊÈóÈ¾Æ©ÌÀ¥Ó¥Ã¥È³ÊÇ¼¡Ë */
+uint16_t	Grp_LineBufSP[1024];		/* ¿ü¿¿¿¿¿¿¿¿¿¿¿¿¿¿¿¿¿¿å¿¿ */
+uint16_t	Grp_LineBufSP2[1024];		/* ¿¿¿¿¿¿¿¿¿¿¿¿¿¿¿¿¿å¿¿¿¿¿¿¿¿¿¿¿¿å¿¿¿¿¿ */
 static uint16_t	Grp_LineBufSP_Tr[1024];
-static uint16_t	Pal16Adr[256];			/* 16bit color ¥Ñ¥ì¥Ã¥È¥¢¥É¥ì¥¹·×»»ÍÑ */
+static uint16_t	Pal16Adr[256];			/* 16bit color ¿¿¿å¿¿¿¿¿¿¿¿¿¿ */
 
-/* xxx: for little endian only */
-#define GET_WORD_W8(adr) (uint16_t)GVRAM[(adr + 1) & 0x7FFFF] << 8 | (uint16_t)GVRAM[adr & 0x7FFFF]
+#ifdef MSB_FIRST
+#define GET_WORD_W8(src) (*(uint16_t *)(src))
+#else
+#define GET_WORD_W8(src) (*(uint8_t *)(src) | *((uint8_t *)(src) + 1) << 8)
+#endif
 
 /*
- *   ½é´ü²½¡Á
+ *   ¿¿¿¿¿¿¿
  */
 void GVRAM_Init(void)
 {
 	int i;
 
 	memset(GVRAM, 0, 0x80000);
-	for (i=0; i<128; i++) /* 16bit color ¥Ñ¥ì¥Ã¥È¥¢¥É¥ì¥¹·×»»ÍÑ */
+	for (i=0; i<128; i++) /* 16bit color ¿¿¿å¿¿¿¿¿¿¿¿¿¿ */
 	{
 		Pal16Adr[i*2] = i*4;
 		Pal16Adr[i*2+1] = i*4+1;
@@ -39,14 +42,14 @@ void GVRAM_Init(void)
 
 
 /*
- *  ¹âÂ®¥¯¥ê¥¢ÍÑ¥ë¡¼¥Á¥ó
+ *  ¿¿®¿¿¿¿¿¿¿¿¿¿¿
  */
 
 void FASTCALL GVRAM_FastClear(void)
 {
 	uint32_t v = ((CRTC_Regs[0x29]&4)?512:256);
 	uint32_t h = ((CRTC_Regs[0x29]&3)?512:256);
-	/* ¤ä¤Ã¤Ñ¤Á¤ã¤ó¤ÈÈÏ°Ï»ØÄê¤·¤Ê¤¤¤ÈÊÑ¤Ë¤Ê¤ë¤â¤Î¤â¤¢¤ë¡Ê¥À¥¤¥Ê¥Þ¥¤¥È¥Ç¥å¡¼¥¯¤È¤«¡Ë */
+	/* ¿¿ä¿¿¿¿¿¿¿¿¿¿¿¿¿¿¿¿¿¿¿¿¿¿¿¿¿¿¿¿¿¿¿¿¿¿¿¿¿¿¿¿¿¿¿¿¿¿ */
 {
 	uint16_t *p;
 	uint32_t x, y;
@@ -72,7 +75,9 @@ void FASTCALL GVRAM_FastClear(void)
  */
 uint8_t FASTCALL GVRAM_Read(uint32_t adr)
 {
+#ifndef MSB_FIRST
 	adr     ^= 1;
+#endif
 	adr     -= 0xc00000;
 
 	if (CRTC_Regs[0x28] & 8)
@@ -132,10 +137,12 @@ void FASTCALL GVRAM_Write(uint32_t adr, uint8_t data)
 {
 	int line = 1023;
 
+#ifndef MSB_FIRST
 	adr ^= 1;
+#endif
 	adr -= 0xc00000;
 
-	if (CRTC_Regs[0x28]&8) /* 65536¥â¡¼¥É¤ÎVRAMÇÛÃÖ¡©¡ÊNemesis¡Ë */
+	if (CRTC_Regs[0x28]&8) /* 65536¿¿¿¿¿VRAM¿¿¿¿¿¿¿Nemesis¿¿ */
    {
       if ( adr<0x80000 )
       {
@@ -209,7 +216,7 @@ void FASTCALL GVRAM_Write(uint32_t adr, uint8_t data)
 
 
 /*
- *   ¤³¤Ã¤«¤é¸å¤Ï¥é¥¤¥óÃ±°Ì¤Ç¤Î²èÌÌÅ¸³«Éô
+ *   ¿¿¿ä¿¿¿¿¿¿¿¿ñ¿¿¿¿¿¿¿¿¿¿¿¿
  */
 void Grp_DrawLine16(void)
 {
@@ -262,13 +269,12 @@ void Grp_DrawLine16(void)
 
 void FASTCALL Grp_DrawLine8(int page, int opaq)
 {
-	uint16_t *destp;
+	uint16_t *srcp, *destp;
 	uint32_t x, x0;
 	uint32_t y, y0;
 	uint32_t off;
 	uint32_t i;
 	uint16_t v;
-   uint32_t adr;
 
 	page &= 1;
 
@@ -284,8 +290,8 @@ void FASTCALL Grp_DrawLine8(int page, int opaq)
 	x = GrphScrollX[page * 2] & 0x1ff;
 	x0 = GrphScrollX[page * 2 + 1] & 0x1ff;
 
-	off   = y0 + x0 * 2;
-	adr   = y  + x  * 2;
+	off = y0 + x0 * 2;
+	srcp = (uint16_t *)(GVRAM + y + x * 2);
 	destp = (uint16_t *)Grp_LineBuf;
 
 	x = (x ^ 0x1ff) + 1;
@@ -296,8 +302,8 @@ void FASTCALL Grp_DrawLine8(int page, int opaq)
 	if (opaq) {
 		if (x < TextDotX) {
 			for (; i < x; ++i) {
-				v = GET_WORD_W8(adr);
-				adr += 2;
+				v = GET_WORD_W8(srcp);
+				srcp++;
 				v = GrphPal[(GVRAM[off] & 0xf0) | (v & 0x0f)];
 				*destp++ = v;
 
@@ -305,12 +311,12 @@ void FASTCALL Grp_DrawLine8(int page, int opaq)
 				if ((off & 0x3fe) == 0x000)
 					off -= 0x400;
 			}
-			adr -= 0x400;
+			srcp -= 0x200;
 		}
 
 		for (; i < TextDotX; ++i) {
-			v = GET_WORD_W8(adr);
-         adr += 2;
+			v = GET_WORD_W8(srcp);
+			srcp++;
 			v = GrphPal[(GVRAM[off] & 0xf0) | (v & 0x0f)];
 			*destp++ = v;
 
@@ -321,8 +327,8 @@ void FASTCALL Grp_DrawLine8(int page, int opaq)
 	} else {
 		if (x < TextDotX) {
 			for (; i < x; ++i) {
-				v = GET_WORD_W8(adr);
-            adr += 2;
+				v = GET_WORD_W8(srcp);
+				srcp++;
 				v = (GVRAM[off] & 0xf0) | (v & 0x0f);
 				if (v != 0x00)
 					*destp = GrphPal[v];
@@ -332,12 +338,12 @@ void FASTCALL Grp_DrawLine8(int page, int opaq)
 				if ((off & 0x3fe) == 0x000)
 					off -= 0x400;
 			}
-			adr -= 0x400;
+			srcp -= 0x200;
 		}
 
 		for (; i < TextDotX; ++i) {
-			v = GET_WORD_W8(adr);
-         adr += 2;
+			v = GET_WORD_W8(srcp);
+			srcp++;
 			v = (GVRAM[off] & 0xf0) | (v & 0x0f);
 			if (v != 0x00)
 				*destp = GrphPal[v];
@@ -350,15 +356,14 @@ void FASTCALL Grp_DrawLine8(int page, int opaq)
 	}
 }
 
-/* Manhattan Requiem Opening 7.0¢ª7.5MHz */
+/* Manhattan Requiem Opening 7.0¿¿7.5MHz */
 void FASTCALL Grp_DrawLine4(uint32_t page, int opaq)
 {
-	uint16_t *destp;	/* XXX: ALIGN */
+	uint16_t *srcp, *destp;	/* XXX: ALIGN */
 	uint32_t x, y;
 	uint32_t off;
 	uint32_t i;
 	uint16_t v;
-   uint32_t adr;
 
 	page &= 3;
 
@@ -372,7 +377,7 @@ void FASTCALL Grp_DrawLine4(uint32_t page, int opaq)
 
 	x ^= 0x1ff;
 
-   adr   = off + (page >> 1);
+	srcp = (uint16_t *)(GVRAM + off + (page >> 1));
 	destp = (uint16_t *)Grp_LineBuf;
 
 	v = 0;
@@ -382,34 +387,34 @@ void FASTCALL Grp_DrawLine4(uint32_t page, int opaq)
 		if (opaq) {
 			if (x < TextDotX) {
 				for (; i < x; ++i) {
-					v = GET_WORD_W8(adr);
-               adr += 2;
+					v = GET_WORD_W8(srcp);
+					srcp++;
 					v = GrphPal[(v >> 4) & 0xf];
 					*destp++ = v;
 				}
-				adr -= 0x400;
+				srcp -= 0x200;
 			}
 			for (; i < TextDotX; ++i) {
-				v = GET_WORD_W8(adr);
-				adr += 2;
+				v = GET_WORD_W8(srcp);
+				srcp++;
 				v = GrphPal[(v >> 4) & 0xf];
 				*destp++ = v;
 			}
 		} else {
 			if (x < TextDotX) {
 				for (; i < x; ++i) {
-					v = GET_WORD_W8(adr);
-               adr += 2;
+					v = GET_WORD_W8(srcp);
+					srcp++;
 					v = (v >> 4) & 0x0f;
 					if (v != 0x00)
 						*destp = GrphPal[v];
 					destp++;
 				}
-				adr -= 0x400;
+				srcp -= 0x200;
 			}
 			for (; i < TextDotX; ++i) {
-				v = GET_WORD_W8(adr);
-            adr += 2;
+				v = GET_WORD_W8(srcp);
+				srcp++;
 				v = (v >> 4) & 0x0f;
 				if (v != 0x00)
 					*destp = GrphPal[v];
@@ -420,34 +425,34 @@ void FASTCALL Grp_DrawLine4(uint32_t page, int opaq)
 		if (opaq) {
 			if (x < TextDotX) {
 				for (; i < x; ++i) {
-					v = GET_WORD_W8(adr);
-               adr += 2;
+					v = GET_WORD_W8(srcp);
+					srcp++;
 					v = GrphPal[v & 0x0f];
 					*destp++ = v;
 				}
-				adr -= 0x400;
+				srcp -= 0x200;
 			}
 			for (; i < TextDotX; ++i) {
-				v = GET_WORD_W8(adr);
-            adr += 2;
+				v = GET_WORD_W8(srcp);
+				srcp++;
 				v = GrphPal[v & 0x0f];
 				*destp++ = v;
 			}
 		} else {
 			if (x < TextDotX) {
 				for (; i < x; ++i) {
-					v = GET_WORD_W8(adr);
-               adr += 2;
+					v = GET_WORD_W8(srcp);
+					srcp++;
 					v &= 0x0f;
 					if (v != 0x00)
 						*destp = GrphPal[v];
 					destp++;
 				}
-				adr -= 0x400;
+				srcp -= 0x200;
 			}
 			for (; i < TextDotX; ++i) {
-				v = GET_WORD_W8(adr);
-            adr += 2;
+				v = GET_WORD_W8(srcp);
+				srcp++;
 				v &= 0x0f;
 				if (v != 0x00)
 					*destp = GrphPal[v];
@@ -457,7 +462,7 @@ void FASTCALL Grp_DrawLine4(uint32_t page, int opaq)
 	}
 }
 
-/* ¤³¤Î²èÌÌ¥â¡¼¥É¤Ï´ªÊÛ¤·¤Æ²¼¤µ¤¤¡Ä */
+/* ¿¿¿¿¿¿¿¿¿¿¿¿¿¿¿¿¿¿¿¿¿¿¿¿ */
 void FASTCALL Grp_DrawLine4h(void)
 {
 	uint16_t *srcp, *destp;
@@ -499,7 +504,7 @@ void FASTCALL Grp_DrawLine4h(void)
 
 
 /*
- * --- È¾Æ©ÌÀ¡¿ÆÃ¼ìPri¤Î¥Ù¡¼¥¹¤È¤Ê¤ë¥Ú¡¼¥¸¤ÎÉÁ²è ---
+ * --- ¿¿¿¿¿¿¿ü¿Pri¿¿¿¿¿¿¿¿¿¿¿¿¿¿¿¿¿¿¿¿ ---
  */
 void FASTCALL Grp_DrawLine16SP(void)
 {
