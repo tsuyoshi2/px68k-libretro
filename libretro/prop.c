@@ -40,7 +40,7 @@ static uint8_t initialized = 0;
 Win68Conf Config;
 
 extern char filepath[MAX_PATH];
-extern char winx68k_ini[MAX_PATH];
+extern char winx68k_ini[2048];
 
 extern char retro_system_conf[512];
 extern char slash;
