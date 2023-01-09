@@ -120,7 +120,6 @@ int CHANGEAV_TIMING       = 0; /* Separate change of geometry from change of ref
 int VID_MODE              = MODE_NORM; /* what framerate we start in */
 static float FRAMERATE;
 uint32_t libretro_supports_input_bitmasks = 0;
-static bool libretro_supports_option_categories = false;
 unsigned int total_usec   = (unsigned int) -1;
 
 static int16_t soundbuf[1024 * 2];
@@ -1153,10 +1152,7 @@ void retro_set_environment(retro_environment_t cb)
    environ_cb = cb;
    cb(RETRO_ENVIRONMENT_SET_CONTROLLER_INFO, (void*)ports);
    cb(RETRO_ENVIRONMENT_SET_SUPPORT_NO_GAME, &nocontent);
-
-   libretro_supports_option_categories = 0;
-   libretro_set_core_options(cb,
-         &libretro_supports_option_categories);
+   libretro_set_core_options(environ_cb);
 }
 
 static void update_variables(int running)
@@ -1532,8 +1528,6 @@ bool retro_load_game(const struct retro_game_info *info)
    no_content = 1;
    RPATH[0] = '\0';
 
-   update_variables(0);
-
    if (info && info->path)
    {
       const char *full_path = info->path;
@@ -1642,6 +1636,8 @@ void retro_init(void)
    Config.JOY_TYPE[0]   = 0;
    Config.JOY_TYPE[1]   = 0;
 
+   update_variables(0);
+
    memset(Core_Key_State, 0, 512);
    memset(Core_old_Key_State, 0, sizeof(Core_old_Key_State));
 
@@ -1669,9 +1665,8 @@ void retro_deinit(void)
    WinDraw_Cleanup();
 
    SaveConfig();
-   libretro_supports_input_bitmasks    = 0;
-   libretro_supports_midi_output       = 0;
-   libretro_supports_option_categories = false;
+   libretro_supports_input_bitmasks = 0;
+   libretro_supports_midi_output    = 0;
 }
 
 void retro_reset(void)

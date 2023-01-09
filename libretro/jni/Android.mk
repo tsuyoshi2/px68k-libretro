@@ -5,7 +5,7 @@ C68K := 1
 
 include $(CORE_DIR)/Makefile.common
 
-COREFLAGS := -DC68K_NO_JUMP_TABLE -DNO_MERCURY -D__LIBRETRO__ $(INCFLAGS) $(FLAGS) -DHAVE_NO_LANGEXTRA
+COREFLAGS := -DC68K_NO_JUMP_TABLE -DNO_MERCURY -D__LIBRETRO__ $(INCFLAGS) $(FLAGS)
 
 GIT_VERSION := " $(shell git rev-parse --short HEAD || echo unknown)"
 ifneq ($(GIT_VERSION)," unknown")
