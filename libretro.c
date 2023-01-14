@@ -113,8 +113,8 @@ static int FrameSkipCount = 0;
 static int FrameSkipQueue = 0;
 static int ClkUsed        = 0;
 
-int retrow                = 800;
-int retroh                = 600;
+uint32_t retrow           = 800;
+uint32_t retroh           = 600;
 int CHANGEAV              = 0;
 int CHANGEAV_TIMING       = 0; /* Separate change of geometry from change of refresh rate */
 int VID_MODE              = MODE_NORM; /* what framerate we start in */

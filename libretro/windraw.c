@@ -67,7 +67,9 @@ void WinDraw_Cleanup(void)
         ScrBuf = NULL;
 }
 
-extern int retrow,retroh,CHANGEAV;
+/* Forward declarations */
+extern uint32_t retrow, retroh;
+extern int CHANGEAV;
 
 void FASTCALL WinDraw_Draw(void)
 {
