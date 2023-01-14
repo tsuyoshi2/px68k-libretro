@@ -233,69 +233,45 @@ void FASTCALL MFP_Write(uint32_t adr, uint8_t data)
 
 void FASTCALL MFP_Timer(int32_t clock)
 {
-	if ((!(MFP[MFP_TACR] & 8)) && (MFP[MFP_TACR] & 7))
+   static const int TimerInt[4] = { 2, 7, 10, 11 };
+   int chan;
+
+   for (chan = 0; chan < 4; chan++)
    {
-      int t          = Timer_Prescaler[MFP[MFP_TACR] & 7];
-      Timer_Tick[0] += clock;
-      while (Timer_Tick[0] >= t)
+      int mode;
+
+      switch (chan)
       {
-         Timer_Tick[0] -= t;
-         MFP[MFP_TADR]--;
-         if (!MFP[MFP_TADR])
+         case 2:
+            mode = MFP[MFP_TCDCR] >> 4;
+            break;
+
+         case 3:
+            mode = MFP[MFP_TCDCR];
+            break;
+
+         default:
+            mode = MFP[MFP_TACR + chan];
+            break;
+      }
+
+      if (!((chan == 0) && (mode & 8)) && (mode & 7))
+      {
+         int             t = Timer_Prescaler[mode & 7];
+         Timer_Tick[chan] += clock;
+
+         while (Timer_Tick[chan] >= t)
          {
-            MFP[MFP_TADR] = Timer_Reload[0];
-            MFP_Int(2);
+            Timer_Tick[chan] -= t;
+            MFP[MFP_TADR + chan]--;
+            if (MFP[MFP_TADR + chan] == 0)
+            {
+               MFP[MFP_TADR + chan] = Timer_Reload[chan];
+               MFP_Int(TimerInt[chan]);
+            }
          }
       }
    }
-
-	if (MFP[MFP_TBCR] & 7)
-   {
-      int t          = Timer_Prescaler[MFP[MFP_TBCR] & 7];
-      Timer_Tick[1] += clock;
-      while (Timer_Tick[1] >= t)
-      {
-         Timer_Tick[1] -= t;
-         MFP[MFP_TBDR]--;
-         if (!MFP[MFP_TBDR])
-         {
-            MFP[MFP_TBDR] = Timer_Reload[1];
-            MFP_Int(7);
-         }
-      }
-   }
-
-	if (MFP[MFP_TCDCR] & 0x70)
-   {
-		int          t = Timer_Prescaler[(MFP[MFP_TCDCR] & 0x70) >> 4];
-		Timer_Tick[2] += clock;
-		while (Timer_Tick[2] >= t)
-      {
-			Timer_Tick[2] -= t;
-			MFP[MFP_TCDR]--;
-			if (!MFP[MFP_TCDR])
-         {
-				MFP[MFP_TCDR] = Timer_Reload[2];
-				MFP_Int(10);
-			}
-		}
-	}
-
-	if (MFP[MFP_TCDCR] & 7)
-   {
-		int          t = Timer_Prescaler[MFP[MFP_TCDCR] & 7];
-		Timer_Tick[3] += clock;
-		while (Timer_Tick[3] >= t)
-      {
-			Timer_Tick[3] -= t;
-			MFP[MFP_TDDR]--;
-			if (!MFP[MFP_TDDR])
-         {
-				MFP[MFP_TDDR] = Timer_Reload[3];
-				MFP_Int(11);
-			}
-		}
-	}
 }
 
 void FASTCALL MFP_TimerA(void)
