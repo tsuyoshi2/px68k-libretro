@@ -13,8 +13,8 @@ uint8_t LastKey = 0;
 
 uint8_t MFP[24];
 uint8_t Timer_TBO = 0;
-static uint8_t Timer_Reload[4] = {0, 0, 0, 0};
-static int Timer_Tick[4] = {0, 0, 0, 0};
+static uint8_t Timer_Reload[4]      = {0, 0, 0, 0};
+static int32_t Timer_Tick[4]        = {0, 0, 0, 0};
 static const int Timer_Prescaler[8] = {1, 10, 25, 40, 125, 160, 250, 500};
 
 uint32_t FASTCALL MFP_IntCallback(uint8_t irq)
@@ -160,7 +160,6 @@ uint8_t FASTCALL MFP_Read(uint32_t adr)
             if (KeyBufRP!=KeyBufWP)
                return MFP[reg] & 0x7f;
             return MFP[reg] | 0x80;
-            break;
          default:
             return MFP[reg];
       }
