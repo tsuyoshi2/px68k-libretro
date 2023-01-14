@@ -188,7 +188,7 @@ void FASTCALL MFP_Write(uint32_t adr, uint8_t data)
       {
          case MFP_IERA:
          case MFP_IERB:
-            MFP[reg] = data;
+            MFP[reg]    = data;
             MFP[reg+2] &= data;  /* 禁止されたものはIPRA/Bを落とす */
             MFP_RecheckInt();
             break;
@@ -203,15 +203,6 @@ void FASTCALL MFP_Write(uint32_t adr, uint8_t data)
          case MFP_IMRB:
             MFP[reg] = data;
             MFP_RecheckInt();
-            break;
-         case MFP_TACR:
-            MFP[reg] = data;
-            break;
-         case MFP_TBCR:
-            MFP[reg] = data;
-            break;
-         case MFP_TCDCR:
-            MFP[reg] = data;
             break;
          case MFP_TADR:
             Timer_Reload[0] = MFP[reg] = data;
@@ -230,6 +221,9 @@ void FASTCALL MFP_Write(uint32_t adr, uint8_t data)
             break;
          case MFP_UDR:
             break;
+         case MFP_TACR:
+         case MFP_TBCR:
+         case MFP_TCDCR:
          default:
             MFP[reg] = data;
             break;
@@ -239,15 +233,15 @@ void FASTCALL MFP_Write(uint32_t adr, uint8_t data)
 
 void FASTCALL MFP_Timer(int32_t clock)
 {
-	if ( (!(MFP[MFP_TACR]&8))&&(MFP[MFP_TACR]&7) )
+	if ((!(MFP[MFP_TACR] & 8)) && (MFP[MFP_TACR] & 7))
    {
-      int t          = Timer_Prescaler[MFP[MFP_TACR]&7];
+      int t          = Timer_Prescaler[MFP[MFP_TACR] & 7];
       Timer_Tick[0] += clock;
-      while ( Timer_Tick[0]>=t )
+      while (Timer_Tick[0] >= t)
       {
          Timer_Tick[0] -= t;
          MFP[MFP_TADR]--;
-         if ( !MFP[MFP_TADR] )
+         if (!MFP[MFP_TADR])
          {
             MFP[MFP_TADR] = Timer_Reload[0];
             MFP_Int(2);
@@ -255,15 +249,15 @@ void FASTCALL MFP_Timer(int32_t clock)
       }
    }
 
-	if ( MFP[MFP_TBCR]&7 )
+	if (MFP[MFP_TBCR] & 7)
    {
-      int t          = Timer_Prescaler[MFP[MFP_TBCR]&7];
+      int t          = Timer_Prescaler[MFP[MFP_TBCR] & 7];
       Timer_Tick[1] += clock;
-      while ( Timer_Tick[1]>=t )
+      while (Timer_Tick[1] >= t)
       {
          Timer_Tick[1] -= t;
          MFP[MFP_TBDR]--;
-         if ( !MFP[MFP_TBDR] )
+         if (!MFP[MFP_TBDR])
          {
             MFP[MFP_TBDR] = Timer_Reload[1];
             MFP_Int(7);
@@ -271,27 +265,31 @@ void FASTCALL MFP_Timer(int32_t clock)
       }
    }
 
-	if ( MFP[MFP_TCDCR]&0x70 ) {
-		int t = Timer_Prescaler[(MFP[MFP_TCDCR]&0x70)>>4];
+	if (MFP[MFP_TCDCR] & 0x70)
+   {
+		int          t = Timer_Prescaler[(MFP[MFP_TCDCR] & 0x70) >> 4];
 		Timer_Tick[2] += clock;
-		while ( Timer_Tick[2]>=t ) {
+		while (Timer_Tick[2] >= t)
+      {
 			Timer_Tick[2] -= t;
 			MFP[MFP_TCDR]--;
-			if ( !MFP[MFP_TCDR] ) {
+			if (!MFP[MFP_TCDR])
+         {
 				MFP[MFP_TCDR] = Timer_Reload[2];
 				MFP_Int(10);
 			}
 		}
 	}
 
-	if ( MFP[MFP_TCDCR]&7 ) {
-		int t = Timer_Prescaler[MFP[MFP_TCDCR]&7];
+	if (MFP[MFP_TCDCR] & 7)
+   {
+		int          t = Timer_Prescaler[MFP[MFP_TCDCR] & 7];
 		Timer_Tick[3] += clock;
-		while ( Timer_Tick[3]>=t )
+		while (Timer_Tick[3] >= t)
       {
 			Timer_Tick[3] -= t;
 			MFP[MFP_TDDR]--;
-			if ( !MFP[MFP_TDDR] )
+			if (!MFP[MFP_TDDR])
          {
 				MFP[MFP_TDDR] = Timer_Reload[3];
 				MFP_Int(11);
@@ -302,25 +300,27 @@ void FASTCALL MFP_Timer(int32_t clock)
 
 void FASTCALL MFP_TimerA(void)
 {
-	if ( (MFP[MFP_TACR]&15)==8 )
+	if ((MFP[MFP_TACR] & 15) == 8)
    {
-      if ( MFP[MFP_AER]&0x10 )
+      if (MFP[MFP_AER] & 0x10)
       {
-         if (vline==CRTC_VSTART) MFP[MFP_TADR]--;
+         if (vline == CRTC_VSTART)
+            MFP[MFP_TADR]--;
       }
       else
       {
-         if ( CRTC_VEND>=VLINE_TOTAL )
+         if (CRTC_VEND >= VLINE_TOTAL)
          {
-            if ( (long)vline==(VLINE_TOTAL-1) )
+            if ((long)vline == (VLINE_TOTAL - 1))
                MFP[MFP_TADR]--;
          }
          else
          {
-            if ( vline==CRTC_VEND ) MFP[MFP_TADR]--;
+            if (vline == CRTC_VEND)
+               MFP[MFP_TADR]--;
          }
       }
-      if ( !MFP[MFP_TADR] )
+      if (!MFP[MFP_TADR])
       {
          MFP[MFP_TADR] = Timer_Reload[0];
          MFP_Int(2);
