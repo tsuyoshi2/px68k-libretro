@@ -227,7 +227,7 @@ void MakeLFOTable()
 //	チップ内で共通な部分
 //
 Chip::Chip()
-: ratio_(0), aml_(0), pml_(0), pmv_(0), optype_(typeN)
+: ratio_(0), aml_(0), pml_(0), pmv_(0), optype_(TYPE_N)
 {
 }
 
@@ -297,7 +297,7 @@ void FM::Operator::Reset()
 {
 	// EG part
 	tl_ = tl_latch_ = 127;
-	ShiftPhase(off);
+	ShiftPhase(OFF);
 	eg_count_ = 0;
 	eg_curve_count_ = 0;
 	ssg_phase_ = 0;
@@ -356,117 +356,129 @@ inline void FM::Operator::SetDPBN(uint32_t dp, uint32_t bn)
 //	準備
 void Operator::Prepare()
 {
-	if (param_changed_)
-	{
-		param_changed_ = false;
-		//	PG Part
-		pg_diff_ = (dp_ + dttable[detune_ + bn_]) * chip_->GetMulValue(detune2_, multiple_);
-		pg_diff_lfo_ = pg_diff_ >> 11;
+   int min_y;
+   if (param_changed_)
+   {
+      param_changed_ = false;
+      //	PG Part
+      pg_diff_ = (dp_ + dttable[detune_ + bn_]) * chip_->GetMulValue(detune2_, multiple_);
+      pg_diff_lfo_ = pg_diff_ >> 11;
 
-		// EG Part
-		key_scale_rate_ = bn_ >> (3-ks_);
-		tl_out_ = mute_ ? 0x3ff : tl_ * 8;
-		
-		switch (eg_phase_)
-		{
-		case attack:
-			SetEGRate(ar_ ? Min(63, ar_ + key_scale_rate_) : 0);
-			break;
-		case decay:
-			SetEGRate(dr_ ? Min(63, dr_ + key_scale_rate_) : 0);
-			eg_level_on_next_phase_ = sl_ * 8;
-			break;
-		case sustain:
-			SetEGRate(sr_ ? Min(63, sr_ + key_scale_rate_) : 0);
-			break;
-		case release:
-			SetEGRate(Min(63, rr_ + key_scale_rate_));
-			break;
-		case next:
-		case off:
-			break;
-		}
+      // EG Part
+      key_scale_rate_ = bn_ >> (3-ks_);
+      tl_out_ = mute_ ? 0x3ff : tl_ * 8;
 
-		// SSG-EG
-		if (ssg_type_ && (eg_phase_ != release))
-		{
-			int m = ar_ >= ((ssg_type_ == 8 || ssg_type_ == 12) ? 56 : 60);
-			const int* table = ssgenvtable[ssg_type_ & 7][m][ssg_phase_];
+      switch (eg_phase_)
+      {
+         case ATTACK:
+            min_y = ar_ + key_scale_rate_;
+            SetEGRate(ar_ ? FMGEN_MIN(63, min_y) : 0);
+            break;
+         case DECAY:
+            min_y = dr_ + key_scale_rate_;
+            SetEGRate(dr_ ? FMGEN_MIN(63, min_y) : 0);
+            eg_level_on_next_phase_ = sl_ * 8;
+            break;
+         case SUSTAIN:
+            min_y = sr_ + key_scale_rate_;
+            SetEGRate(sr_ ? FMGEN_MIN(63, min_y) : 0);
+            break;
+         case RELEASE:
+            min_y = rr_ + key_scale_rate_;
+            SetEGRate(FMGEN_MIN(63, min_y));
+            break;
+         case NEXT:
+         case OFF:
+            break;
+      }
 
-			ssg_offset_ = table[0] * 0x200;
-			ssg_vector_ = table[1];
-		}
-		// LFO
-		ams_ = amtable[type_][amon_ ? (ms_ >> 4) & 3 : 0];
-		EGUpdate();
-	}
+      // SSG-EG
+      if (ssg_type_ && (eg_phase_ != RELEASE))
+      {
+         int m = ar_ >= ((ssg_type_ == 8 || ssg_type_ == 12) ? 56 : 60);
+         const int* table = ssgenvtable[ssg_type_ & 7][m][ssg_phase_];
+
+         ssg_offset_ = table[0] * 0x200;
+         ssg_vector_ = table[1];
+      }
+      // LFO
+      ams_ = amtable[type_][amon_ ? (ms_ >> 4) & 3 : 0];
+      EGUpdate();
+   }
 }
 //	envelop の eg_phase_ 変更
 void Operator::ShiftPhase(EGPhase nextphase)
 {
 	switch (nextphase)
-	{
-	case attack:		// Attack Phase
-		tl_ = tl_latch_;
-		if (ssg_type_)
-		{
-			ssg_phase_ = ssg_phase_ + 1;
-			if (ssg_phase_ > 2)
-				ssg_phase_ = 1;
-			
-			int m = ar_ >= ((ssg_type_ == 8 || ssg_type_ == 12) ? 56 : 60);
-			const int* table = ssgenvtable[ssg_type_ & 7][m][ssg_phase_];
+   {
+      case ATTACK:		// Attack Phase
+         tl_ = tl_latch_;
+         if (ssg_type_)
+         {
+            ssg_phase_ = ssg_phase_ + 1;
+            if (ssg_phase_ > 2)
+               ssg_phase_ = 1;
 
-			ssg_offset_ = table[0] * 0x200;
-			ssg_vector_ = table[1];
-		}
-		if ((ar_ + key_scale_rate_) < 62)
-		{
-			SetEGRate(ar_ ? Min(63, ar_ + key_scale_rate_) : 0);
-			eg_phase_ = attack;
-			break;
-		}
-	case decay:			// Decay Phase
-		if (sl_)
-		{
-			eg_level_ = 0;
-			eg_level_on_next_phase_ = ssg_type_ ? Min(sl_ * 8, 0x200) : sl_ * 8;
+            int m = ar_ >= ((ssg_type_ == 8 || ssg_type_ == 12) ? 56 : 60);
+            const int* table = ssgenvtable[ssg_type_ & 7][m][ssg_phase_];
 
-			SetEGRate(dr_ ? Min(63, dr_ + key_scale_rate_) : 0);
-			eg_phase_ = decay;
-			break;
-		}
-	case sustain:		// Sustain Phase
-		eg_level_ = sl_ * 8;
-		eg_level_on_next_phase_ = ssg_type_ ? 0x200 : 0x400;
+            ssg_offset_ = table[0] * 0x200;
+            ssg_vector_ = table[1];
+         }
+         if ((ar_ + key_scale_rate_) < 62)
+         {
+            int min_y = ar_ + key_scale_rate_;
+            SetEGRate(ar_ ? FMGEN_MIN(63, min_y) : 0);
+            eg_phase_ = ATTACK;
+            break;
+         }
+      case DECAY:			// Decay Phase
+         if (sl_)
+         {
+            int min_x = sl_ * 8;
+            int min_y = dr_ + key_scale_rate_;
+            eg_level_ = 0;
+            eg_level_on_next_phase_ = ssg_type_ ? FMGEN_MIN(min_x, 0x200) : sl_ * 8;
 
-		SetEGRate(sr_ ? Min(63, sr_ + key_scale_rate_) : 0);
-		eg_phase_ = sustain;
-		break;
-	
-	case release:		// Release Phase
-		if (ssg_type_)
-		{
-			eg_level_ = eg_level_ * ssg_vector_ + ssg_offset_;
-			ssg_vector_ = 1;
-			ssg_offset_ = 0;
-		}
-		if (eg_phase_ == attack || (eg_level_ < FM_EG_BOTTOM)) //0x400/* && eg_phase_ != off*/))
-		{
-			eg_level_on_next_phase_ = 0x400;
-			SetEGRate(Min(63, rr_ + key_scale_rate_));
-			eg_phase_ = release;
-			break;
-		}
-	case off:			// off
-	default:
-		eg_level_ = FM_EG_BOTTOM;
-		eg_level_on_next_phase_ = FM_EG_BOTTOM;
-		EGUpdate();
-		SetEGRate(0);
-		eg_phase_ = off;
-		break;
-	}
+            SetEGRate(dr_ ? FMGEN_MIN(63, min_y) : 0);
+            eg_phase_ = DECAY;
+            break;
+         }
+      case SUSTAIN:		// Sustain Phase
+         {
+            int min_y = sr_ + key_scale_rate_;
+            eg_level_ = sl_ * 8;
+            eg_level_on_next_phase_ = ssg_type_ ? 0x200 : 0x400;
+
+            SetEGRate(sr_ ? FMGEN_MIN(63, min_y) : 0);
+            eg_phase_ = SUSTAIN;
+         }
+         break;
+
+      case RELEASE:		// Release Phase
+         if (ssg_type_)
+         {
+            eg_level_ = eg_level_ * ssg_vector_ + ssg_offset_;
+            ssg_vector_ = 1;
+            ssg_offset_ = 0;
+         }
+         if (eg_phase_ == ATTACK || (eg_level_ < FM_EG_BOTTOM)) //0x400/* && eg_phase_ != off*/))
+         {
+            int min_y = rr_ + key_scale_rate_;
+            eg_level_on_next_phase_ = 0x400;
+            SetEGRate(FMGEN_MIN(63, min_y));
+            eg_phase_ = RELEASE;
+            break;
+         }
+      case OFF:			// off
+      default:
+         eg_level_ = FM_EG_BOTTOM;
+         eg_level_on_next_phase_ = FM_EG_BOTTOM;
+         EGUpdate();
+         SetEGRate(0);
+         eg_phase_ = OFF;
+         break;
+   }
 }
 
 //	Block/F-Num
@@ -495,13 +507,15 @@ inline FM::ISample Operator::LogToLin(uint32_t a)
 inline void Operator::EGUpdate()
 {
 	if (!ssg_type_)
-	{
-		eg_out_ = Min(tl_out_ + eg_level_, 0x3ff) << (1 + 2);
-	}
+   {
+      int min_x = tl_out_ + eg_level_;
+		eg_out_ = FMGEN_MIN(min_x, 0x3ff) << (1 + 2);
+   }
 	else
-	{
-		eg_out_ = Min(tl_out_ + eg_level_ * ssg_vector_ + ssg_offset_, 0x3ff) << (1 + 2);
-	}
+   {
+      int min_x = tl_out_ + eg_level_ * ssg_vector_ + ssg_offset_;
+		eg_out_   = FMGEN_MIN(min_x, 0x3ff) << (1 + 2);
+   }
 }
 
 inline void Operator::SetEGRate(uint32_t rate)
@@ -513,54 +527,54 @@ inline void Operator::SetEGRate(uint32_t rate)
 //	EG 計算
 void FM::Operator::EGCalc()
 {
-	eg_count_ = (2047 * 3) << FM_RATIOBITS;				// ##この手抜きは再現性を低下させる
-	
-	if (eg_phase_ == attack)
-	{
-		int c = attacktable[eg_rate_][eg_curve_count_ & 7];
-		if (c >= 0)
-		{
-			eg_level_ -= 1 + (eg_level_ >> c);
-			if (eg_level_ <= 0)
-				ShiftPhase(decay);
-		}
-		EGUpdate();
-	}
-	else
-	{
-		if (!ssg_type_)
-		{
-			eg_level_ += decaytable1[eg_rate_][eg_curve_count_ & 7];
-			if (eg_level_ >= eg_level_on_next_phase_)
-				ShiftPhase(EGPhase(eg_phase_+1));
-			EGUpdate();
-		}
-		else
-		{
-			eg_level_ += 4 * decaytable1[eg_rate_][eg_curve_count_ & 7];
-			if (eg_level_ >= eg_level_on_next_phase_)
-			{
-				EGUpdate();
-				switch (eg_phase_)
-				{
-				case decay:
-					ShiftPhase(sustain);
-					break;
-				case sustain:
-					ShiftPhase(attack);
-					break;
-				case release:
-					ShiftPhase(off);
-					break;
-				case next:
-				case attack:
-				case off:
-					break;
-				}
-			}
-		}
-	}
-	eg_curve_count_++;
+   eg_count_ = (2047 * 3) << FM_RATIOBITS;				// ##この手抜きは再現性を低下させる
+
+   if (eg_phase_ == ATTACK)
+   {
+      int c = attacktable[eg_rate_][eg_curve_count_ & 7];
+      if (c >= 0)
+      {
+         eg_level_ -= 1 + (eg_level_ >> c);
+         if (eg_level_ <= 0)
+            ShiftPhase(DECAY);
+      }
+      EGUpdate();
+   }
+   else
+   {
+      if (!ssg_type_)
+      {
+         eg_level_ += decaytable1[eg_rate_][eg_curve_count_ & 7];
+         if (eg_level_ >= eg_level_on_next_phase_)
+            ShiftPhase(EGPhase(eg_phase_+1));
+         EGUpdate();
+      }
+      else
+      {
+         eg_level_ += 4 * decaytable1[eg_rate_][eg_curve_count_ & 7];
+         if (eg_level_ >= eg_level_on_next_phase_)
+         {
+            EGUpdate();
+            switch (eg_phase_)
+            {
+               case DECAY:
+                  ShiftPhase(SUSTAIN);
+                  break;
+               case SUSTAIN:
+                  ShiftPhase(ATTACK);
+                  break;
+               case RELEASE:
+                  ShiftPhase(OFF);
+                  break;
+               case NEXT:
+               case ATTACK:
+               case OFF:
+                  break;
+            }
+         }
+      }
+   }
+   eg_curve_count_++;
 }
 
 inline void FM::Operator::EGStep()
@@ -614,12 +628,11 @@ inline FM::ISample FM::Operator::CalcL(ISample in)
 inline FM::ISample FM::Operator::CalcN(uint32_t noise)
 {
 	EGStep();
-	
-	int lv = Max(0, 0x3ff - (tl_out_ + eg_level_)) << 1;
-	
+	int y  = 0x3ff - (tl_out_ + eg_level_);
+	int lv = FMGEN_MAX(0, y) << 1;
 	// noise & 1 ? lv : -lv と等価 
-	noise = (noise & 1) - 1;
-	out_ = (lv + noise) ^ noise;
+	noise  = (noise & 1) - 1;
+	out_   = (lv + noise) ^ noise;
 	return out_;
 }
 
@@ -768,8 +781,9 @@ void Channel4::SetAlgorithm(uint32_t algo)
 	in [2] = &buf[table1[algo][4]];
 	out[2] = &buf[table1[algo][5]];
 
-	op[0].ResetFB();
-	algo_ = algo;
+	op[0].out_  = 0;
+	op[0].out2_ = 0;
+	algo_       = algo;
 }
 
 //  合成

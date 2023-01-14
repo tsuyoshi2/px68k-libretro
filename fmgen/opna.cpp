@@ -125,9 +125,9 @@ bool OPNBase::Init(uint32_t c, uint32_t r)
 //	²»ÎÌÀßÄê
 void OPNBase::SetVolumeFM(int db)
 {
-	db = Min(db, 20);
+	db               = FMGEN_MIN(db, 20);
 	if (db > -192)
-		fmvolume = int(16384.0 * pow(10.0, db / 40.0));
+		fmvolume = (int)(16384.0f * powf(10.0f, db / 40.0f));
 	else
 		fmvolume = 0;
 }
@@ -155,7 +155,7 @@ OPN::OPN()
 	for (int i=0; i<3; i++)
 	{
 		ch[i].SetChip(&chip);
-		ch[i].SetType(typeN);
+		ch[i].SetType(TYPE_N);
 	}
 }
 
@@ -361,7 +361,7 @@ OPNABase::OPNABase()
 	for (int i=0; i<6; i++)
 	{
 		ch[i].SetChip(&chip);
-		ch[i].SetType(typeN);
+		ch[i].SetType(TYPE_N);
 	}
 }
 
@@ -622,8 +622,8 @@ void OPNABase::SetADPCMBReg(uint32_t addr, uint32_t data)
 	case 0x0a:		// delta-N H
 		adpcmreg[addr - 0x09 + 4] = data;
 		deltan = adpcmreg[5]*256+adpcmreg[4];
-		deltan = Max(256, deltan);
-		adpld = deltan * adplbase >> 16;
+		deltan = FMGEN_MAX(256, deltan);
+		adpld  = deltan * adplbase >> 16;
 		break;
 
 	case 0x0b:		// Level Control
@@ -945,7 +945,7 @@ void OPNABase::ADPCMBMix(int16_t* dest, size_t count)
 					DecodeADPCMB();
 					if (!adpcmplay)
 						goto stop;
-					s -= apout0 * Max(adplc, t);
+					s -= apout0 * FMGEN_MAX(adplc, t);
 					adplc -= t;
 				}
 				adplc -= 8192;
@@ -1185,6 +1185,7 @@ bool OPNA::LoadRhythmSample(const char* path)
 	{
 		FILE *fp;
 		uint32_t fsize;
+		uint8_t subchunkname[4];
 		char buf[MAX_PATH] = "";
 		if (path)
 			strncpy(buf, path, MAX_PATH);
@@ -1220,7 +1221,6 @@ bool OPNA::LoadRhythmSample(const char* path)
 		fseek(fp, 0x10, SEEK_SET);
 		fread(&whdr, sizeof(whdr), 1, fp);
 		
-		uint8_t subchunkname[4];
 		fsize = 4 + whdr.chunksize - sizeof(whdr);
 		do 
 		{
@@ -1235,11 +1235,11 @@ bool OPNA::LoadRhythmSample(const char* path)
 			fclose(fp);
 			break;
 		}
-		fsize = Max(fsize, (1<<31)/1024);
+		/* formula = (1<<31) / 1024 = 2097152 */
+		fsize            = FMGEN_MAX(fsize, 2097152 );
 		
 		delete rhythm[i].sample;
-		rhythm[i].sample = new int16_t[fsize];
-		if (!rhythm[i].sample)
+		if (!(rhythm[i].sample = new int16_t[fsize]))
 		{
 			fclose(fp);
 			break;
@@ -1367,19 +1367,19 @@ void OPNA::RhythmMix(int16_t* buffer, size_t count)
 //
 void OPNA::SetVolumeRhythmTotal(int db)
 {
-	db = Min(db, 20);
+	db         = FMGEN_MIN(db, 20);
 	rhythmtvol = -(db * 2 / 3);
 }
 
 void OPNA::SetVolumeRhythm(int index, int db)
 {
-	db = Min(db, 20);
+	db                   = FMGEN_MIN(db, 20);
 	rhythm[index].volume = -(db * 2 / 3);
 }
 
 void OPNA::SetVolumeADPCM(int db)
 {
-	db = Min(db, 20);
+	db = FMGEN_MIN(db, 20);
 	if (db > -192)
 		adpcmvol = int(65536.0 * pow(10.0, db / 40.0));
 	else
@@ -1548,11 +1548,11 @@ bool Y288::LoadRhythmSample(const char* path)
 			fclose(fp);
 			break;
 		}
-		fsize = Max(fsize, (1<<31)/1024);
+		/* formula = (1<<31) / 1024 = 2097152 */
+		fsize            = FMGEN_MAX(fsize, 2097152);
 		
 		delete rhythm[i].sample;
-		rhythm[i].sample = new int16_t[fsize];
-		if (!rhythm[i].sample)
+		if (!(rhythm[i].sample = new int16_t[fsize]))
 		{
 			fclose(fp);
 			break;
@@ -1679,13 +1679,13 @@ void Y288::RhythmMix(int16_t* buffer, size_t count)
 //
 void Y288::SetVolumeRhythmTotal(int db)
 {
-	db = Min(db, 20);
+	db         = FMGEN_MIN(db, 20);
 	rhythmtvol = -(db * 2 / 3);
 }
 
 void Y288::SetVolumeRhythm(int index, int db)
 {
-	db = Min(db, 20);
+	db                   = FMGEN_MIN(db, 20);
 	rhythm[index].volume = -(db * 2 / 3);
 }
 

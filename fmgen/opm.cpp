@@ -25,7 +25,7 @@ OPM::OPM()
 	for (int i=0; i<8; i++)
 	{
 		ch[i].SetChip(&chip);
-		ch[i].SetType(typeM);
+		ch[i].SetType(TYPE_M);
 	}
 }
 
@@ -116,9 +116,9 @@ void OPM::TimerA()
 //
 void OPM::SetVolume(int db)
 {
-	db = Min(db, 20);
+	db = FMGEN_MIN(db, 20);
 	if (db > -192)
-		fmvolume = int(16384.0 * pow(10, db / 40.0));
+		fmvolume = (int)(16384.0f * powf(10, db / 40.0f));
 	else
 		fmvolume = 0;
 }

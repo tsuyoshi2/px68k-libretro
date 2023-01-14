@@ -1,8 +1,8 @@
 #ifndef MISC_H
 #define MISC_H
 
-inline int Max(int x, int y) { return (x > y) ? x : y; }
-inline int Min(int x, int y) { return (x < y) ? x : y; }
+#define FMGEN_MAX(x, y) (((x) > (y)) ? (x) : (y))
+#define FMGEN_MIN(x, y) (((x) < (y)) ? (x) : (y))
 
 inline int Limit(int v, int max, int min) 
 { 

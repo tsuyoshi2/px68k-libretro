@@ -10,7 +10,7 @@
 // ---------------------------------------------------------------------------
 //	定数その２
 //	
-#define FM_PI			3.14159265358979323846
+#define FM_PI		3.14159265358979323846f
 
 #define FM_SINEPRESIS	2	// EGとサイン波の精度の差  0(低)-2(高)
 
@@ -18,30 +18,21 @@
 #define FM_OPSINBITS	10
 #define FM_OPSINENTS	(1 << FM_OPSINBITS)
 
-#define FM_EGCBITS		18		// eg の count のシフト値
-#define FM_LFOCBITS		14
+#define FM_EGCBITS	18		// eg の count のシフト値
+#define FM_LFOCBITS	14
 
 #ifdef FM_TUNEBUILD
- #define FM_PGBITS		2
+ #define FM_PGBITS	2
  #define FM_RATIOBITS	0
 #else
- #define FM_PGBITS		9		
+ #define FM_PGBITS	9		
  #define FM_RATIOBITS	7			// 8-12 くらいまで？
 #endif
 
-#define FM_EGBITS		16
+#define FM_EGBITS	16
 
 namespace FM
 {
-
-// ---------------------------------------------------------------------------
-//	Operator
-//
-//	フィードバックバッファをクリア
-inline void Operator::ResetFB()
-{
-	out_ = out2_ = 0;
-}
 
 //	キーオン
 inline void Operator::KeyOn()
@@ -49,10 +40,10 @@ inline void Operator::KeyOn()
 	if (!keyon_)
 	{
 		keyon_ = true;
-		if (eg_phase_ == off || eg_phase_ == release)
+		if (eg_phase_ == OFF || eg_phase_ == RELEASE)
 		{
 			ssg_phase_ = -1;
-			ShiftPhase(attack);
+			ShiftPhase(ATTACK);
 			EGUpdate();
 			out_ = out2_ = 0;
 			pg_count_ = 0;
@@ -66,14 +57,14 @@ inline void	Operator::KeyOff()
 	if (keyon_)
 	{
 		keyon_ = false;
-		ShiftPhase(release);
+		ShiftPhase(RELEASE);
 	}
 }
 
 //	オペレータは稼働中か？
 inline int Operator::IsOn()
 {
-	return eg_phase_ - off;
+	return eg_phase_ - OFF;
 }
 
 //	Detune (0-7)

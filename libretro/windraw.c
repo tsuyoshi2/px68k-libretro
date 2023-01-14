@@ -916,7 +916,7 @@ void WinDraw_DrawMenu(int menu_state, int mkey_pos, int mkey_y, int *mval_y)
 	for (i = 0; i < 5; i++)
 	{
 		set_mlocateC(3, 5 + i);
-		if (menu_state == ms_key && i == (mkey_y - mkey_pos))
+		if (menu_state == MS_KEY && i == (mkey_y - mkey_pos))
 		{
 			p6m.mcolor  = 0x0;
 			p6m.mbcolor = 0xffe0;
@@ -934,8 +934,9 @@ void WinDraw_DrawMenu(int menu_state, int mkey_pos, int mkey_y, int *mval_y)
 	p6m.mbcolor = 0x0;
 	for (i = 0; i < 5; i++)
 	{
-		if ((menu_state == ms_value || menu_state == ms_hwjoy_set)
-		    && i == (mkey_y - mkey_pos))
+		if (       (menu_state == MS_VALUE 
+               || menu_state == MS_HWJOY_SET)
+               && i == (mkey_y - mkey_pos))
 		{
 			p6m.mcolor  = 0x0;
 			p6m.mbcolor = 0xffe0;

@@ -32,7 +32,7 @@ namespace FM
 	//	Types ----------------------------------------------------------------
 	typedef int32_t ISample;
 
-	enum OpType { typeN=0, typeM=1 };
+	enum OpType { TYPE_N = 0, TYPE_M = 1 };
 
 	void StoreSample(ISample& dest, int data);
 
@@ -54,7 +54,6 @@ namespace FM
 		void	KeyOn();
 		void	KeyOff();
 		void	Reset();
-		void	ResetFB();
 		int	IsOn();
 
 		void	SetDT(uint32_t dt);
@@ -93,7 +92,7 @@ namespace FM
 		int32_t		pg_diff_lfo_;	// Phase º¹Ê¬ÃÍ >> x
 
 	//	Envelop Generator ---------------------------------------------------
-		enum	EGPhase { next, attack, decay, sustain, release, off };
+		enum	EGPhase { NEXT, ATTACK, DECAY, SUSTAIN, RELEASE, OFF };
 		
 		void	EGCalc();
 		void	EGStep();

@@ -4,7 +4,8 @@
 #include <stdint.h>
 #include "common.h"
 
-typedef struct {
+typedef struct
+{
 	unsigned char reserved;
 	unsigned char adr;
 	unsigned char trackno;
@@ -12,7 +13,8 @@ typedef struct {
 	unsigned char addr[4];
 } TOCENTRY;
 
-typedef struct {
+typedef struct
+{
 	unsigned char size[2];
 	unsigned char first;
 	unsigned char last;

@@ -16,11 +16,18 @@ int WinUI_Menu(int first);
 #define WUM_MENU_END 1
 #define WUM_EMU_QUIT 2
 
-enum MenuState {ms_key, ms_value, ms_file, ms_hwjoy_set};
+enum MenuState
+{
+   MS_KEY,
+   MS_VALUE,
+   MS_FILE,
+   MS_HWJOY_SET
+};
 
 #define MFL_MAX 4000
 
-struct menu_flist {
+struct menu_flist
+{
 	char name[MFL_MAX][MAX_PATH];
 	char type[MFL_MAX];
 	char dir[4][MAX_PATH];
