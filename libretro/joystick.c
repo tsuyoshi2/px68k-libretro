@@ -87,9 +87,8 @@ static uint16_t get_px68k_input(int port)
 void FASTCALL Joystick_Update(int is_menu, int key, int port)
 {
 	uint8_t ret0            = 0xff, ret1 = 0xff;
-	uint8_t mret0           = 0xff, mret1 = 0xff;
 	uint8_t temp            = 0;
-	static uint8_t pre_ret0 = 0xff, pre_mret0 = 0xff;
+	static uint8_t pre_ret0 = 0xff;
 	uint32_t res            = 0;
 
 	if (libretro_supports_input_bitmasks)
@@ -177,7 +176,6 @@ void FASTCALL Joystick_Update(int is_menu, int key, int port)
 
 	JoyDownState0   = ~(ret0 ^ pre_ret0) | ret0;
 	pre_ret0        = ret0;
-	pre_mret0       = mret0;
 
 	/* input overrides section during Menu mode for faster menu browsing
 	 * by pressing and holding key or button aka turbo mode */
@@ -185,23 +183,21 @@ void FASTCALL Joystick_Update(int is_menu, int key, int port)
    {
 		int i;
 		static int repeat_rate, repeat_delay;
-		static uint8_t last_in;
-		uint8_t inbuf, joy_in;
-
-		for (i = 0; i < 4; i++)
-			speedup_joy[1 << i] = 0;
-
-		joy_in = (ret0 ^ 0xff);
-		inbuf  = (joy_in | keyb_in);
+		static uint8_t last_inbuf;
+      uint8_t joy_in = (ret0 ^ 0xff);
+		uint8_t inbuf  = (joy_in | keyb_in);
 
 		if ((inbuf & (JOY_LEFT | JOY_RIGHT)) == (JOY_LEFT | JOY_RIGHT))
 			inbuf &= ~(JOY_LEFT | JOY_RIGHT);
 		if ((inbuf & (JOY_UP | JOY_DOWN)) == (JOY_UP | JOY_DOWN))
 			inbuf &= ~(JOY_UP | JOY_DOWN);
 
-		if (last_in != inbuf)
+		for (i = 0; i < 4; i++)
+			speedup_joy[1 << i] = 0;
+
+		if (last_inbuf != inbuf)
 		{
-			last_in       = inbuf;
+			last_inbuf    = inbuf;
 			repeat_delay  = JOYDELAY;
 			repeat_rate   = 0;
 			JoyDownState0 = (inbuf ^ 0xff);
@@ -235,7 +231,6 @@ void FASTCALL Joystick_Update(int is_menu, int key, int port)
          JoyState0[port] = ret0;
          JoyState1[port] = ret1;
       }
-
    }
 }
 
