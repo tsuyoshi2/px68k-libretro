@@ -127,6 +127,27 @@ void MFP_Init(void)
       Timer_Tick[i] = 0;
 }
 
+static uint8_t GetGPIP(void)
+{
+	uint8_t ret = 0x20; /* bit 5 is always 1 */
+	int hpos    = (int)(ICount % HSYNC_CLK);
+
+	if ((vline >= CRTC_VSTART) && (vline < CRTC_VEND))
+		ret     |= 0x13;
+	else
+		ret     |= 0x03;
+
+	if ((hpos >= ((int)CRTC_Regs[0x05] * HSYNC_CLK / CRTC_Regs[0x01])) &&
+	    (hpos < ((int)CRTC_Regs[0x07] * HSYNC_CLK / CRTC_Regs[0x01])))
+		ret     &= 0x7f;
+	else
+		ret     |= 0x80;
+
+	if (vline != CRTC_IntLine)
+		ret     |= 0x40;
+	return ret;
+}
+
 uint8_t FASTCALL MFP_Read(uint32_t adr)
 {
    if (adr > 0xe8802f)
@@ -134,36 +155,23 @@ uint8_t FASTCALL MFP_Read(uint32_t adr)
 
    if (adr&1)
    {
-      int hpos;
-      uint8_t ret = 0;
       uint8_t reg = (uint8_t)((adr&0x3f)>>1);
+
       switch(reg)
       {
          case MFP_GPIP:
-            if ( (vline>=CRTC_VSTART)&&(vline<CRTC_VEND) )
-               ret = 0x13;
-            else
-               ret = 0x03;
-            hpos = (int)(ICount%HSYNC_CLK);
-            if ( (hpos>=((int)CRTC_Regs[5]*HSYNC_CLK/CRTC_Regs[1]))&&(hpos<((int)CRTC_Regs[7]*HSYNC_CLK/CRTC_Regs[1])) )
-               ret &= 0x7f;
-            else
-               ret |= 0x80;
-            if (vline!=CRTC_IntLine)
-               ret |= 0x40;
-            break;
+            return GetGPIP();
          case MFP_UDR:
-            ret        = LastKey;
-            KeyIntFlag = 0;
-            break;
+               KeyIntFlag = 0;
+               return LastKey;
          case MFP_RSR:
-            if (KeyBufRP!=KeyBufWP)
-               return MFP[reg] & 0x7f;
-            return MFP[reg] | 0x80;
+               if (KeyBufRP != KeyBufWP)
+                  return MFP[reg] & 0x7f;
+               return MFP[reg] | 0x80;
          default:
-            return MFP[reg];
+               break;
       }
-      return ret;
+      return MFP[reg];
    }
    return 0xff;
 }
