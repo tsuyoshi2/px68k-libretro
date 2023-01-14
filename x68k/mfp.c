@@ -12,7 +12,6 @@
 uint8_t LastKey = 0;
 
 uint8_t MFP[24];
-uint8_t Timer_TBO = 0;
 static uint8_t Timer_Reload[4]      = {0, 0, 0, 0};
 static int32_t Timer_Tick[4]        = {0, 0, 0, 0};
 static const int Timer_Prescaler[8] = {1, 10, 25, 40, 125, 160, 250, 500};
@@ -181,7 +180,7 @@ void FASTCALL MFP_Write(uint32_t adr, uint8_t data)
    if (adr>0xe8802f)
       return;
 
-   if (adr&1)
+   if ((adr & 1) != 0)
    {
       uint8_t reg = (uint8_t)((adr&0x3f)>>1);
 
@@ -205,21 +204,20 @@ void FASTCALL MFP_Write(uint32_t adr, uint8_t data)
             MFP[reg] = data;
             MFP_RecheckInt();
             break;
-         case MFP_TSR:
-            MFP[reg] = data|0x80; /* Txは常にEnableに */
+         case MFP_TACR:
+            MFP[reg] = data;
+            break;
+         case MFP_TBCR:
+            MFP[reg] = data;
+            break;
+         case MFP_TCDCR:
+            MFP[reg] = data;
             break;
          case MFP_TADR:
             Timer_Reload[0] = MFP[reg] = data;
             break;
-         case MFP_TACR:
-            MFP[reg] = data;
-            break;
          case MFP_TBDR:
             Timer_Reload[1] = MFP[reg] = data;
-            break;
-         case MFP_TBCR:
-            MFP[reg] = data;
-            if ( MFP[reg]&0x10 ) Timer_TBO = 0;
             break;
          case MFP_TCDR:
             Timer_Reload[2] = MFP[reg] = data;
@@ -227,13 +225,14 @@ void FASTCALL MFP_Write(uint32_t adr, uint8_t data)
          case MFP_TDDR:
             Timer_Reload[3] = MFP[reg] = data;
             break;
-         case MFP_TCDCR:
-            MFP[reg] = data;
+         case MFP_TSR:
+            MFP[reg] = data | 0x80; /* Txは常にEnableに */
             break;
          case MFP_UDR:
             break;
          default:
             MFP[reg] = data;
+            break;
       }
    }
 }
