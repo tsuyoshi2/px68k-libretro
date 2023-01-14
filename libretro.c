@@ -90,8 +90,8 @@ const char *retro_content_directory;
 char retro_system_conf[512];
 char base_dir[MAX_PATH];
 
-static char Core_Key_State[512];
-static char Core_old_Key_State[512];
+static uint8_t Core_Key_State[512];
+static uint8_t Core_old_Key_State[512];
 
 static bool joypad1, joypad2;
 
