@@ -64,7 +64,6 @@ void FASTCALL Joystick_Write(uint8_t num, uint8_t data)
 /* Menu navigation related vars */
 #define RATE   3      /* repeat rate */
 #define JOYDELAY 30   /* delay before 1st repeat */
-uint8_t keyb_in;
 
 static uint32_t get_px68k_input_bitmasks(int port)
 {
@@ -86,35 +85,35 @@ static uint16_t get_px68k_input(int port)
 
 void FASTCALL Joystick_Update(int is_menu, int key, int port)
 {
-	uint8_t ret0            = 0xff, ret1 = 0xff;
-	uint8_t temp            = 0;
-	static uint8_t pre_ret0 = 0xff;
-	uint32_t res            = 0;
+   uint8_t ret0            = 0xff, ret1 = 0xff;
+   uint8_t temp            = 0;
+   static uint8_t pre_ret0 = 0xff;
+   uint32_t res            = 0;
 
-	if (libretro_supports_input_bitmasks)
-		res                  = get_px68k_input_bitmasks(port);
-	else
-		res                  = get_px68k_input(port);
+   if (libretro_supports_input_bitmasks)
+      res                  = get_px68k_input_bitmasks(port);
+   else
+      res                  = get_px68k_input(port);
 
-	/* D-Pad */
-	if (res & (1 << RETRO_DEVICE_ID_JOYPAD_RIGHT))
+   /* D-Pad */
+   if (res & (1 << RETRO_DEVICE_ID_JOYPAD_RIGHT))
       temp |= JOY_RIGHT;
-	if (res & (1 << RETRO_DEVICE_ID_JOYPAD_LEFT))
+   if (res & (1 << RETRO_DEVICE_ID_JOYPAD_LEFT))
       temp |=  JOY_LEFT;
-	if (res & (1 << RETRO_DEVICE_ID_JOYPAD_UP))
+   if (res & (1 << RETRO_DEVICE_ID_JOYPAD_UP))
       temp |=  JOY_UP;
-	if (res & (1 << RETRO_DEVICE_ID_JOYPAD_DOWN))
+   if (res & (1 << RETRO_DEVICE_ID_JOYPAD_DOWN))
       temp |=  JOY_DOWN;
 
-	if ((temp & (JOY_LEFT | JOY_RIGHT)) == (JOY_LEFT | JOY_RIGHT))
-		temp &= ~(JOY_LEFT | JOY_RIGHT);
-	if ((temp & (JOY_UP | JOY_DOWN)) == (JOY_UP | JOY_DOWN))
-		temp &= ~(JOY_UP | JOY_DOWN);
+   if ((temp & (JOY_LEFT | JOY_RIGHT)) == (JOY_LEFT | JOY_RIGHT))
+      temp &= ~(JOY_LEFT | JOY_RIGHT);
+   if ((temp & (JOY_UP | JOY_DOWN)) == (JOY_UP | JOY_DOWN))
+      temp &= ~(JOY_UP | JOY_DOWN);
 
-	ret0 ^= temp;
+   ret0 ^= temp;
 
-	/* Buttons */
-	switch (Config.JOY_TYPE[port])
+   /* Buttons */
+   switch (Config.JOY_TYPE[port])
    {
       case PAD_2BUTTON:
          if (res & (1 << RETRO_DEVICE_ID_JOYPAD_A))
@@ -174,34 +173,34 @@ void FASTCALL Joystick_Update(int is_menu, int key, int port)
          break;
    }
 
-	JoyDownState0   = ~(ret0 ^ pre_ret0) | ret0;
-	pre_ret0        = ret0;
+   JoyDownState0   = ~(ret0 ^ pre_ret0) | ret0;
+   pre_ret0        = ret0;
 
-	/* input overrides section during Menu mode for faster menu browsing
-	 * by pressing and holding key or button aka turbo mode */
-	if (is_menu)
+   /* input overrides section during Menu mode for faster menu browsing
+    * by pressing and holding key or button aka turbo mode */
+   if (is_menu)
    {
-		int i;
-		static int repeat_rate, repeat_delay;
-		static uint8_t last_inbuf;
+      int i;
+      static int repeat_rate, repeat_delay;
+      static uint8_t last_inbuf;
       uint8_t joy_in = (ret0 ^ 0xff);
-		uint8_t inbuf  = (joy_in | keyb_in);
+      uint8_t inbuf  = (joy_in | key);
 
-		if ((inbuf & (JOY_LEFT | JOY_RIGHT)) == (JOY_LEFT | JOY_RIGHT))
-			inbuf &= ~(JOY_LEFT | JOY_RIGHT);
-		if ((inbuf & (JOY_UP | JOY_DOWN)) == (JOY_UP | JOY_DOWN))
-			inbuf &= ~(JOY_UP | JOY_DOWN);
+      if ((inbuf & (JOY_LEFT | JOY_RIGHT)) == (JOY_LEFT | JOY_RIGHT))
+         inbuf &= ~(JOY_LEFT | JOY_RIGHT);
+      if ((inbuf & (JOY_UP | JOY_DOWN)) == (JOY_UP | JOY_DOWN))
+         inbuf &= ~(JOY_UP | JOY_DOWN);
 
-		for (i = 0; i < 4; i++)
-			speedup_joy[1 << i] = 0;
+      for (i = 0; i < 4; i++)
+         speedup_joy[1 << i] = 0;
 
-		if (last_inbuf != inbuf)
-		{
-			last_inbuf    = inbuf;
-			repeat_delay  = JOYDELAY;
-			repeat_rate   = 0;
-			JoyDownState0 = (inbuf ^ 0xff);
-		}
+      if (last_inbuf != inbuf)
+      {
+         last_inbuf    = inbuf;
+         repeat_delay  = JOYDELAY;
+         repeat_rate   = 0;
+         JoyDownState0 = (inbuf ^ 0xff);
+      }
       else
       {
          if (repeat_delay)
@@ -222,7 +221,7 @@ void FASTCALL Joystick_Update(int is_menu, int key, int port)
             }
          }
       }
-	}
+   }
    else
    {
       /* disable Joystick when software keyboard is active */
