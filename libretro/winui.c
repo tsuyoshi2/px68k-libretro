@@ -216,7 +216,12 @@ static void switch_mfl(int a, int b)
 	mfl.type[b] = type_tmp;
 }
 
-extern char slash;
+#ifdef _WIN32
+#define SLASH '\\'
+#else
+#define SLASH '/'
+#endif
+
 extern char base_dir[MAX_PATH];
 
 static void menu_create_flist(int v)
@@ -261,7 +266,7 @@ static void menu_create_flist(int v)
 		char tmp[PATH_MAX];
 		/* failed to open StartDir, use rom folder as default */
 		/* TODO: check for path more early */
-		snprintf(tmp, sizeof(tmp), "%s%c", base_dir, slash);
+		snprintf(tmp, sizeof(tmp), "%s%c", base_dir, SLASH);
 		strcpy(mfl.dir[drv], tmp);
 		/* re-open folder */
 		dp = opendir(mfl.dir[drv]);
@@ -350,7 +355,7 @@ static void shortcut_dir(int drv)
 	char *p    = mfl.dir[drv] + len - 2;
 	for (i = len - 2; i >= 0; i--)
    {
-      if (*p == slash/*'/'*/)
+      if (*p == SLASH/*'/'*/)
       {
          found = 1;
          break;

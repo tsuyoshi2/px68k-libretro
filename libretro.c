@@ -48,9 +48,9 @@
 #include "x68k/scc.h"
 
 #ifdef _WIN32
-char slash = '\\';
+#define SLASH '\\'
 #else
-char slash = '/';
+#define SLASH '/'
 #endif
 
 #define MODE_HIGH_ACTUAL 55.46 /* floor((10*100*1000^2 / VSYNC_HIGH)) / 100 */
@@ -60,8 +60,16 @@ char slash = '/';
                      * reduced the chances of audio stutters due to mismatch
                      * fps when vsync is used since most monitors are only capable
                      * of upto 60Hz refresh rate. */
-enum { MODES_ACTUAL, MODES_COMPAT, MODE_NORM = 0, MODE_HIGH, MODES };
-const float framerates[][MODES] = {
+enum
+{
+   MODES_ACTUAL,
+   MODES_COMPAT,
+   MODE_NORM = 0,
+   MODE_HIGH,
+   MODES
+};
+
+const float framerates[2][2] = {
    { MODE_NORM_ACTUAL, MODE_HIGH_ACTUAL },
    { MODE_NORM_COMPAT, MODE_HIGH_COMPAT }
 };
@@ -222,7 +230,7 @@ static struct retro_input_descriptor input_descs_null[] = {
 
 static bool is_path_absolute(const char* path)
 {
-   if (path[0] == slash)
+   if (path[0] == SLASH)
       return true;
 
 #ifdef _WIN32
@@ -658,7 +666,7 @@ static bool read_m3u(const char *file)
          if (is_path_absolute(line))
             strncpy(name, line, sizeof(name));
          else
-            snprintf(name, sizeof(name), "%s%c%s", base_dir, slash, line);
+            snprintf(name, sizeof(name), "%s%c%s", base_dir, SLASH, line);
 
          custom_label = strchr(name, '|');
          if (custom_label)
@@ -787,16 +795,16 @@ entry point) */
 		0x4e, 0x75,							/* $fc002c "rts" */
 	};
 
-	uint16_t *p1, *p2;
-	int scsi;
 	int i;
-
-	scsi = 0;
-	for (i = 0x30600; i < 0x30c00; i += 2) {
+	uint16_t *p1, *p2;
+	int scsi = 0;
+	for (i = 0x30600; i < 0x30c00; i += 2)
+   {
 		p1 = (uint16_t *)(&IPL[i]);
 		p2 = p1 + 1;
 		/* xxx: works only for little endian guys */
-		if (*p1 == 0xfc00 && *p2 == 0x0000) {
+		if (*p1 == 0xfc00 && *p2 == 0x0000)
+      {
 			scsi = 1;
 			break;
 		}
@@ -849,7 +857,8 @@ static int WinX68k_LoadROMs(void)
 	}
 
 	fp = file_open_c((char *)FONTFILE);
-	if (fp == 0) {
+	if (fp == 0)
+   {
 		/* cgrom.tmp present? */
 		fp = file_open_c((char *)FONTFILETMP);
 		/* font creation XXX - Font ROM image can't be found */
@@ -877,61 +886,61 @@ static  void WinX68k_Cleanup(void)
 
 void WinX68k_Reset(void)
 {
-	OPM_Reset();
+   OPM_Reset();
 
 #if defined (HAVE_CYCLONE)
-	m68000_reset();
-	m68000_set_reg(M68K_A7, (IPL[0x30001]<<24)|(IPL[0x30000]<<16)|(IPL[0x30003]<<8)|IPL[0x30002]);
-	m68000_set_reg(M68K_PC, (IPL[0x30005]<<24)|(IPL[0x30004]<<16)|(IPL[0x30007]<<8)|IPL[0x30006]);
+   m68000_reset();
+   m68000_set_reg(M68K_A7, (IPL[0x30001]<<24)|(IPL[0x30000]<<16)|(IPL[0x30003]<<8)|IPL[0x30002]);
+   m68000_set_reg(M68K_PC, (IPL[0x30005]<<24)|(IPL[0x30004]<<16)|(IPL[0x30007]<<8)|IPL[0x30006]);
 #elif defined (HAVE_C68K)
-	C68k_Reset(&C68K);
-/*
-	C68k_Set_Reg(&C68K, C68K_A7, (IPL[0x30001]<<24)|(IPL[0x30000]<<16)|(IPL[0x30003]<<8)|IPL[0x30002]);
-	C68k_Set_Reg(&C68K, C68K_PC, (IPL[0x30005]<<24)|(IPL[0x30004]<<16)|(IPL[0x30007]<<8)|IPL[0x30006]);
-*/
-	C68k_Set_AReg(&C68K, 7, (IPL[0x30001]<<24)|(IPL[0x30000]<<16)|(IPL[0x30003]<<8)|IPL[0x30002]);
-	C68k_Set_PC(&C68K, (IPL[0x30005]<<24)|(IPL[0x30004]<<16)|(IPL[0x30007]<<8)|IPL[0x30006]);
+   C68k_Reset(&C68K);
+#if 0
+   C68k_Set_Reg(&C68K, C68K_A7, (IPL[0x30001]<<24)|(IPL[0x30000]<<16)|(IPL[0x30003]<<8)|IPL[0x30002]);
+   C68k_Set_Reg(&C68K, C68K_PC, (IPL[0x30005]<<24)|(IPL[0x30004]<<16)|(IPL[0x30007]<<8)|IPL[0x30006]);
+#endif
+   C68k_Set_AReg(&C68K, 7, (IPL[0x30001]<<24)|(IPL[0x30000]<<16)|(IPL[0x30003]<<8)|IPL[0x30002]);
+   C68k_Set_PC(&C68K, (IPL[0x30005]<<24)|(IPL[0x30004]<<16)|(IPL[0x30007]<<8)|IPL[0x30006]);
 #elif defined (HAVE_MUSASHI)
-	m68k_pulse_reset();
+   m68k_pulse_reset();
 
-	m68k_set_reg(M68K_REG_A7, (IPL[0x30001]<<24)|(IPL[0x30000]<<16)|(IPL[0x30003]<<8)|IPL[0x30002]);
-	m68k_set_reg(M68K_REG_PC, (IPL[0x30005]<<24)|(IPL[0x30004]<<16)|(IPL[0x30007]<<8)|IPL[0x30006]);
+   m68k_set_reg(M68K_REG_A7, (IPL[0x30001]<<24)|(IPL[0x30000]<<16)|(IPL[0x30003]<<8)|IPL[0x30002]);
+   m68k_set_reg(M68K_REG_PC, (IPL[0x30005]<<24)|(IPL[0x30004]<<16)|(IPL[0x30007]<<8)|IPL[0x30006]);
 #endif /* HAVE_C68K */ /* HAVE_MUSASHI */
 
-	Memory_Init();
-	CRTC_Init();
-	DMA_Init();
-	MFP_Init();
-	FDC_Init();
-	FDD_Reset();
-	SASI_Init();
-	SCSI_Init();
-	IOC_Init();
-	SCC_Init();
-	PIA_Init();
-	RTC_Init();
-	TVRAM_Init();
-	GVRAM_Init();
-	BG_Init();
-	Pal_Init();
-	IRQH_Init();
-	MIDI_Init();
+   Memory_Init();
+   CRTC_Init();
+   DMA_Init();
+   MFP_Init();
+   FDC_Init();
+   FDD_Reset();
+   SASI_Init();
+   SCSI_Init();
+   IOC_Init();
+   SCC_Init();
+   PIA_Init();
+   RTC_Init();
+   TVRAM_Init();
+   GVRAM_Init();
+   BG_Init();
+   Pal_Init();
+   IRQH_Init();
+   MIDI_Init();
 
-	m68000_ICountBk = 0;
-	ICount = 0;
+   m68000_ICountBk = 0;
+   ICount = 0;
 
-	DSound_Stop();
-	SRAM_VirusCheck();
+   DSound_Stop();
+   SRAM_VirusCheck();
 #if 0
-	CDROM_Init();
+   CDROM_Init();
 #endif
-	DSound_Play();
+   DSound_Play();
 }
 
 static int pmain(int argc, char *argv[])
 {
-   if (set_modulepath(winx68k_dir, sizeof(winx68k_dir)))
-      return 1;
+	strcpy(winx68k_dir, retro_system_conf);
+	sprintf(winx68k_ini, "%s%cconfig", retro_system_conf, SLASH);
 
    file_setcd(winx68k_dir);
 
@@ -992,7 +1001,7 @@ static int pmain(int argc, char *argv[])
    DSound_Play();
 
    /* apply defined command line settings */
-   if(argc==3 && argv[1][0]=='-' && argv[1][1]=='h')
+   if(argc == 3 && argv[1][0] == '-' && argv[1][1] == 'h')
       strcpy(Config.HDImage[0], argv[2]);
    else
    {
@@ -1006,6 +1015,7 @@ static int pmain(int argc, char *argv[])
          case 0:
             /* start menu when running without content */
             menu_mode = menu_enter;
+            break;
       }
    }
 
@@ -1245,8 +1255,8 @@ static void update_variables(int running)
          opt_analog = true;
    }
 
-   var.key = "px68k_adpcm_vol";
-   var.value = NULL;
+   var.key    = "px68k_adpcm_vol";
+   var.value  = NULL;
 
    if (environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE, &var) && var.value)
    {
@@ -1258,8 +1268,8 @@ static void update_variables(int running)
       }
    }
 
-   var.key = "px68k_opm_vol";
-   var.value = NULL;
+   var.key    = "px68k_opm_vol";
+   var.value  = NULL;
 
    if (environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE, &var) && var.value)
    {
@@ -1272,8 +1282,8 @@ static void update_variables(int running)
    }
 
 #ifndef NO_MERCURY
-   var.key = "px68k_mercury_vol";
-   var.value = NULL;
+   var.key    = "px68k_mercury_vol";
+   var.value  = NULL;
 
    if (environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE, &var) && var.value)
    {
@@ -1288,8 +1298,8 @@ static void update_variables(int running)
 
    update_variable_disk_drive_swap();
 
-   var.key = "px68k_menufontsize";
-   var.value = NULL;
+   var.key    = "px68k_menufontsize";
+   var.value  = NULL;
 
    if (environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE, &var) && var.value)
    {
@@ -1299,8 +1309,8 @@ static void update_variables(int running)
          Config.MenuFontSize = 1;
    }
 
-   var.key = "px68k_joy1_select";
-   var.value = NULL;
+   var.key    = "px68k_joy1_select";
+   var.value  = NULL;
 
    if (environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE, &var) && var.value)
    {
@@ -1326,8 +1336,8 @@ static void update_variables(int running)
          Config.joy1_select_mapping = 0;
    }
 
-   var.key = "px68k_save_fdd_path";
-   var.value = NULL;
+   var.key    = "px68k_save_fdd_path";
+   var.value  = NULL;
 
    if (environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE, &var) && var.value)
    {
@@ -1337,8 +1347,8 @@ static void update_variables(int running)
          Config.save_fdd_path = 1;
    }
 
-   var.key = "px68k_save_hdd_path";
-   var.value = NULL;
+   var.key    = "px68k_save_hdd_path";
+   var.value  = NULL;
 
    if (environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE, &var) && var.value)
    {
@@ -1348,8 +1358,8 @@ static void update_variables(int running)
          Config.save_hdd_path = 1;
    }
 
-   var.key = "px68k_rumble_on_disk_read";
-   var.value = NULL;
+   var.key    = "px68k_rumble_on_disk_read";
+   var.value  = NULL;
 
    if (environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE, &var) && var.value)
    {
@@ -1361,8 +1371,8 @@ static void update_variables(int running)
 
    /* PX68K Menu */
 
-   var.key = "px68k_joy_mouse";
-   var.value = NULL;
+   var.key      = "px68k_joy_mouse";
+   var.value    = NULL;
 
    if (environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE, &var) && var.value)
    {
@@ -1376,8 +1386,8 @@ static void update_variables(int running)
       Mouse_StartCapture(value == 1);
    }
 
-   var.key = "px68k_vbtn_swap";
-   var.value = NULL;
+   var.key    = "px68k_vbtn_swap";
+   var.value  = NULL;
 
    if (environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE, &var) && var.value)
    {
@@ -1387,8 +1397,8 @@ static void update_variables(int running)
          Config.VbtnSwap = 1;
    }
 
-   var.key = "px68k_no_wait_mode";
-   var.value = NULL;
+   var.key    = "px68k_no_wait_mode";
+   var.value  = NULL;
 
    if (environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE, &var) && var.value)
    {
@@ -1398,8 +1408,8 @@ static void update_variables(int running)
          Config.NoWaitMode = 1;
    }
 
-   var.key = "px68k_frameskip";
-   var.value = NULL;
+   var.key    = "px68k_frameskip";
+   var.value  = NULL;
 
    if (environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE, &var) && var.value)
    {
@@ -1427,8 +1437,8 @@ static void update_variables(int running)
          Config.FrameRate = 1;
    }
 
-   var.key = "px68k_adjust_frame_rates";
-   var.value = NULL;
+   var.key     = "px68k_adjust_frame_rates";
+   var.value   = NULL;
 
    if (environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE, &var) && var.value)
    {
@@ -1442,7 +1452,7 @@ static void update_variables(int running)
          CHANGEAV_TIMING = CHANGEAV_TIMING || Config.AdjustFrameRates != temp;
    }
 
-   var.key = "px68k_audio_desync_hack";
+   var.key   = "px68k_audio_desync_hack";
    var.value = NULL;
 
    if (environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE, &var) && var.value)
@@ -1466,22 +1476,21 @@ void retro_get_system_info(struct retro_system_info *info)
 #ifndef PX68K_VERSION
 #define PX68K_VERSION "0.15+"
 #endif
-   memset(info, 0, sizeof(*info));
-   info->library_name = "PX68K";
-   info->library_version = PX68K_VERSION GIT_VERSION;
-   info->need_fullpath = true;
+   info->library_name     = "PX68K";
+   info->library_version  = PX68K_VERSION GIT_VERSION;
+   info->need_fullpath    = true;
    info->valid_extensions = "dim|zip|img|d88|88d|hdm|dup|2hd|xdf|hdf|cmd|m3u";
+   info->block_extract    = false;
 }
 
 
 void retro_get_system_av_info(struct retro_system_av_info *info)
 {
    /* FIXME handle PAL/NTSC */
-   struct retro_game_geometry geom   = { retrow, retroh,800, 600 ,4.0 / 3.0 };
+   struct retro_game_geometry geom   = { retrow, retroh, 800, 600, 4.0 / 3.0 };
    struct retro_system_timing timing = { FRAMERATE, SOUNDRATE };
-
-   info->geometry = geom;
-   info->timing   = timing;
+   info->geometry                    = geom;
+   info->timing                      = timing;
 }
 
 static void frame_time_cb(retro_usec_t usec)
@@ -1502,16 +1511,6 @@ static void setup_frame_time_cb(void)
       total_usec = (unsigned int) -1;
    else if (total_usec == (unsigned int) -1)
       total_usec = 0;
-}
-
-void update_timing(void)
-{
-   struct retro_system_av_info system_av_info;
-   retro_get_system_av_info(&system_av_info);
-   FRAMERATE                 = framerates[Config.AdjustFrameRates][VID_MODE];
-   system_av_info.timing.fps = FRAMERATE;
-   environ_cb(RETRO_ENVIRONMENT_SET_SYSTEM_AV_INFO, &system_av_info);
-   setup_frame_time_cb();
 }
 
 /* TODO/FIXME - implement savestates */
@@ -1609,7 +1608,7 @@ void retro_init(void)
    else
       strcpy(RETRO_DIR, retro_system_directory);
 
-   sprintf(retro_system_conf, "%s%ckeropi", RETRO_DIR, slash);
+   sprintf(retro_system_conf, "%s%ckeropi", RETRO_DIR, SLASH);
 
    if (!environ_cb(RETRO_ENVIRONMENT_SET_PIXEL_FORMAT, &fmt))
       exit(0);
@@ -1709,134 +1708,137 @@ static void rumble_frames(void)
 
 static void handle_retrok(void)
 {
-	if(Core_Key_State[RETROK_F12] && Core_Key_State[RETROK_F12]!=Core_old_Key_State[RETROK_F12]  )
-	{
-		if (menu_mode == menu_out)
+   int i;
+   if(Core_Key_State[RETROK_F12] && Core_Key_State[RETROK_F12]!=Core_old_Key_State[RETROK_F12]  )
+   {
+      if (menu_mode == menu_out)
       {
-         oldrw=retrow;oldrh=retroh;
-         retroh=600;retrow=800;
-         CHANGEAV=1;
+         oldrw     = retrow;
+         oldrh     = retroh;
+         retrow    = 800;
+         retroh    = 600;
+         CHANGEAV  = 1;
          menu_mode = menu_enter;
          DSound_Stop();
       }
       else
       {
-			CHANGEAV=1;
-			retrow=oldrw;retroh=oldrh;
-			DSound_Play();
-			menu_mode = menu_out;
-		}
-	}
+         CHANGEAV  = 1;
+         retrow    = oldrw;
+         retroh    = oldrh;
+         DSound_Play();
+         menu_mode = menu_out;
+      }
+   }
 
-	KEYP(RETROK_ESCAPE,0x1);
-        int i;
-	for(i=1;i<10;i++)
-		KEYP(RETROK_0+i,0x1+i);
-	KEYP(RETROK_0,0xb);
-	KEYP(RETROK_MINUS,0xc);
-	KEYP(RETROK_QUOTE,0x28); /* colon : */
-	KEYP(RETROK_BACKSPACE,0xf);
+   KEYP(RETROK_ESCAPE,0x1);
+   for(i = 1; i < 10; i++)
+      KEYP(RETROK_0 + i, 0x1 + i);
+   KEYP(RETROK_0,0xb);
+   KEYP(RETROK_MINUS,0xc);
+   KEYP(RETROK_QUOTE,0x28); /* colon : */
+   KEYP(RETROK_BACKSPACE,0xf);
 
-	KEYP(RETROK_TAB,0x10);
-	KEYP(RETROK_q,0x11);
-	KEYP(RETROK_w,0x12);
-	KEYP(RETROK_e,0x13);
-	KEYP(RETROK_r,0x14);
-	KEYP(RETROK_t,0x15);
-	KEYP(RETROK_y,0x16);
-	KEYP(RETROK_u,0x17);
-	KEYP(RETROK_i,0x18);
-	KEYP(RETROK_o,0x19);
-	KEYP(RETROK_p,0x1A);
-	KEYP(RETROK_BACKQUOTE,0x1B);
-	KEYP(RETROK_LEFTBRACKET,0x1C);
-	KEYP(RETROK_RETURN,0x1d);
-	KEYP(RETROK_EQUALS,0xd); /* caret ^ */
+   KEYP(RETROK_TAB,0x10);
+   KEYP(RETROK_q,0x11);
+   KEYP(RETROK_w,0x12);
+   KEYP(RETROK_e,0x13);
+   KEYP(RETROK_r,0x14);
+   KEYP(RETROK_t,0x15);
+   KEYP(RETROK_y,0x16);
+   KEYP(RETROK_u,0x17);
+   KEYP(RETROK_i,0x18);
+   KEYP(RETROK_o,0x19);
+   KEYP(RETROK_p,0x1A);
+   KEYP(RETROK_BACKQUOTE,0x1B);
+   KEYP(RETROK_LEFTBRACKET,0x1C);
+   KEYP(RETROK_RETURN,0x1d);
+   KEYP(RETROK_EQUALS,0xd); /* caret ^ */
 
-	KEYP(RETROK_a,0x1e);
-	KEYP(RETROK_s,0x1f);
-	KEYP(RETROK_d,0x20);
-	KEYP(RETROK_f,0x21);
-	KEYP(RETROK_g,0x22);
-	KEYP(RETROK_h,0x23);
-	KEYP(RETROK_j,0x24);
-	KEYP(RETROK_k,0x25);
-	KEYP(RETROK_l,0x26);
-	KEYP(RETROK_SEMICOLON,0x27);
-	KEYP(RETROK_BACKSLASH,0xe); /* Yen symbol ¥ */
-	KEYP(RETROK_RIGHTBRACKET,0x29);
+   KEYP(RETROK_a,0x1e);
+   KEYP(RETROK_s,0x1f);
+   KEYP(RETROK_d,0x20);
+   KEYP(RETROK_f,0x21);
+   KEYP(RETROK_g,0x22);
+   KEYP(RETROK_h,0x23);
+   KEYP(RETROK_j,0x24);
+   KEYP(RETROK_k,0x25);
+   KEYP(RETROK_l,0x26);
+   KEYP(RETROK_SEMICOLON,0x27);
+   KEYP(RETROK_BACKSLASH,0xe); /* Yen symbol ¥ */
+   KEYP(RETROK_RIGHTBRACKET,0x29);
 
-	KEYP(RETROK_z,0x2a);
-	KEYP(RETROK_x,0x2b);
-	KEYP(RETROK_c,0x2c);
-	KEYP(RETROK_v,0x2d);
-	KEYP(RETROK_b,0x2e);
-	KEYP(RETROK_n,0x2f);
-	KEYP(RETROK_m,0x30);
-	KEYP(RETROK_COMMA,0x31);
-	KEYP(RETROK_PERIOD,0x32);
-	KEYP(RETROK_SLASH,0x33);
-	KEYP(RETROK_0,0x34); /* underquote _ as shift+0 which was empty, Japanese
-chars can't overlap as we're not using them */
+   KEYP(RETROK_z,0x2a);
+   KEYP(RETROK_x,0x2b);
+   KEYP(RETROK_c,0x2c);
+   KEYP(RETROK_v,0x2d);
+   KEYP(RETROK_b,0x2e);
+   KEYP(RETROK_n,0x2f);
+   KEYP(RETROK_m,0x30);
+   KEYP(RETROK_COMMA,0x31);
+   KEYP(RETROK_PERIOD,0x32);
+   KEYP(RETROK_SLASH,0x33);
+   KEYP(RETROK_0,0x34); /* underquote _ as shift+0 which was empty, Japanese
+                           chars can't overlap as we're not using them */
 
-	KEYP(RETROK_SPACE,0x35);
-	KEYP(RETROK_HOME,0x36);
-	KEYP(RETROK_DELETE,0x37);
-	KEYP(RETROK_PAGEDOWN,0x38);
-	KEYP(RETROK_PAGEUP,0x39);
-	KEYP(RETROK_END,0x3a);
-	KEYP(RETROK_LEFT,0x3b);
-	KEYP(RETROK_UP,0x3c);
-	KEYP(RETROK_RIGHT,0x3d);
-	KEYP(RETROK_DOWN,0x3e);
+   KEYP(RETROK_SPACE,0x35);
+   KEYP(RETROK_HOME,0x36);
+   KEYP(RETROK_DELETE,0x37);
+   KEYP(RETROK_PAGEDOWN,0x38);
+   KEYP(RETROK_PAGEUP,0x39);
+   KEYP(RETROK_END,0x3a);
+   KEYP(RETROK_LEFT,0x3b);
+   KEYP(RETROK_UP,0x3c);
+   KEYP(RETROK_RIGHT,0x3d);
+   KEYP(RETROK_DOWN,0x3e);
 
-	KEYP(RETROK_CLEAR,0x3f);
-	KEYP(RETROK_KP_DIVIDE,0x40);
-	KEYP(RETROK_KP_MULTIPLY,0x41);
-	KEYP(RETROK_KP_MINUS,0x42);
-	KEYP(RETROK_KP7,0x43);
-	KEYP(RETROK_KP8,0x44);
-	KEYP(RETROK_KP9,0x45);
-	KEYP(RETROK_KP_PLUS,0x46);
-	KEYP(RETROK_KP4,0x47);
-	KEYP(RETROK_KP5,0x48);
-	KEYP(RETROK_KP6,0x49);
-	KEYP(RETROK_KP_EQUALS,0x4a);
-	KEYP(RETROK_KP1,0x4b);
-	KEYP(RETROK_KP2,0x4c);
-	KEYP(RETROK_KP3,0x4d);
-	KEYP(RETROK_KP_ENTER,0x4e);
-	KEYP(RETROK_KP0,0x4f);
+   KEYP(RETROK_CLEAR,0x3f);
+   KEYP(RETROK_KP_DIVIDE,0x40);
+   KEYP(RETROK_KP_MULTIPLY,0x41);
+   KEYP(RETROK_KP_MINUS,0x42);
+   KEYP(RETROK_KP7,0x43);
+   KEYP(RETROK_KP8,0x44);
+   KEYP(RETROK_KP9,0x45);
+   KEYP(RETROK_KP_PLUS,0x46);
+   KEYP(RETROK_KP4,0x47);
+   KEYP(RETROK_KP5,0x48);
+   KEYP(RETROK_KP6,0x49);
+   KEYP(RETROK_KP_EQUALS,0x4a);
+   KEYP(RETROK_KP1,0x4b);
+   KEYP(RETROK_KP2,0x4c);
+   KEYP(RETROK_KP3,0x4d);
+   KEYP(RETROK_KP_ENTER,0x4e);
+   KEYP(RETROK_KP0,0x4f);
 #if 0
-	KEYP(RETROK_COMMA,0x50);
+   KEYP(RETROK_COMMA,0x50);
 #endif
-	KEYP(RETROK_KP_PERIOD,0x51);
+   KEYP(RETROK_KP_PERIOD,0x51);
 
-	KEYP(RETROK_PRINT,0x52); /* symbol input (kigou) */
-	KEYP(RETROK_SCROLLOCK,0x53); /* registration (touroku) */
-	KEYP(RETROK_F11,0x54); /* help */
+   KEYP(RETROK_PRINT,0x52); /* symbol input (kigou) */
+   KEYP(RETROK_SCROLLOCK,0x53); /* registration (touroku) */
+   KEYP(RETROK_F11,0x54); /* help */
 
-	/* only process kb_to_joypad map when its not zero, else button is used as
- * joypad select mode */
-	if (Config.joy1_select_mapping)
-		KEYP(RETROK_XFX, Config.joy1_select_mapping);
+   /* only process kb_to_joypad map when its not zero, else button is used as
+    * joypad select mode */
+   if (Config.joy1_select_mapping)
+      KEYP(RETROK_XFX, Config.joy1_select_mapping);
 
-	KEYP(RETROK_CAPSLOCK,0x5d);
-	KEYP(RETROK_INSERT,0x5e);
-	KEYP(RETROK_BREAK,0x61); /* break */
-	KEYP(RETROK_PAUSE,0x61); /* break (allow shift+break combo) */
+   KEYP(RETROK_CAPSLOCK,0x5d);
+   KEYP(RETROK_INSERT,0x5e);
+   KEYP(RETROK_BREAK,0x61); /* break */
+   KEYP(RETROK_PAUSE,0x61); /* break (allow shift+break combo) */
 
-	for(i=0;i<10;i++)
-		KEYP(RETROK_F1+i,0x63+i);
+   for(i = 0; i < 10; i++)
+      KEYP(RETROK_F1 + i, 0x63 + i);
 
-	KEYP(RETROK_LSHIFT,0x70);
-	KEYP(RETROK_RSHIFT,0x70);
-	KEYP(RETROK_LCTRL,0x71);
-	KEYP(RETROK_RCTRL,0x71);
-	KEYP(RETROK_LSUPER,0x72);
-	KEYP(RETROK_RSUPER,0x73);
-	KEYP(RETROK_LALT,0x72);
-	KEYP(RETROK_RALT,0x73);
+   KEYP(RETROK_LSHIFT,0x70);
+   KEYP(RETROK_RSHIFT,0x70);
+   KEYP(RETROK_LCTRL,0x71);
+   KEYP(RETROK_RCTRL,0x71);
+   KEYP(RETROK_LSUPER,0x72);
+   KEYP(RETROK_RSUPER,0x73);
+   KEYP(RETROK_LALT,0x72);
+   KEYP(RETROK_RALT,0x73);
 }
 
 #define CLOCK_SLICE 200
@@ -1844,190 +1846,202 @@ chars can't overlap as we're not using them */
 /*  Core Main Loop */
 static void WinX68k_Exec(void)
 {
-	int clk_total, clkdiv, usedclk, hsync, clk_next, clk_count, clk_line=0;
-	int KeyIntCnt = 0, MouseIntCnt = 0;
-	uint32_t t_start = timeGetTime(), t_end;
+   int clk_total, clkdiv, usedclk, hsync, clk_next, clk_count, clk_line=0;
+   int KeyIntCnt = 0, MouseIntCnt = 0;
+   uint32_t t_start = timeGetTime(), t_end;
 
-	if(!(cpu_readmem24_dword(0xed0008)==Config.ram_size))
+   if(!(cpu_readmem24_dword(0xed0008) == Config.ram_size))
    {
-      cpu_writemem24(0xe8e00d, 0x31);             /* SRAM write permission */
+      cpu_writemem24(0xe8e00d, 0x31); /* SRAM write permission */
       cpu_writemem24_dword(0xed0008, Config.ram_size); /* Define RAM amount */
    }
 
-	Joystick_Update(0, -1, 0);
-	Joystick_Update(0, -1, 1);
+   Joystick_Update(0, -1, 0);
+   Joystick_Update(0, -1, 1);
 
-	if ( Config.FrameRate != 7 )
-		DispFrame = (DispFrame+1)%Config.FrameRate;
-	else
-	{				/* Auto Frame Skip */
-		if ( FrameSkipQueue )
+   if (Config.FrameRate != 7)
+      DispFrame = (DispFrame + 1) % Config.FrameRate;
+   else
+   {				/* Auto Frame Skip */
+      if (FrameSkipQueue)
       {
-         if ( FrameSkipCount>15 )
+         if (FrameSkipCount > 15)
          {
             FrameSkipCount = 0;
             FrameSkipQueue++;
-            DispFrame = 0;
+            DispFrame      = 0;
          }
          else
          {
             FrameSkipCount++;
             FrameSkipQueue--;
-            DispFrame = 1;
+            DispFrame      = 1;
          }
-      } else {
-			FrameSkipCount = 0;
-			DispFrame = 0;
-		}
-	}
+      }
+      else
+      {
+         FrameSkipCount    = 0;
+         DispFrame         = 0;
+      }
+   }
 
-	vline = 0;
-	clk_count = -ICount;
-	clk_total = (CRTC_Regs[0x29] & 0x10) ? VSYNC_HIGH : VSYNC_NORM;
+   vline     = 0;
+   clk_count = -ICount;
+   clk_total = (CRTC_Regs[0x29] & 0x10) ? VSYNC_HIGH : VSYNC_NORM;
 
-	clk_total = (clk_total*Config.clockmhz)/10;
-	clkdiv = Config.clockmhz;
+   clk_total = (clk_total*Config.clockmhz)/10;
+   clkdiv    = Config.clockmhz;
 
 #if 0
-	if (Config.XVIMode == 1)
+   if (Config.XVIMode == 1)
    {
-		clk_total = (clk_total*16)/10;
-		clkdiv    = 16;
-	}
+      clk_total = (clk_total * 16) / 10;
+      clkdiv    = 16;
+   }
    else if (Config.XVIMode == 2)
    {
-		clk_total = (clk_total*24)/10;
-		clkdiv    = 24;
-	}
+      clk_total = (clk_total * 24) / 10;
+      clkdiv    = 24;
+   }
    else
-		clkdiv    = 10;
+      clkdiv    = 10;
 #endif
 
-	if(clkdiv != old_clkdiv || Config.ram_size != old_ram_size){
-		old_clkdiv = clkdiv;
-		old_ram_size = Config.ram_size;
-	}
+   if(clkdiv != old_clkdiv || Config.ram_size != old_ram_size)
+   {
+      old_clkdiv = clkdiv;
+      old_ram_size = Config.ram_size;
+   }
 
-	ICount += clk_total;
-	clk_next = (clk_total/VLINE_TOTAL);
-	hsync = 1;
+   ICount  += clk_total;
+   clk_next = (clk_total/VLINE_TOTAL);
+   hsync    = 1;
 
-	do {
-		int m, n = (ICount > CLOCK_SLICE) ? CLOCK_SLICE : ICount;
+   do
+   {
+      int m, n = (ICount > CLOCK_SLICE) ? CLOCK_SLICE : ICount;
 
-		if ( hsync ) {
-			hsync = 0;
-			clk_line = 0;
-			MFP_Int(0);
-			if ( (vline>=CRTC_VSTART)&&(vline<CRTC_VEND) )
-				VLINE = ((vline-CRTC_VSTART)*CRTC_VStep)/2;
-			else
-				VLINE = (uint32_t)-1;
-			if ( (!(MFP[MFP_AER]&0x40))&&(vline==CRTC_IntLine) )
-				MFP_Int(1);
-			if ( MFP[MFP_AER]&0x10 ) {
-				if ( vline==CRTC_VSTART )
-					MFP_Int(9);
-			} else {
-				if ( CRTC_VEND>=VLINE_TOTAL )
+      if ( hsync )
+      {
+         hsync    = 0;
+         clk_line = 0;
+         MFP_Int(0);
+         if ((vline >= CRTC_VSTART) && (vline < CRTC_VEND))
+            VLINE = ((vline - CRTC_VSTART) * CRTC_VStep) / 2;
+         else
+            VLINE = (uint32_t)-1;
+         if ((!(MFP[MFP_AER] & 0x40)) && (vline == CRTC_IntLine))
+            MFP_Int(1);
+         if (MFP[MFP_AER] & 0x10)
+         {
+            if (vline == CRTC_VSTART)
+               MFP_Int(9);
+         }
+         else
+         {
+            if (CRTC_VEND >= VLINE_TOTAL)
             {
-               if ( (long)vline==(CRTC_VEND-VLINE_TOTAL) )
+               if ((long)vline == (CRTC_VEND - VLINE_TOTAL))
                   MFP_Int(9);		/* Is it Exciting Hour? （TOTAL<VEND） */
             }
             else
             {
-					if ( (long)vline==(VLINE_TOTAL-1) )
+               if ((long)vline == (VLINE_TOTAL-1))
                   MFP_Int(9);		/* Is it Crazy Climber? */
-				}
-			}
-		}
+            }
+         }
+      }
 
-		{
+      {
 #if defined (HAVE_CYCLONE)
-			m68000_execute(n);
+         m68000_execute(n);
 #elif defined (HAVE_C68K)
-			C68k_Exec(&C68K, n);
+         C68k_Exec(&C68K, n);
 #elif defined (HAVE_MUSASHI)
-			m68k_execute(n);
+         m68k_execute(n);
 #endif /* HAVE_C68K */ /* HAVE_MUSASHI */
-			m = (n-m68000_ICountBk);
-			ClkUsed += m*10;
-			usedclk = ClkUsed/clkdiv;
-			clk_line += usedclk;
-			ClkUsed -= usedclk*clkdiv;
-			ICount -= m;
-			clk_count += m;
-		}
+         m          = (n-m68000_ICountBk);
+         ClkUsed   += m*10;
+         usedclk    = ClkUsed/clkdiv;
+         clk_line  += usedclk;
+         ClkUsed   -= usedclk*clkdiv;
+         ICount    -= m;
+         clk_count += m;
+      }
 
-		MFP_Timer(usedclk);
-		RTC_Timer(usedclk);
-		DMA_Exec(0);
-		DMA_Exec(1);
-		DMA_Exec(2);
+      MFP_Timer(usedclk);
+      RTC_Timer(usedclk);
+      DMA_Exec(0);
+      DMA_Exec(1);
+      DMA_Exec(2);
 
-		if ( clk_count>=clk_next ) {
-			MIDI_DelayOut((Config.MIDIAutoDelay)?(Config.BufferSize*5):Config.MIDIDelay);
-			MFP_TimerA();
-			if ( (MFP[MFP_AER]&0x40)&&(vline==CRTC_IntLine) )
-				MFP_Int(1);
-			if ( (!DispFrame)&&(vline>=CRTC_VSTART)&&(vline<CRTC_VEND) ) {
-				if ( CRTC_VStep==1 )
-				{
-					/* HighReso 256dot (read twice) */
-					if ( vline%2 )
-						WinDraw_DrawLine();
-				}
-				else if ( CRTC_VStep==4 )
-				{
-					/* LowReso 512dot
-					 * draw twice per scanline (interlace) */
-					WinDraw_DrawLine();			
-					VLINE++;
-					WinDraw_DrawLine();
-				}
-				else /* High 512dot / Low 256dot */
-					WinDraw_DrawLine();
-			}
+      if (clk_count >= clk_next)
+      {
+         MIDI_DelayOut((Config.MIDIAutoDelay)?(Config.BufferSize*5):Config.MIDIDelay);
+         MFP_TimerA();
+         if ((MFP[MFP_AER] & 0x40) && (vline == CRTC_IntLine))
+            MFP_Int(1);
+         if ( (!DispFrame) && (vline >= CRTC_VSTART) && (vline < CRTC_VEND))
+         {
+            if ( CRTC_VStep==1 )
+            {
+               /* HighReso 256dot (read twice) */
+               if ( vline%2 )
+                  WinDraw_DrawLine();
+            }
+            else if (CRTC_VStep == 4)
+            {
+               /* LowReso 512dot
+                * draw twice per scanline (interlace) */
+               WinDraw_DrawLine();			
+               VLINE++;
+               WinDraw_DrawLine();
+            }
+            else /* High 512dot / Low 256dot */
+               WinDraw_DrawLine();
+         }
 
-			ADPCM_PreUpdate(clk_line);
-			OPM_Timer(clk_line);
-			MIDI_Timer(clk_line);
+         ADPCM_PreUpdate(clk_line);
+         OPM_Timer(clk_line);
+         MIDI_Timer(clk_line);
 #ifndef	NO_MERCURY
-			Mcry_PreUpdate(clk_line);
+         Mcry_PreUpdate(clk_line);
 #endif
 
-			KeyIntCnt++;
-			if ( KeyIntCnt>(VLINE_TOTAL/4) ) {
-				KeyIntCnt = 0;
-				Keyboard_Int();
-			}
-			MouseIntCnt++;
-			if ( MouseIntCnt>(VLINE_TOTAL/8) ) {
-				MouseIntCnt = 0;
-				SCC_IntCheck();
-			}
-			DSound_Send0(clk_line);
+         KeyIntCnt++;
+         if (KeyIntCnt > (VLINE_TOTAL/4))
+         {
+            KeyIntCnt = 0;
+            Keyboard_Int();
+         }
+         MouseIntCnt++;
+         if (MouseIntCnt > (VLINE_TOTAL / 8))
+         {
+            MouseIntCnt = 0;
+            SCC_IntCheck();
+         }
+         DSound_Send0(clk_line);
 
-			vline++;
-			clk_next  = (clk_total*(vline+1))/VLINE_TOTAL;
-			hsync = 1;
-		}
-	} while ( vline<VLINE_TOTAL );
+         vline++;
+         clk_next  = (clk_total*(vline+1))/VLINE_TOTAL;
+         hsync     = 1;
+      }
+   } while (vline < VLINE_TOTAL);
 
-	if ( CRTC_Mode&2 )
+   if (CRTC_Mode & 2)
    {
       /* FastClr byte adjustment (PITAPAT) */
-      if ( CRTC_FastClr )
+      if (CRTC_FastClr)
       {
          /* if FastClr=1 and CRTC_Mode&2 then end */
          CRTC_FastClr--;
-         if ( !CRTC_FastClr )
+         if (!CRTC_FastClr)
             CRTC_Mode &= 0xfd;
       }
       else
       {
          /* FastClr start */
-         if ( CRTC_Regs[0x29]&0x10 )
+         if (CRTC_Regs[0x29] & 0x10)
             CRTC_FastClr = 1;
          else
             CRTC_FastClr = 2;
@@ -2036,16 +2050,17 @@ static void WinX68k_Exec(void)
       }
    }
 
-	FDD_SetFDInt();
-	if ( !DispFrame )
-		WinDraw_Draw();
+   FDD_SetFDInt();
+   if (!DispFrame)
+      WinDraw_Draw();
 
-	t_end = timeGetTime();
-	if ( (int)(t_end-t_start)>((CRTC_Regs[0x29]&0x10)?14:16) ) {
-		FrameSkipQueue += ((t_end-t_start)/((CRTC_Regs[0x29]&0x10)?14:16))+1;
-		if ( FrameSkipQueue>100 )
-			FrameSkipQueue = 100;
-	}
+   t_end = timeGetTime();
+   if ((int)(t_end - t_start) > ((CRTC_Regs[0x29] & 0x10) ? 14 : 16))
+   {
+      FrameSkipQueue += ((t_end - t_start) / ((CRTC_Regs[0x29] & 0x10) ? 14 : 16)) + 1;
+      if (FrameSkipQueue > 100)
+         FrameSkipQueue = 100;
+   }
 }
 
 void retro_run(void)
@@ -2054,7 +2069,7 @@ void retro_run(void)
 	int i;
    int mouse_x, mouse_y, mouse_l, mouse_r;
    bool updated = false;
-	static int mbL = 0, mbR = 0;
+	static bool mbL = false, mbR = false;
 
    if (firstcall)
    {
@@ -2073,20 +2088,25 @@ void retro_run(void)
    {
       if (CHANGEAV_TIMING)
       {
-         update_timing();
-         CHANGEAV_TIMING = 0;
-         CHANGEAV = 0;
+         struct retro_system_av_info system_av_info;
+         retro_get_system_av_info(&system_av_info);
+         FRAMERATE                            = framerates[Config.AdjustFrameRates][VID_MODE];
+         system_av_info.timing.fps            = FRAMERATE;
+         environ_cb(RETRO_ENVIRONMENT_SET_SYSTEM_AV_INFO, &system_av_info);
+         setup_frame_time_cb();
+         CHANGEAV_TIMING                      = 0;
+         CHANGEAV                             = 0;
       }
       if (CHANGEAV)
       {
          struct retro_system_av_info system_av_info;
-         system_av_info.geometry.base_width = retrow;
-         system_av_info.geometry.base_height = retroh;
+         system_av_info.geometry.base_width   = retrow;
+         system_av_info.geometry.base_height  = retroh;
          system_av_info.geometry.aspect_ratio = (float)4.0/3.0;
          environ_cb(RETRO_ENVIRONMENT_SET_GEOMETRY, &system_av_info);
-         CHANGEAV = 0;
+         CHANGEAV                             = 0;
       }
-      soundbuf_size = SNDSZ;
+      soundbuf_size                           = SNDSZ;
    }
 
    input_poll_cb();
@@ -2094,44 +2114,44 @@ void retro_run(void)
 
    FDD_IsReading = 0;
 
-	if (menu_mode == menu_out
-			&& (Config.AudioDesyncHack ||
-				Config.NoWaitMode || Timer_GetCount()))
+	if (     (menu_mode == menu_out)
+			&& (  Config.AudioDesyncHack
+				|| Config.NoWaitMode 
+            || Timer_GetCount()))
 		WinX68k_Exec();
 
 	menu_key_down = -1;
-
-
-	mouse_x = input_state_cb(0, RETRO_DEVICE_MOUSE, 0, RETRO_DEVICE_ID_MOUSE_X);
-	mouse_y = input_state_cb(0, RETRO_DEVICE_MOUSE, 0, RETRO_DEVICE_ID_MOUSE_Y);
+	mouse_x       = input_state_cb(0, RETRO_DEVICE_MOUSE, 0, RETRO_DEVICE_ID_MOUSE_X);
+	mouse_y       = input_state_cb(0, RETRO_DEVICE_MOUSE, 0, RETRO_DEVICE_ID_MOUSE_Y);
 
 	Mouse_Event(0, mouse_x, mouse_y);
 
-	mouse_l    = input_state_cb(0, RETRO_DEVICE_MOUSE, 0, RETRO_DEVICE_ID_MOUSE_LEFT);
-	mouse_r    = input_state_cb(0, RETRO_DEVICE_MOUSE, 0, RETRO_DEVICE_ID_MOUSE_RIGHT);
+	mouse_l       = input_state_cb(0, RETRO_DEVICE_MOUSE, 0, RETRO_DEVICE_ID_MOUSE_LEFT);
+	mouse_r       = input_state_cb(0, RETRO_DEVICE_MOUSE, 0, RETRO_DEVICE_ID_MOUSE_RIGHT);
 
-	if(mbL==0 && mouse_l)
+	if(!mbL && mouse_l)
    {
-		mbL=1;
+		mbL         = true;
 		Mouse_Event(1,1.0,0);
 	}
-	else if(mbL==1 && !mouse_l)
+	else if(mbL && !mouse_l)
 	{
-		mbL=0;
+		mbL         = false;
 		Mouse_Event(1,0,0);
 	}
-	if(mbR==0 && mouse_r){
-		mbR=1;
+	if(!mbR && mouse_r)
+   {
+		mbR         = true;
 		Mouse_Event(2,1.0,0);
 	}
-	else if(mbR==1 && !mouse_r)
+	else if(mbR && !mouse_r)
 	{
-		mbR=0;
+		mbR         = false;
 		Mouse_Event(2,0,0);
 	}
 
-	for(i=0;i<320;i++)
-		Core_Key_State[i]=input_state_cb(0, RETRO_DEVICE_KEYBOARD, 0,i) ? 0x80: 0;
+	for(i = 0; i < 320; i++)
+		Core_Key_State[i] = input_state_cb(0, RETRO_DEVICE_KEYBOARD, 0, i) ? 0x80: 0;
 
 	Core_Key_State[RETROK_XFX] = 0;
 

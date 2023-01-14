@@ -35,7 +35,11 @@
 
 #include "dosio.h"
 
-extern char slash;
+#ifdef _WIN32
+#define SLASH '\\'
+#else
+#define SLASH '/'
+#endif
 
 static char  curpath[MAX_PATH] = "";
 static char *curfilep = curpath;
@@ -46,12 +50,12 @@ static void plusyen(char *s, size_t len)
 
 	if (pos)
 	{
-		if (s[pos-1] == slash)
+		if (s[pos-1] == SLASH)
 			return;
 	}
 	if ((pos + 2) >= len)
 		return;
-	s[pos++] = slash;
+	s[pos++] = SLASH;
 	s[pos]   = '\0';
 }
 

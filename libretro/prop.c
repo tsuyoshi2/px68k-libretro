@@ -42,16 +42,6 @@ Win68Conf Config;
 extern char filepath[MAX_PATH];
 extern char winx68k_ini[2048];
 
-extern char retro_system_conf[512];
-extern char slash;
-
-int set_modulepath(char *path, size_t len)
-{
-        strcpy(path,retro_system_conf);
-        sprintf(winx68k_ini, "%s%cconfig",retro_system_conf,slash);
-        return 0;
-}
-
 static void LoadDefaults(void)
 {
 	int i;
