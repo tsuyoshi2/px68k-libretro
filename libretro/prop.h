@@ -50,6 +50,4 @@ void LoadConfig(void);
 void SaveConfig(void);
 void PropPage_Init(void);
 
-int set_modulepath(char *path, size_t len);
-
 #endif /* _WINX68K_CONFIG_H */
