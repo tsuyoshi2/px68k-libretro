@@ -1,0 +1,171 @@
+Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
+Upstream-Name: px68k-libretro
+Upstream-Contact: libretro@gmail.com
+Source: https://github.com/libretro/px68k-libretro
+
+Files:
+ *
+Copyright: (c) 2000,01 Kenjo
+License: kenjo
+ 商利用しない限りにおいて、一部のファイルを除き、改変、パクりなどは自由
+ です。パクって作ったソフトに関してもソースコード公開の義務はありません。
+ 連絡も不要です（でも、使ったよ〜と云ってもらえると嬉しいです（笑））。
+ .
+ 著作権に関しては放棄しません（国内じゃしたくてもできないけど）。が、
+ まぁ好きに使って下さい（笑）。
+Comment:
+ Unofficial English translation:
+ .
+ Regarding limitations on commercial profit, excluding files, modification,
+ swiping and so on, do what you wish. Using this in your own software
+ does not obligate you to publish your source code. Contacting me is
+ unnecessary. (However, I would be delighted if you could let me
+ know you are using it (ha)).
+ .
+ I am not waiving copyright (not that I could even if I wanted to in this
+ country). But, well, please use it as you wish (ha).
+
+Files:
+ libretro/*
+ x68k/mem_wrap.c
+Copyright: Copyright (c) 2003,2008 NONAKA Kimihiro
+License: BSD-4-clause
+ Redistribution and use in source and binary forms, with or without
+ modification, are permitted provided that the following conditions
+ are met:
+ 1. Redistributions of source code must retain the above copyright
+    notice, this list of conditions and the following disclaimer.
+ 2. Redistributions in binary form must reproduce the above copyright
+    notice, this list of conditions and the following disclaimer in the
+    documentation and/or other materials provided with the distribution.
+ 3. All advertising materials mentioning features or use of this software
+    must display the following acknowledgment:
+      This product includes software developed by NONAKA Kimihiro.
+ 4. The name of the author may not be used to endorse or promote products
+    derived from this software without specific prior written permission.
+ .
+ THIS SOFTWARE IS PROVIDED BY THE AUTHOR ``AS IS'' AND ANY EXPRESS OR
+ IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
+ OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
+ IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT, INDIRECT,
+ INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT
+ NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+ DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+ THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
+ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+Files:
+ m68000/c68k/*
+Copyright: Copyright 2003-2004 Stephane Dallongeville
+License: GPL-2+
+ This file is part of Yabause.
+ .
+ Yabause is free software; you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as published by
+ the Free Software Foundation; either version 2 of the License, or
+ (at your option) any later version.
+ .
+ Yabause is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU General Public License for more details.
+ .
+ You should have received a copy of the GNU General Public License
+ along with Yabause; if not, write to the Free Software
+ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
+Comment:
+ On Debian systems, the full text of the GNU General Public License
+ version 2 can be found in the file /usr/share/common-licenses/GPL-2.
+
+Files:
+ m68000/musashi/*
+Copyright: Copyright Karl Stenerud.
+License: Expat
+ Permission is hereby granted, free of charge, to any person obtaining a copy
+ of this software and associated documentation files (the "Software"), to deal
+ in the Software without restriction, including without limitation the rights
+ to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ copies of the Software, and to permit persons to whom the Software is
+ furnished to do so, subject to the following conditions:
+ .
+ The above copyright notice and this permission notice shall be included in
+ all copies or substantial portions of the Software.
+ .
+ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ THE SOFTWARE.
+
+Files:
+ m68000/musashi/softfloat/*
+Copyright: Written by John R. Hauser.
+ This work was made possible in part by the International Computer
+ Science Institute, located at Suite 600, 1947 Center Street, Berkeley,
+ California 94704. Funding was partially provided by the National Science
+ Foundation under grant MIP-9311980. The original version of this code
+ was written as part of a project to build a fixed-point vector processor
+ in collaboration with the University of California at Berkeley, overseen
+ by Profs. Nelson Morgan and John Wawrzynek.
+License: hauser
+ THIS SOFTWARE IS DISTRIBUTED AS IS, FOR FREE.  Although reasonable effort has
+ been made to avoid it, THIS SOFTWARE MAY CONTAIN FAULTS THAT WILL AT TIMES
+ RESULT IN INCORRECT BEHAVIOR.  USE OF THIS SOFTWARE IS RESTRICTED TO PERSONS
+ AND ORGANIZATIONS WHO CAN AND WILL TAKE FULL RESPONSIBILITY FOR ALL LOSSES,
+ COSTS, OR OTHER PROBLEMS THEY INCUR DUE TO THE SOFTWARE, AND WHO FURTHERMORE
+ EFFECTIVELY INDEMNIFY JOHN HAUSER AND THE INTERNATIONAL COMPUTER SCIENCE
+ INSTITUTE (possibly via similar legal warning) AGAINST ALL LOSSES, COSTS, OR
+ OTHER PROBLEMS INCURRED BY THEIR CUSTOMERS AND CLIENTS DUE TO THE SOFTWARE.
+ .
+ Derivative works are acceptable, even for commercial purposes, so long as
+ (1) the source code for the derivative work includes prominent notice that
+ the work is derivative, and (2) the source code includes prominent notice with
+ these four paragraphs for those parts of this code that are retained.
+
+Files:
+ fmgen/*
+Copyright: Copyright (C) by cisc 1998, 2003.
+License: cisc
+ 【著作権、免責規定】
+ .
+ ・本ソースコードは作者(cisc@retropc.net) が著作権を所有しています。
+ .
+ ・本ソースコードはあるがままに提供されるものであり，
+ 　暗黙及び明示的な保証を一切含みません．
+ .
+ ・本ソースコードを利用したこと，利用しなかったこと，
+ 　利用できなかったことに関して生じたあるいは生じると予測される
+ 　損害について，作者は一切責任を負いません．
+ .
+ ・本ソースコードは，以下の制限を満たす限り自由に改変・組み込み・
+ 　配布・利用することができます．
+ .
+ 　1. 本ソフトの由来(作者, 著作権)を明記すること.
+ 　2. 配布する際にはフリーソフトとすること．
+ 　3. 改変したソースコードを配布する際は改変内容を明示すること.
+ 　4. ソースコードを配布する際にはこのテキストを一切改変せずに
+ 　　 そのまま添付すること．
+Comment:
+ Unofficial English translation:
+ .
+ * The author, cisc@retropc.net, owns the copyright of this
+   source code.
+ .
+ * This source code is provided as-is, with absolutely no
+   implicit or explicit warranty.
+ .
+ * The author assumes no responsibility for damages caused by or
+   expecteded to be caused by the use, non-use, or inability to
+   use this source code.
+ .
+ * The source code may be freely modified, embedded, distributed,
+   or used under the following conditions:
+ .
+   1. The author of the software is made clear,
+   2. It is distributed as free software,
+   3. Any changes to the source code are specified, and
+   4. The source code is distributed with this text unchanged, in
+      its entirety.

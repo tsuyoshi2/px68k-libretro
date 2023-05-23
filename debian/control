@@ -1,0 +1,17 @@
+Source: libretro-px68k
+Maintainer: Christopher Cramer <tsuyoshi@yumegakanau.org>
+Section: games
+Priority: optional
+Build-Depends: debhelper-compat (= 13)
+Standards-Version: 4.6.2
+Homepage: https://github.com/libretro/px68k-libretro
+Rules-Requires-Root: no
+
+Package: libretro-px68k
+Architecture: any
+Depends: ${shlibs:Depends},
+         ${misc:Depends},
+         retroarch | libretro-frontend
+Description: libretro Sharp X68000 core
+ This package provides a libretro core, which emulates the Sharp X68000 in
+ libretro frontends such as RetroArch and Highscore (formerly GNOME Games).
